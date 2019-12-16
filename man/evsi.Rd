@@ -4,18 +4,28 @@
 \alias{evsi}
 \title{Calculate the expected value of sample information under a decision-analytic model}
 \usage{
-evsi(nb, pars, rfn, method, ...)
+evsi(outputs, inputs, rfn, method, ...)
 }
 \arguments{
-\item{nb}{Matrix or data frame of samples from the uncertainty distribution of the expected net benefit.  The number of rows should equal the number of samples, and the number of columns should equal the number of decision options. 
+\item{outputs}{This could take one of two forms
 
-The exact names of all these arguments is up for discussion! 
+"net benefit" form: a matrix or data frame of samples from the uncertainty distribution of the expected net benefit.  The number of rows should equal the number of samples, and the number of columns should equal the number of decision options.
 
-(if we want to transform the NB to the INB to make certain calculation methods more efficient, we can do that internally. this would need a "baseline" treatment.  would the user need to supply this?  should default to first column at least)
+"cost-effectiveness analysis" form: a list with the following named components:
 
-Should also be easy to compute for different willingness to pay values.  So should think about how to separate out costs and effects}
+\code{"c"}: a matrix or data frame of samples from the distribution of costs.  There should be one column for each decision option.
 
-\item{pars}{Matrix or data frame of samples from the uncertainty distribution of the parameters of the decision-analytic model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as \code{nb}, and each row of \code{nb} should give the net benefit function evaluated at the corresponding parameters.}
+\code{"e"}: a matrix or data frame of samples from the distribution of effects, likewise.
+
+\code{"k"}: a vector of willingness-to-pay values.
+
+Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, may be supplied as the \code{outputs} argument, as they are lists with the required components. 
+
+If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.
+
+The exact names and formats of all these arguments is up for discussion!}
+
+\item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
 \item{rfn}{Function to sample data from a proposed future study}
 

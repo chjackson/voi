@@ -13,11 +13,11 @@
 ##' @param ... Other arguments required by specific methods 
 ##'
 ##' @export
-evsi <- function(nb,
-                  pars,
-                  rfn,
-                  method,
-                  ...)
+evsi <- function(outputs,
+                 inputs,
+                 rfn,
+                 method,
+                 ...)
 {
-    check_nbpars(nb, pars)
+
 }

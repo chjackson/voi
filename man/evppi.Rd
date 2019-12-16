@@ -2,29 +2,50 @@
 % Please edit documentation in R/evppi.R
 \name{evppi}
 \alias{evppi}
-\title{Calculate the expected value of partial perfect information from a decision-analytic model}
+\title{Calculate the expected value of partial perfect information from a decision model}
 \usage{
-evppi(nb, pars, poi, method, ...)
+evppi(outputs, inputs, poi, method = NULL, nsim = NULL, ...)
 }
 \arguments{
-\item{nb}{Matrix or data frame of samples from the uncertainty distribution of the expected net benefit.  The number of rows should equal the number of samples, and the number of columns should equal the number of decision options. 
+\item{outputs}{This could take one of two forms
 
-The exact names of all these arguments is up for discussion! 
+"net benefit" form: a matrix or data frame of samples from the uncertainty distribution of the expected net benefit.  The number of rows should equal the number of samples, and the number of columns should equal the number of decision options.
 
-(if we want to transform the NB to the INB to make certain calculation methods more efficient, we can do that internally. this would need a "baseline" treatment.  would the user need to supply this?  should default to first column at least)
+"cost-effectiveness analysis" form: a list with the following named components:
 
-Should also be easy to compute for different willingness to pay values.  So should think about how to separate out costs and effects}
+\code{"c"}: a matrix or data frame of samples from the distribution of costs.  There should be one column for each decision option.
 
-\item{pars}{Matrix or data frame of samples from the uncertainty distribution of the parameters of the decision-analytic model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as \code{nb}, and each row of \code{nb} should give the net benefit function evaluated at the corresponding parameters.}
+\code{"e"}: a matrix or data frame of samples from the distribution of effects, likewise.
 
-\item{poi}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{pars}.  [ I thought about allowing numeric indices for this, but perhaps better to encourage good practice by mandating that the parameters are named ]}
+\code{"k"}: a vector of willingness-to-pay values.
+
+Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, may be supplied as the \code{outputs} argument, as they are lists with the required components. 
+
+If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.
+
+The exact names and formats of all these arguments is up for discussion!}
+
+\item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
+
+\item{poi}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  [ I thought about allowing numeric indices for this, but perhaps better to encourage good practice by mandating that the parameters are named ]}
 
 \item{method}{Character string indicating the calculation method.
 
-Should support gam, gp, inla at least}
+"gam" for a generalized additive model implemented in the gam() function from the mgcv() package.
+"gp" for a Gaussian process regression TODO MORE 
 
-\item{...}{Other arguments required by specific methods}
+"inla" for an INLA/SPDE Gaussian process regression  TODO MORE 
+
+"earth" for a multivariate adaptive regression spline with the \pkg{earth} package  TODO MORE 
+
+TODO earth, single par methods}
+
+\item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
+
+\item{...}{Other arguments required by specific methods
+
+\code{gam_formula}: a character string giving the right hand side of the formula supplied to the gam() function, when \code{method="gam"}. By default, this is a tensor product of all the parameters of interest, e.g. if \code{poi = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis.   [ This is the default in SAVI ]}
 }
 \description{
-Calculate the expected value of partial perfect information from a decision-analytic model
+Calculate the expected value of partial perfect information from a decision model
 }

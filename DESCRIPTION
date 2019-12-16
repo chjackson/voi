@@ -14,6 +14,7 @@ Description: Methods to calculate the expected value of partial perfect informat
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Depends: R (>= 2.10)
 Imports: mgcv
-Suggests: testthat, earth, BCEA
+Suggests: testthat, earth, BCEA, INLA, ldr
 RoxygenNote: 6.1.1

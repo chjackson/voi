@@ -1,8 +1,41 @@
-## voi package TODO
+## DONE
 
-* Copy in existing EVPPI code
+* Basic package structure
+
+* EVPPI methods copied in from BCEA and tidied up
+
+* A few unit tests added for these 
+
+
+## TODO
+
+EVPPI
+
+* GP.  Compare with SAVI code, and use that if it does more 
+
+* INLA: error handling, check non-default args, plots, 
+
+* Test earth gam method more, compare against other methods to suggest advantages 
+
+* Add single parameter methods for historical interest? 
+
+* Standard errors for all nonparametric regression methods at least 
+
+* Regression diagnostics
+
+* Any other plots for communication?
+
+EVSI 
 
 * Copy in existing EVSI code from Convoi 1 material
 
-* Work out how to separate costs, effects, and willingness to pay in NB.  How do other packages do it?  I'd like the package not to be completely specific to health economic decision models, so should allow the option of supplying a generic NB that isn't a function of costs and effects. 
+* Material from Anna's EVSI package 
 
+
+## DISCUSSION 
+
+* Does the baseline option matter for the purpose of regression-based EVPPI computation - can it always be treatment 1?   For consistency with what BCEA does, incremental for regressions is calculated as reference - active.  That seems backwards, but not sure it matters.
+
+* Suggests or Imports for packages enabling specific methods?   Imports for default methods, suggests for others? 
+
+* BCEA allows different regression methods for effects and costs, handle this? 

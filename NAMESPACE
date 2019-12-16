@@ -2,3 +2,12 @@
 
 export(evppi)
 export(evsi)
+importFrom(grDevices,dev.off)
+importFrom(graphics,points)
+importFrom(stats,as.formula)
+importFrom(stats,dist)
+importFrom(stats,dnorm)
+importFrom(stats,formula)
+importFrom(stats,optim)
+importFrom(stats,sd)
+importFrom(utils,select.list)
