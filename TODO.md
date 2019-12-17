@@ -21,7 +21,13 @@ EVPPI
 
 * Standard errors for all nonparametric regression methods at least 
 
-* Regression diagnostics
+* Diagnostics for fit of nonparametric regression models 
+
+* MLMC and QMC methods
+
+* Standard 2 level Monte Carlo? [ not recommended for use, but as a convenience for methods development ] 
+
+* Anything to facilitate algebraic methods?
 
 * Any other plots for communication?
 

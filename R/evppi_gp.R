@@ -1,6 +1,6 @@
 ### TODO acknowledge source of code.  Mark Strong? SAVI?
 
-### TODO different code is in SAVI.  check diffference.
+### TODO different code is in SAVI.  check difference.
 ## TODO standard errors 
 
 ## isn't there also packaged GP regression methods ?  gaupro, GPfit? are they more efficient?

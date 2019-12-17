@@ -96,11 +96,11 @@ fitted_npreg <- function(nb, inputs, poi, method, ...){
     ## Transforming to incremental net benefit allows us to do one fewer regression
     ## Assume it doesn't matters which option is the baseline for this purpose
     inb <- nb[,1] - nb[, -1, drop=FALSE] #- nb[,1]
-    fit <- matrix(0, nrow=nsam, ncol=nopt)
+    fitted <- matrix(0, nrow=nsam, ncol=nopt)
     for (i in 1:(nopt-1)){
-        fit[,i+1] <- fitted_npreg_call(inb[,i], inputs, poi, method, ...) 
+        fitted[,i+1] <- fitted_npreg_call(inb[,i], inputs, poi, method, ...) 
     }
-    fit
+    fitted
 }
 
 fitted_npreg_call <- function(y, inputs, poi, method, ...){
