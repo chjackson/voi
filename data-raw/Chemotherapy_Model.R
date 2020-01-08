@@ -327,6 +327,11 @@ NB<-e*wtp-c
 extra.lines<-(Size.Prior+1):dim(prior.model$BUGSoutput$sims.matrix)[1]
 theta<-as.data.frame(prior.model$BUGSoutput$sims.matrix[-extra.lines,c("pi1","rho","gamma","gamma2","lambda.2.3.fix","lambda.1.3.fix","SE[1]","SE[2]")])
 colnames(theta)<-c("pi1","rho","gamma","gamma2","lambda.2.3.fix","lambda.1.3.fix","SE1","SE2")
+
+theta$pi2 <- theta[,"pi1"]*theta[,"rho"]
+theta$recover.amb<--log(1-theta[,"lambda.1.3.fix"])
+theta$recover.hosp<--log(1-theta[,"lambda.2.3.fix"])
+
 rm(prior.model,extra.lines,l)
 
 ## Find the incremental net benefit for each treatment
@@ -342,7 +347,7 @@ chemo_cea <- list(e=e[1:nsam,], c=c[1:nsam,], k=seq(10000, 50000, by=10000))
 chemo_nb <- (e*30000 - c)[1:nsam,]
 chemo_pars <- theta[1:nsam,]
 
-use_data(chemo_cea)
-use_data(chemo_nb)
-use_data(chemo_pars)
+use_data(chemo_cea, overwrite=TRUE)
+use_data(chemo_nb, overwrite=TRUE)
+use_data(chemo_pars, overwrite=TRUE)
 

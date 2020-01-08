@@ -29,14 +29,15 @@ The exact names and formats of all these arguments is up for discussion!}
 
 \item{poi}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  [ I thought about allowing numeric indices for this, but perhaps better to encourage good practice by mandating that the parameters are named ]}
 
-\item{method}{Character string indicating the calculation method.
+\item{method}{Character string indicating the calculation method.   Only methods currently implemented are based on nonparametric regression
 
-"gam" for a generalized additive model implemented in the gam() function from the mgcv() package.
-"gp" for a Gaussian process regression TODO MORE 
+\code{"gam"} for a generalized additive model implemented in the gam() function from the mgcv() package.
 
-"inla" for an INLA/SPDE Gaussian process regression  TODO MORE 
+\code{"gp"} for a Gaussian process regression TODO MORE 
 
-"earth" for a multivariate adaptive regression spline with the \pkg{earth} package  TODO MORE 
+\code{"inla"} for an INLA/SPDE Gaussian process regression  TODO MORE 
+
+\code{"earth"} for a multivariate adaptive regression spline with the \pkg{earth} package  TODO MORE 
 
 TODO earth, single par methods}
 

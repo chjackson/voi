@@ -24,14 +24,15 @@
 ##'
 ##' @param poi A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  [ I thought about allowing numeric indices for this, but perhaps better to encourage good practice by mandating that the parameters are named ] 
 ##'
-##' @param method Character string indicating the calculation method.
+##' @param method Character string indicating the calculation method.   Only methods currently implemented are based on nonparametric regression
 ##'
-##' "gam" for a generalized additive model implemented in the gam() function from the mgcv() package.
-##' "gp" for a Gaussian process regression TODO MORE 
+##' \code{"gam"} for a generalized additive model implemented in the gam() function from the mgcv() package.
+##' 
+##' \code{"gp"} for a Gaussian process regression TODO MORE 
 ##'
-##' "inla" for an INLA/SPDE Gaussian process regression  TODO MORE 
+##' \code{"inla"} for an INLA/SPDE Gaussian process regression  TODO MORE 
 ##'
-##' "earth" for a multivariate adaptive regression spline with the \pkg{earth} package  TODO MORE 
+##' \code{"earth"} for a multivariate adaptive regression spline with the \pkg{earth} package  TODO MORE 
 ##'
 ##' TODO earth, single par methods
 ##'
@@ -55,35 +56,43 @@ evppi <- function(outputs,
     opts <- list(...)
     if (is.null(method))
         method <- default_evppi_method(poi)
+
     if (is.null(nsim)) nsim <- nrow(inputs)
-    if (method %in% npreg_methods) { 
-        if (output_type == "nb")
-            evppi_npreg_nb(nb=outputs, inputs=inputs, poi=poi, method=method, nsim=nsim, ...)
-        else if (output_type == "cea")
-            evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                            inputs=inputs, poi=poi, method=method, nsim=nsim, ...)
+    if (output_type == "nb") {
+        outputs <- outputs[1:nsim,,drop=FALSE]
+    } else if (output_type == "cea") {
+        outputs$c <- outputs$c[1:nsim,,drop=FALSE]
+        outputs$e <- outputs$e[1:nsim,,drop=FALSE]
+    }
+    inputs <- inputs[1:nsim,,drop=FALSE]
+    
+    if (method %in% npreg_methods) {
+        evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
+                    poi=poi, method=method, ...)
     } else stop("Other methods not implemented yet")
 }
 
 npreg_methods <- c("gam", "gp", "inla", "earth")
 
-evppi_npreg_nb <- function(nb, inputs, poi, method, nsim, ...){
-    ## TODO move the subsetting outside when do methods other than np regression
-    nb <- nb[1:nsim,,drop=FALSE]
-    inputs <- inputs[1:nsim,,drop=FALSE]
+evppi_npreg <- function(outputs, inputs, output_type, poi, method=NULL, ...){
+    if (output_type == "nb")
+        evppi_npreg_nb(nb=outputs, inputs=inputs, poi=poi, method=method, ...)
+    else if (output_type == "cea")
+        evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
+                        inputs=inputs, poi=poi, method=method, ...)
+}
+
+evppi_npreg_nb <- function(nb, inputs, poi, method, ...){
     fit <- fitted_npreg(nb, inputs=inputs, poi=poi, method=method, ...)
     calc_evppi(fit)
 }
 
-evppi_npreg_cea <- function(costs, effects, wtp, inputs, poi, method, nsim, ...){
-    costs <- costs[1:nsim,,drop=FALSE]
-    effects <- effects[1:nsim,,drop=FALSE]
-    inputs <- inputs[1:nsim,,drop=FALSE]
+evppi_npreg_cea <- function(costs, effects, wtp, inputs, poi, method, ...){
     nwtp <- length(wtp)
     res <- numeric(nwtp)
+    cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=method, ...)
+    efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=method, ...)
     for (i in 1:nwtp){
-        cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=method, ...)
-        efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=method, ...)
         inbfit <- efit*wtp[i] - cfit
         res[i] <- calc_evppi(inbfit)
     }

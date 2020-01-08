@@ -2,9 +2,20 @@
 % Please edit documentation in R/evsi.R
 \name{evsi}
 \alias{evsi}
-\title{Calculate the expected value of sample information under a decision-analytic model}
+\title{Calculate the expected value of sample information from a decision-analytic model}
 \usage{
-evsi(outputs, inputs, rfn, method, ...)
+evsi(
+  outputs,
+  inputs,
+  rfn,
+  n = 100,
+  method = NULL,
+  likelihood = NULL,
+  poi = NULL,
+  npreg_method = "gam",
+  nsim = NULL,
+  ...
+)
 }
 \arguments{
 \item{outputs}{This could take one of two forms
@@ -27,14 +38,36 @@ The exact names and formats of all these arguments is up for discussion!}
 
 \item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
-\item{rfn}{Function to sample data from a proposed future study}
+\item{rfn}{Function to sample predicted data from a proposed future study}
+
+\item{n}{Sample size of future study - optional argument to rfn - facilitates calculating EVSI for multiple sample sizes.  TODO how will this work for randomised trials with multiple arms?}
 
 \item{method}{Character string indicating the calculation method.
 
-Should support Strong, Heath, Jalal, Menzies at least (but named after method not person, as in convoi 1 paper)}
+All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistics of the predicted data (Strong et al 201?).   Defaults to \code{"gam"}.
+
+\code{"is"} for importance sampling (Menzies 200?)
+
+TODO Heath (moment matching \code{"mm"}) and Jalal methods}
+
+\item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should take arguments:
+
+the first: a matrix or data frame with rows defined by the number of simulated dataset,s and columns defined by the number of outcomes in the data.  ??? vector? 
+
+the second: a vector or data frame of parameter values
+
+The function should return a vector of length \code{nsim}, the number of simulated datasets.   ??? TODO clear up vectorisation
+
+Note this should match up with rfn and define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either rfn or likelihood ]}
+
+\item{poi}{Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and TODO OTHER methods.  This should ne a character vector naming particular columns of \code{inputs}.}
+
+\item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES}
+
+\item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 
 \item{...}{Other arguments required by specific methods}
 }
 \description{
-Calculate the expected value of sample information under a decision-analytic model
+Calculate the expected value of sample information from a decision-analytic model
 }

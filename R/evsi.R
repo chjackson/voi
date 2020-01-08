@@ -1,14 +1,36 @@
-##' Calculate the expected value of sample information under a decision-analytic model
+##' Calculate the expected value of sample information from a decision-analytic model
 ##'
-##' Calculate the expected value of sample information under a decision-analytic model
+##' Calculate the expected value of sample information from a decision-analytic model
 ##'
 ##' @inheritParams evppi
 ##' 
-##' @param rfn Function to sample data from a proposed future study
+##' @param rfn Function to sample predicted data from a proposed future study
+##'
+##' @param n Sample size of future study - optional argument to rfn - facilitates calculating EVSI for multiple sample sizes.  TODO how will this work for randomised trials with multiple arms? 
 ##'
 ##' @param method Character string indicating the calculation method.
 ##'
-##' Should support Strong, Heath, Jalal, Menzies at least (but named after method not person, as in convoi 1 paper)
+##' All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistics of the predicted data (Strong et al 201?).   Defaults to \code{"gam"}.
+##'
+##' \code{"is"} for importance sampling (Menzies 200?)
+##'
+##' TODO Heath (moment matching \code{"mm"}) and Jalal methods
+##'
+##' @param likelihood Likelihood function, required (and only required) for the importance sampling method.  This should take arguments:
+##'
+##' the first: a matrix or data frame with rows defined by the number of simulated dataset,s and columns defined by the number of outcomes in the data.  ??? vector? 
+##'
+##' the second: a vector or data frame of parameter values
+##'
+##' The function should return a vector of length \code{nsim}, the number of simulated datasets.   ??? TODO clear up vectorisation
+##'
+##' Note this should match up with rfn and define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either rfn or likelihood ]
+##'
+##' @param poi Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and TODO OTHER methods.  This should ne a character vector naming particular columns of \code{inputs}.
+##'
+##' @param npreg_method Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES
+##'
+##' @param nsim Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used. 
 ##'
 ##' @param ... Other arguments required by specific methods 
 ##'
@@ -16,8 +38,56 @@
 evsi <- function(outputs,
                  inputs,
                  rfn,
-                 method,
+                 n=100,
+                 method=NULL, # TODO speficy gam here or npreg? 
+                 likelihood=NULL,
+                 poi=NULL,
+                 npreg_method="gam",
+                 nsim=NULL,
                  ...)
 {
+    check_inputs(inputs)
+    output_type <- check_outputs(outputs, inputs)
+    opts <- list(...)
+    if (is.null(method))
+        method <- default_evsi_method()
 
+    if (is.null(nsim)) nsim <- nrow(inputs)
+    if (output_type == "nb") {
+        outputs <- outputs[1:nsim,,drop=FALSE]
+    } else if (output_type == "cea") {
+        outputs$c <- outputs$c[1:nsim,,drop=FALSE]
+        outputs$e <- outputs$e[1:nsim,,drop=FALSE]
+    }
+    inputs <- inputs[1:nsim,,drop=FALSE]
+
+    ## Could use any nonparametric regression method to regress on a summary statistic, in identical way to EVPPI estimation.
+    
+    if (method %in% npreg_methods) { 
+        evsi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
+                   rfn=rfn, n=n, likelihood=likelihood, method=method, ...)
+    } else if (method=="is") {
+        evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
+                poi=poi, rfn=rfn, n=n, likelihood=likelihood, npreg_method=npreg_method, ...)
+    }
+    else stop("Other methods not implemented yet")
+}
+
+evsi_npreg <- function(outputs, inputs, output_type, rfn, n, method=NULL, ...){
+    Tdata <- generate_data(inputs, rfn, n)
+    if (output_type == "nb")
+        evppi_npreg_nb(nb=outputs, inputs=Tdata, poi=names(Tdata), method=method, ...)
+    else if (output_type == "cea")
+        evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
+                        inputs=Tdata, poi=names(Tdata), method=method, ...)
+}
+
+generate_data <- function(inputs, rfn, n=150){
+    ## TODO check rfn is a function with correct args, and check its output
+    ## do we need this in a separate function anyway?  better name for rfn? 
+    rfn(inputs=inputs, n=n)
+}
+
+default_evsi_method <- function(){
+    "gam" # TODO think about this 
 }

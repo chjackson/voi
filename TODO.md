@@ -6,6 +6,8 @@
 
 * A few unit tests added for these 
 
+* Nonparametric regression and importance sampling methods added for EVSI, and rough tests written
+
 
 ## TODO
 
@@ -33,9 +35,17 @@ EVPPI
 
 EVSI 
 
-* Copy in existing EVSI code from Convoi 1 material
+* Complete doc and unit tests for regression and IS methods 
+
+* Add the other EVSI methods 
 
 * Material from Anna's EVSI package 
+
+GENERAL
+
+* Interface to heemod package.  Any other packages to interface with? 
+
+* Package vignettes explaining merits of different methods - linking to our papers
 
 
 ## DISCUSSION 
