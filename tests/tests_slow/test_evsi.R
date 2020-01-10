@@ -48,8 +48,9 @@ lik_chemo <- function(Y, inputs){
 
 load_all(".")
 
+nsam <- 1000
+
 simdat <- generate_data(chemo_pars[1:nsam,], rfn=rfn)
 lik_chemo(simdat[1,], chemo_pars[1:nsam,])
 
-nsam <- 1000
 evsi(chemo_nb[1:nsam,], chemo_pars[1:nsam,], method="is", poi=poi, rfn=rfn, likelihood=lik_chemo, gam_formula=gamf)

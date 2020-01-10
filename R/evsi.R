@@ -4,7 +4,12 @@
 ##'
 ##' @inheritParams evppi
 ##' 
-##' @param rfn Function to sample predicted data from a proposed future study
+##' @param rfn Function to sample predicted data from a proposed future study.
+##'
+##' This should have first argument defined by a data frame of parameter simulations, with one row per simulation and one column per parameter.  The names of the parameters must all correspond to parameters in \code{inputs}.
+##'
+##' The function should return a data frame with the number of rows equal to the number of parameter simulations.  Thus if \code{inputs} is considered as a sample from the posterior, then \code{rfn} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
+##'
 ##'
 ##' @param n Sample size of future study - optional argument to rfn - facilitates calculating EVSI for multiple sample sizes.  TODO how will this work for randomised trials with multiple arms? 
 ##'
@@ -18,15 +23,19 @@
 ##'
 ##' @param likelihood Likelihood function, required (and only required) for the importance sampling method.  This should take arguments:
 ##'
-##' the first: a matrix or data frame with rows defined by the number of simulated dataset,s and columns defined by the number of outcomes in the data.  ??? vector? 
+##' the first: a data frame with columns defined by the number of outcomes in the data, and with names matching the names of the data frame returned by \code{rfn}. 
 ##'
-##' the second: a vector or data frame of parameter values
+##' the second: a data frame of parameter values, whose names should all correspond to variables in \code{inputs}.
 ##'
-##' The function should return a vector of length \code{nsim}, the number of simulated datasets.   ??? TODO clear up vectorisation
+##' The function should return a vector whose length matches the number of rows of the data frame given as the second argument. 
 ##'
-##' Note this should match up with rfn and define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either rfn or likelihood ]
+##' POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER
 ##'
-##' @param poi Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and TODO OTHER methods.  This should ne a character vector naming particular columns of \code{inputs}.
+##' Note the definition of the likelihood should agree with the definition of \code{rfn} to define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either rfn or likelihood ]
+##'
+##' @param poi Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and TODO OTHER methods.
+##'
+##' This should bee a character vector naming particular columns of \code{inputs}.  It should consist of the variables used in the definition of \code{rfn} (and \code{likelihood} if used) and only these variables.
 ##'
 ##' @param npreg_method Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES
 ##'
