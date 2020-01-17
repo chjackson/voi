@@ -11,6 +11,9 @@ evsi(
   n = 100,
   method = NULL,
   likelihood = NULL,
+  analysis_model = NULL,
+  model = NULL,
+  Q = 30,
   poi = NULL,
   npreg_method = "gam",
   nsim = NULL,
@@ -52,7 +55,9 @@ All the nonparametric regression methods supported for \code{\link{evppi}}, that
 
 \code{"is"} for importance sampling (Menzies 200?)
 
-TODO Heath (moment matching \code{"mm"}) and Jalal methods}
+\code{"mm"} for moment matching (Heath 200?)
+
+TODO Heath and Jalal methods}
 
 \item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should take arguments:
 
@@ -66,9 +71,15 @@ POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER
 
 Note the definition of the likelihood should agree with the definition of \code{rfn} to define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either rfn or likelihood ]}
 
-\item{poi}{Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and TODO OTHER methods.
+\item{analysis_model}{Function which fits a Bayesian model to the generated data. TODO work out format, output, JAGS dependencies, etc.  Required for \code{method="mm"} (and Jalal method if n0 not given??)}
 
-This should bee a character vector naming particular columns of \code{inputs}.  It should consist of the variables used in the definition of \code{rfn} (and \code{likelihood} if used) and only these variables.}
+\item{model}{Function which evaluates the decision-analytic model, given parameter values.  TODO sort out format for nb, c, e output}
+
+\item{Q}{Number of quantiles to use in \code{method="mm"}.}
+
+\item{poi}{Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"} TODO OTHER methods.
+
+This should bee a character vector naming particular columns of \code{inputs}.  It should consist of the variables used in the definition of \code{rfn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
 
 \item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES}
 

@@ -43,9 +43,9 @@ EVSI
 
 GENERAL
 
-* Interface to heemod package.  Any other packages to interface with? 
+* Package vignettes explaining merits of different methods - linking to our papers.  Integrate this with the work on the books. 
 
-* Package vignettes explaining merits of different methods - linking to our papers
+* Interface to heemod package.  Any other packages to interface with? 
 
 
 ## DISCUSSION 

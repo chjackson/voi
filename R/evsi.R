@@ -19,7 +19,9 @@
 ##'
 ##' \code{"is"} for importance sampling (Menzies 200?)
 ##'
-##' TODO Heath (moment matching \code{"mm"}) and Jalal methods
+##' \code{"mm"} for moment matching (Heath 200?)
+##'
+##' TODO Heath and Jalal methods
 ##'
 ##' @param likelihood Likelihood function, required (and only required) for the importance sampling method.  This should take arguments:
 ##'
@@ -33,9 +35,15 @@
 ##'
 ##' Note the definition of the likelihood should agree with the definition of \code{rfn} to define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either rfn or likelihood ]
 ##'
-##' @param poi Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and TODO OTHER methods.
+##' @param analysis_model Function which fits a Bayesian model to the generated data. TODO work out format, output, JAGS dependencies, etc.  Required for \code{method="mm"} (and Jalal method if n0 not given??) 
 ##'
-##' This should bee a character vector naming particular columns of \code{inputs}.  It should consist of the variables used in the definition of \code{rfn} (and \code{likelihood} if used) and only these variables.
+##' @param model Function which evaluates the decision-analytic model, given parameter values.  TODO sort out format for nb, c, e output
+##'
+##' @param Q Number of quantiles to use in \code{method="mm"}. 
+##'
+##' @param poi Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"} TODO OTHER methods.
+##'
+##' This should bee a character vector naming particular columns of \code{inputs}.  It should consist of the variables used in the definition of \code{rfn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.
 ##'
 ##' @param npreg_method Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES
 ##'
@@ -50,6 +58,9 @@ evsi <- function(outputs,
                  n=100,
                  method=NULL, # TODO speficy gam here or npreg? 
                  likelihood=NULL,
+                 analysis_model=NULL,
+                 model=NULL,
+                 Q=30,
                  poi=NULL,
                  npreg_method="gam",
                  nsim=NULL,
@@ -57,10 +68,10 @@ evsi <- function(outputs,
 {
     check_inputs(inputs)
     output_type <- check_outputs(outputs, inputs)
-    opts <- list(...)
     if (is.null(method))
         method <- default_evsi_method()
 
+    ## Take subset of full PSA sample 
     if (is.null(nsim)) nsim <- nrow(inputs)
     if (output_type == "nb") {
         outputs <- outputs[1:nsim,,drop=FALSE]
@@ -78,6 +89,12 @@ evsi <- function(outputs,
     } else if (method=="is") {
         evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
                 poi=poi, rfn=rfn, n=n, likelihood=likelihood, npreg_method=npreg_method, ...)
+    } else if (method=="mm") {
+        evsi_mm(outputs=outputs, inputs=inputs, output_type=output_type,
+                poi=poi, rfn=rfn, n=n, Q=Q, 
+                analysis_model=analysis_model,
+                model=model, 
+                npreg_method=npreg_method, ...)
     }
     else stop("Other methods not implemented yet")
 }

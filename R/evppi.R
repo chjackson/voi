@@ -116,7 +116,7 @@ fitted_npreg_call <- function(y, inputs, poi, method, ...){
 ## could make this neater with do.call? 
     if (method=="gam") {
         fitted <- fitted_gam(y, inputs, poi, ...)
-    } else 
+    }
     if (method=="gp") {
         fitted <- fitted_gp(y, inputs, poi, ...)
     } 

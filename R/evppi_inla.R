@@ -1,6 +1,6 @@
 ## from BCEA package TODO PROPER CITATION 
 
-## TODO indentify column that gives error message in make.proj
+## TODO identify column that gives error message in make.proj
 
 check_packages <- function(){
     if (!isTRUE(requireNamespace("INLA", quietly = TRUE))) {
@@ -11,7 +11,7 @@ check_packages <- function(){
     }
 }
 
-## TODO think about suppress.messages thing - message()? is there more standard way 
+## TODO think about suppress.messages thing - use message() with one optional call to suppressMessages on the outside? 
 ## TODO int.ord - allow different one for different column?
 
 inla_default_opts <- list()
