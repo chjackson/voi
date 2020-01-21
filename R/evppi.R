@@ -135,7 +135,7 @@ calc_evppi <- function(fit) {
 }
 
 default_evppi_method <- function(poi){
-    if (length(poi) <= 4) "gam" else "INLA"
+    if (length(poi) <= 4) "gam" else "inla"
 }
 
 check_inputs <- function(inputs){
