@@ -1,4 +1,4 @@
-## load_all("..")
+## load_all(".")
 #  load_all("voi")
 
 test_that("single-parameter EVPPI",{
@@ -10,8 +10,10 @@ test_that("single-parameter EVPPI, alternative GAM basis",{
     evppi(chemo_nb, chemo_pars, poi="pi1", gam_formula="s(pi1, bs='tp')")
 })
 
+
 test_that("single-parameter EVPPI, GP",{
     evppi(chemo_nb, chemo_pars, poi="pi1", method="gp", nsim=100)
+    evppi(chemo_nb, chemo_pars, poi="pi1", method="gp", nsim=100, gp_hyper_n=100)
 })
 
 test_that("single-parameter EVPPI, earth",{

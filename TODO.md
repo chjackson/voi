@@ -13,8 +13,6 @@
 
 EVPPI
 
-* GP.  Compare with SAVI code, and use that if it does more 
-
 * INLA: error handling, check non-default args, plots, 
 
 * Test earth gam method more, compare against other methods to suggest advantages 

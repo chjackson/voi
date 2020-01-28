@@ -8,7 +8,7 @@
 ##'
 ##' @importFrom grDevices dev.off
 ##' @importFrom graphics points
-##' @importFrom stats formula as.formula dist dnorm formula optim sd
+##' @importFrom stats formula as.formula dist dnorm formula optim sd var
 ##' @importFrom utils select.list
 ##' 
 NULL
