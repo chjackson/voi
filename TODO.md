@@ -8,6 +8,8 @@
 
 * Nonparametric regression and importance sampling methods added for EVSI, and rough tests written
 
+* Chemotherapy model code added to facilitate examples. Note exact format of this code may change as we implement different methods that need access to the decision model function. 
+
 
 ## TODO
 
@@ -35,9 +37,11 @@ EVSI
 
 * Complete doc and unit tests for regression and IS methods 
 
-* Add the other EVSI methods 
+* Add Heath EVSI method: Tricky bit is updating the parameters given new data and rerunning the model - code this more abstractly than is currently done.
 
-* Material from Anna's EVSI package 
+* Add Jalal EVSI method
+
+* Output analysis material from Anna's EVSI package.
 
 GENERAL
 
