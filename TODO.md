@@ -27,7 +27,7 @@ EVPPI
 
 * MLMC and QMC methods
 
-* Standard 2 level Monte Carlo? [ not recommended for use, but as a convenience for methods development ] 
+* Standard 2 level Monte Carlo.  Not recommended for use, but for tutorial purposes and methods development.
 
 * Anything to facilitate algebraic methods?
 
@@ -40,6 +40,8 @@ EVSI
 * Add Heath EVSI method: Tricky bit is updating the parameters given new data and rerunning the model - code this more abstractly than is currently done.
 
 * Add Jalal EVSI method
+
+* 2-level Monte Carlo again
 
 * Output analysis material from Anna's EVSI package.
 
