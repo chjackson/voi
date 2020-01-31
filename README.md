@@ -10,6 +10,14 @@
 
 * A project of the [ConVOI Group: the Collaborative Network for Value of Information](http://convoi-group.org)
 
+## Installation
+
+```r
+install.packages("devtools") # if devtools not already installed
+library(devtools)
+install_github("chjackson/fic")
+ ```
+
   <!-- badges: start -->
   [![Travis build status](https://travis-ci.org/chjackson/voi.svg?branch=master)](https://travis-ci.org/chjackson/voi)
   <!-- badges: end -->

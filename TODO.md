@@ -2,7 +2,7 @@
 
 * Basic package structure
 
-* EVPPI methods copied in from BCEA and tidied up
+* EVPPI methods copied in from BCEA/SAVI and tidied up
 
 * A few unit tests added for these 
 
@@ -55,5 +55,7 @@ GENERAL
 * Does the baseline option matter for the purpose of regression-based EVPPI computation - can it always be treatment 1?   For consistency with what BCEA does, incremental for regressions is calculated as reference - active.  That seems backwards, but not sure it matters.
 
 * Suggests or Imports for packages enabling specific methods?   Imports for default methods, suggests for others? 
+
+	- INLA may be problematic as not standard CRAN package. travis already fails due to inla missing 
 
 * BCEA allows different regression methods for effects and costs, handle this? 

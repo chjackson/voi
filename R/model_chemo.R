@@ -135,7 +135,7 @@ chemo_costeff_fn <- function(SE1, SE2,
                              e.chemo, e.home, e.hosp){
 
 ### auxilary arguments.  TODO make into formal args when we're sure of the format we'll need when calling this function 
-    time.horiz <- 15
+    TH <- 15
     N <- 1000
 
     trace <- chemo_markov_model(SE1, SE2,
@@ -172,4 +172,19 @@ chemo_costeff_fn <- function(SE1, SE2,
     names(effs) <- paste0("eff",seq_along(effs))
     
     c(cost, effs)
+}
+
+chemo_nb_fn <- function(SE1, SE2,
+                        lambda.home.home, lambda.home.hosp, lambda.home.rec,
+                        lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead,
+                        c.home, c.hosp, c.dead,
+                        e.chemo, e.home, e.hosp, wtp=20000)
+{
+    ce <- chemo_costeff_fn(SE1, SE2,
+                           lambda.home.home, lambda.home.hosp, lambda.home.rec,
+                           lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead,
+                           c.home, c.hosp, c.dead,
+                           e.chemo, e.home, e.hosp)
+    nb <- ce[c("eff1","eff2")]*wtp - ce[c("cost1","cost2")]
+    nb
 }
