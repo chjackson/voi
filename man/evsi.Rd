@@ -45,7 +45,9 @@ The exact names and formats of all these arguments is up for discussion!}
 
 This should have first argument defined by a data frame of parameter simulations, with one row per simulation and one column per parameter.  The names of the parameters must all correspond to parameters in \code{inputs}.
 
-The function should return a data frame with the number of rows equal to the number of parameter simulations.  Thus if \code{inputs} is considered as a sample from the posterior, then \code{rfn} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.}
+The function should return a data frame with the number of rows equal to the number of parameter simulations.  Thus if \code{inputs} is considered as a sample from the posterior, then \code{rfn} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
+
+DEVELOPERS - EXAMPLES OF THIS CURRENTLY in \code{tests/tests_slow}}
 
 \item{n}{Sample size of future study - optional argument to rfn - facilitates calculating EVSI for multiple sample sizes.  TODO how will this work for randomised trials with multiple arms?}
 
