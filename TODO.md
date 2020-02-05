@@ -15,7 +15,7 @@
 
 EVPPI
 
-* INLA: error handling, check non-default args, plots, 
+* INLA: error handling, check non-default args, plots, correct repository location. 
 
 * Test earth gam method more, compare against other methods to suggest advantages 
 
@@ -47,6 +47,8 @@ EVSI
 
 GENERAL
 
+* evpi() function.  simple. 
+
 * Package vignettes explaining merits of different methods - linking to our papers.  Integrate this with the work on the books. 
 
 * Interface to heemod package.  Any other packages to interface with? 
@@ -61,6 +63,8 @@ GENERAL
 	- INLA may be problematic as not standard CRAN package. travis already fails due to inla missing 
 
 * BCEA allows different regression methods for effects and costs, handle this? 
+
+* Specify `poi=list("par1", c("par2","par3"), "par4")` if we want independent EVPPI calculations for each component of the list?  Consider in context of object returned by evppi() function, note it can also return EVPPI for multiple WTPs. 
 
 
 ## PRINCIPLES OF PACKAGE DEVELOPMENT
