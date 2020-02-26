@@ -32,7 +32,7 @@
 ##'
 ##' The function should return a vector whose length matches the number of rows of the data frame given as the second argument. 
 ##'
-##' POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER
+##' POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER.  EXAMPLE OF THIS CURRENTLY in \code{tests/tests_slow} but need a vignette eventually
 ##'
 ##' Note the definition of the likelihood should agree with the definition of \code{rfn} to define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either rfn or likelihood ]
 ##'

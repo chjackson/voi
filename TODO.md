@@ -37,6 +37,8 @@ EVSI
 
 * Complete doc and unit tests for regression and IS methods 
 
+* Guidance for users to specify appropriate GAM formulae for their applications when the default formula is too intensive.  Relatedly, appropriate number of PSA samples to use. 
+
 * Add Heath EVSI method: Tricky bit is updating the parameters given new data and rerunning the model - code this more abstractly than is currently done.
 
 * Add Jalal EVSI method

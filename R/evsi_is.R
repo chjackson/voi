@@ -38,9 +38,10 @@ prepost_evsi_is <- function(nb, inputs, poi, rfn, n=100, likelihood, npreg_metho
     ## nb or ce? 
     if (is.null(npreg_method))
         npreg_method <- default_evppi_method(poi)
+    cat("Calculating EVPPI...\n")
     y <- fitted_npreg(nb, inputs=inputs, poi=poi, method=npreg_method, ...)
-    cat("done evppi\n")
-    
+
+    cat("Calculating EVSI...\n")
     nsam <- nrow(inputs)
     nout <- ncol(y) # TODO make sure 1D handled 
     prepost <- matrix(nrow=nsam, ncol=nout)
@@ -51,7 +52,8 @@ prepost_evsi_is <- function(nb, inputs, poi, rfn, n=100, likelihood, npreg_metho
             ## to vectorise would need nsam x nsam storage 
             ## could do in C? though could we still work with user's lik fn?
             prepost[i,j] <- w %*% y[,j]
-            cat(sprintf("w1=%s, w2=%s, [%s]\n",w[1],w[2],i))
+## turn verbose option on 
+##       cat(sprintf("w1=%s, w2=%s, [%s]\n",w[1],w[2],i))
         }
     }
     prepost
