@@ -76,8 +76,9 @@ GENERAL
 
 * Most important!
 
-* Just use it any time you want to do a VoI calculation, and give feedback.
-Describe what you had to do to make it work in your example.  If you need to do anything tedious, this may suggest how the package could be more helpful.
+* Just use it any time you want to do a VoI calculation, and give feedback.  Describe what you had to do to make it work in your example.  If you need to do anything tedious, this may suggest how the package could be more helpful.
+
+* If it gives an error that doesn't make sense, then report that as a bug.  Software should communicate helpfully with the user to help them use it correctly. 
 
 * Does other software do anything better?
 
