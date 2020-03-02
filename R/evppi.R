@@ -38,6 +38,8 @@
 ##'
 ##' @param nsim Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.
 ##'
+##' @param verbose If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method. 
+##'
 ##' @param ... Other arguments to control specific methods  
 ##'
 ##' \code{gam_formula}: a character string giving the right hand side of the formula supplied to the gam() function, when \code{method="gam"}. By default, this is a tensor product of all the parameters of interest, e.g. if \code{poi = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis.   [ This is the default in SAVI ]
@@ -52,6 +54,7 @@ evppi <- function(outputs,
                   poi,
                   method=NULL,
                   nsim=NULL,
+                  verbose=TRUE,
                   ...)
 {
     check_inputs(inputs)
@@ -67,7 +70,7 @@ evppi <- function(outputs,
     
     if (method %in% npreg_methods) {
         evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
-                    poi=poi, method=method, ...)
+                    poi=poi, method=method, verbose=verbose, ...)
     } else stop("Other methods not implemented yet")
 }
 
@@ -83,24 +86,27 @@ subset_outputs <- function(outputs, output_type, nsim){
 
 npreg_methods <- c("gam", "gp", "inla", "earth")
 
-evppi_npreg <- function(outputs, inputs, output_type, poi, method=NULL, ...){
+evppi_npreg <- function(outputs, inputs, output_type, poi, method=NULL, verbose, ...){
     if (output_type == "nb")
-        evppi_npreg_nb(nb=outputs, inputs=inputs, poi=poi, method=method, ...)
+        evppi_npreg_nb(nb=outputs, inputs=inputs, poi=poi, method=method,
+                       verbose=verbose, ...)
     else if (output_type == "cea")
         evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                        inputs=inputs, poi=poi, method=method, ...)
+                        inputs=inputs, poi=poi, method=method,
+                        verbose=verbose, ...)
 }
 
-evppi_npreg_nb <- function(nb, inputs, poi, method, ...){
-    fit <- fitted_npreg(nb, inputs=inputs, poi=poi, method=method, ...)
+evppi_npreg_nb <- function(nb, inputs, poi, method, verbose, ...){
+    fit <- fitted_npreg(nb, inputs=inputs, poi=poi, method=method,
+                        verbose=verbose, ...)
     calc_evppi(fit)
 }
 
-evppi_npreg_cea <- function(costs, effects, wtp, inputs, poi, method, ...){
+evppi_npreg_cea <- function(costs, effects, wtp, inputs, poi, method, verbose, ...){
     nwtp <- length(wtp)
     res <- numeric(nwtp)
-    cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=method, ...)
-    efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=method, ...)
+    cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=method, verbose=verbose, ...)
+    efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=method, verbose=verbose, ...)
     for (i in 1:nwtp){
         inbfit <- efit*wtp[i] - cfit
         res[i] <- calc_evppi(inbfit)
@@ -108,7 +114,7 @@ evppi_npreg_cea <- function(costs, effects, wtp, inputs, poi, method, ...){
     res
 }
 
-fitted_npreg <- function(nb, inputs, poi, method, ...){
+fitted_npreg <- function(nb, inputs, poi, method, verbose, ...){
     nopt <- ncol(nb)
     nsam <- nrow(nb)
     ## Transforming to incremental net benefit allows us to do one fewer regression
@@ -116,12 +122,12 @@ fitted_npreg <- function(nb, inputs, poi, method, ...){
     inb <- nb[,1] - nb[, -1, drop=FALSE] #- nb[,1]
     fitted <- matrix(0, nrow=nsam, ncol=nopt)
     for (i in 1:(nopt-1)){
-        fitted[,i+1] <- fitted_npreg_call(inb[,i], inputs, poi, method, ...) 
+        fitted[,i+1] <- fitted_npreg_call(inb[,i], inputs, poi, method, verbose=verbose, ...) 
     }
     fitted
 }
 
-fitted_npreg_call <- function(y, inputs, poi, method, ...){
+fitted_npreg_call <- function(y, inputs, poi, method, verbose, ...){
 ## could make this neater with do.call? 
     if (method=="gam") {
         fitted <- fitted_gam(y, inputs, poi, ...)
@@ -130,7 +136,7 @@ fitted_npreg_call <- function(y, inputs, poi, method, ...){
         fitted <- fitted_gp(y, inputs, poi, ...)
     } 
     if (method=="inla") {
-        fitted <- fitted_inla(y, inputs, poi, ...)
+        fitted <- fitted_inla(y, inputs, poi, verbose, ...)
     } 
     if (method=="earth") {
         fitted <- fitted_earth(y, inputs, poi, ...)

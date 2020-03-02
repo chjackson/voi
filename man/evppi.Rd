@@ -4,7 +4,8 @@
 \alias{evppi}
 \title{Calculate the expected value of partial perfect information from a decision model}
 \usage{
-evppi(outputs, inputs, poi, method = NULL, nsim = NULL, ...)
+evppi(outputs, inputs, poi, method = NULL, nsim = NULL,
+  verbose = TRUE, ...)
 }
 \arguments{
 \item{outputs}{This could take one of two forms
@@ -42,6 +43,8 @@ The exact names and formats of all these arguments is up for discussion!}
 TODO earth, single par methods}
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
+
+\item{verbose}{If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method.}
 
 \item{...}{Other arguments to control specific methods
 

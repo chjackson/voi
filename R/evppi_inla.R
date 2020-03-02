@@ -4,20 +4,19 @@
 
 check_packages <- function(){
     if (!isTRUE(requireNamespace("INLA", quietly = TRUE))) {
-        stop("You need to install the packages 'INLA' and 'splancs'. Please run in your R terminal:\n install.packages('INLA', repos='http://www.math.ntnu.no/inla/R/stable')\n and\n install.packages('splancs')")
+        stop("You need to install the packages 'INLA' and 'splancs'. Please run in your R terminal:\n install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')\n and\n install.packages('splancs')")
     }
     if (!isTRUE(requireNamespace("ldr", quietly = TRUE))) {
         stop("You need to install the package 'ldr'. Please run in your R terminal:\n install.packages('ldr')")
     }
 }
 
-## TODO think about suppress.messages thing - use message() with one optional call to suppressMessages on the outside? 
 ## TODO int.ord - allow different one for different column?
 
 inla_default_opts <- list()
 
 fitted_inla <- function(y, inputs, poi,
-                        suppress.messages = FALSE,
+                        verbose = TRUE,
                         cutoff = 0.3,
                         convex.inner = -0.4,
                         convex.outer = -0.7,
@@ -34,19 +33,19 @@ fitted_inla <- function(y, inputs, poi,
     if (length(poi)<2){
         stop("The INLA method can only be used with 2 or more parameters")
     }
-    if (!suppress.messages) {
-        cat("\nFinding projections \n")
+    if (verbose) {
+        message("Finding projections")
     }
     projections <- make.proj(parameter = poi, inputs = inputs, x = y)
     data <- projections$data
-    if (!suppress.messages) {
-        cat("Determining Mesh \n")
+    if (verbose) {
+        message("Determining Mesh")
     }
     mesh <- make.mesh(data = data, convex.inner = convex.inner,
                       convex.outer = convex.outer, cutoff = cutoff,max.edge=max.edge)
     plot.mesh(mesh = mesh$mesh, data = data, plot = plot_inla_mesh)
-    if(!suppress.messages) {
-        cat("Calculating fitted values for the GP regression using INLA/SPDE \n")
+    if (verbose) {
+        message("Calculating fitted values for the GP regression using INLA/SPDE")
     }
     fit <- fit.inla(parameter = poi, inputs = inputs,
                     x = y, mesh = mesh$mesh, data.scale = data, int.ord = int.ord,

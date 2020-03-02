@@ -84,6 +84,7 @@ evsi <- function(outputs,
                  poi=NULL,
                  npreg_method="gam",
                  nsim=NULL,
+                 verbose=TRUE, 
                  ...)
 {
     check_inputs(inputs)
@@ -105,27 +106,29 @@ evsi <- function(outputs,
     
     if (method %in% npreg_methods) { 
         evsi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
-                   datagen_fn=datagen_fn, n=n, likelihood=likelihood, method=method, ...)
+                   datagen_fn=datagen_fn, n=n, likelihood=likelihood, method=method, verbose=verbose, ...)
     } else if (method=="is") {
         evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
-                poi=poi, datagen_fn=datagen_fn, n=n, likelihood=likelihood, npreg_method=npreg_method, ...)
+                poi=poi, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
+                npreg_method=npreg_method, verbose=verbose, ...)
     } else if (method=="mm") {
         evsi_mm(outputs=outputs, inputs=inputs, output_type=output_type,
                 poi=poi, datagen_fn=datagen_fn, n=n, Q=Q, 
                 analysis_model=analysis_model,
                 model=model, 
-                npreg_method=npreg_method, ...)
+                npreg_method=npreg_method,
+                verbose=verbose, ...)
     }
     else stop("Other methods not implemented yet")
 }
 
-evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, n, method=NULL, ...){
+evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, n, method=NULL, verbose, ...){
     Tdata <- generate_data(inputs, datagen_fn, n)
     if (output_type == "nb")
-        evppi_npreg_nb(nb=outputs, inputs=Tdata, poi=names(Tdata), method=method, ...)
+        evppi_npreg_nb(nb=outputs, inputs=Tdata, poi=names(Tdata), method=method, verbose=verbose, ...)
     else if (output_type == "cea")
         evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                        inputs=Tdata, poi=names(Tdata), method=method, ...)
+                        inputs=Tdata, poi=names(Tdata), method=method, verbose=verbose, ...)
 }
 
 generate_data <- function(inputs, datagen_fn, n=150){

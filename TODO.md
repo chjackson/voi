@@ -15,7 +15,7 @@
 
 EVPPI
 
-* INLA: error handling, check non-default args, plots, correct repository location. 
+* INLA: error handling, document and check non-default args, check plots work
 
 * Test earth gam method more, compare against other methods to suggest advantages 
 

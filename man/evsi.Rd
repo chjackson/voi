@@ -6,7 +6,8 @@
 \usage{
 evsi(outputs, inputs, datagen_fn, n = 100, method = NULL,
   likelihood = NULL, analysis_model = NULL, model = NULL, Q = 30,
-  poi = NULL, npreg_method = "gam", nsim = NULL, ...)
+  poi = NULL, npreg_method = "gam", nsim = NULL, verbose = TRUE,
+  ...)
 }
 \arguments{
 \item{outputs}{This could take one of two forms
@@ -82,6 +83,8 @@ This should bee a character vector naming particular columns of \code{inputs}.  
 \item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES}
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
+
+\item{verbose}{If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method.}
 
 \item{...}{Other arguments required by specific methods}
 }
