@@ -62,18 +62,23 @@ evppi <- function(outputs,
         method <- default_evppi_method(poi)
 
     if (is.null(nsim)) nsim <- nrow(inputs)
-    if (output_type == "nb") {
-        outputs <- outputs[1:nsim,,drop=FALSE]
-    } else if (output_type == "cea") {
-        outputs$c <- outputs$c[1:nsim,,drop=FALSE]
-        outputs$e <- outputs$e[1:nsim,,drop=FALSE]
-    }
+    outputs <- subset_outputs(outputs, output_type, nsim)
     inputs <- inputs[1:nsim,,drop=FALSE]
     
     if (method %in% npreg_methods) {
         evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
                     poi=poi, method=method, ...)
     } else stop("Other methods not implemented yet")
+}
+
+subset_outputs <- function(outputs, output_type, nsim){
+    if (output_type == "nb") {
+        outputs <- outputs[1:nsim,,drop=FALSE]
+    } else if (output_type == "cea") {
+        outputs$c <- outputs$c[1:nsim,,drop=FALSE]
+        outputs$e <- outputs$e[1:nsim,,drop=FALSE]
+    }
+    outputs
 }
 
 npreg_methods <- c("gam", "gp", "inla", "earth")
@@ -155,10 +160,11 @@ check_outputs_matrix <- function(outputs, inputs, name){
                      name, nrow(outputs), nrow(inputs)))
 }
 
-check_outputs <- function(outputs, inputs){
+check_outputs <- function(outputs, inputs=NULL){
     if (is.matrix(outputs) || is.data.frame(outputs)){
         output_type <- "nb"
-        check_outputs_matrix(outputs, inputs, "outputs")
+        if (!is.null(inputs)) # check not required for EVPI 
+            check_outputs_matrix(outputs, inputs, "outputs")
     }
     else if (is.list(outputs)){
         output_type <- "cea"
@@ -167,8 +173,10 @@ check_outputs <- function(outputs, inputs){
             if (!(i %in% names(outputs)))
                 stop(sprintf("component named `(%s)` not found in `outputs` list", i))
         }
-        check_outputs_matrix(outputs$c, inputs, "outputs$c")
-        check_outputs_matrix(outputs$e, inputs, "outputs$e")
+        if (!is.null(inputs)){
+            check_outputs_matrix(outputs$c, inputs, "outputs$c")
+            check_outputs_matrix(outputs$e, inputs, "outputs$e")
+        }
         ## TODO Also check wtp
     }
     else stop("`outputs` should be a matrix, data frame or list, see help(evppi)")

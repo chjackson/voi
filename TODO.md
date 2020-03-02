@@ -53,8 +53,6 @@ EVSI
 
 GENERAL
 
-* evpi() function.  simple. 
-
 * Package vignettes explaining merits of different methods - linking to our papers.  Integrate this with the work on the books. 
 
 * Interface to heemod package.  Any other packages to interface with? 
