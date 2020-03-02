@@ -1,4 +1,3 @@
-
 load_all(".")
 
 #evppi(chemo_nb, chemo_pars, poi="pi1")
@@ -6,7 +5,7 @@ load_all(".")
 
 ##' Input is data frame of parameter simulations. One row per simulation, one column per parameter
 ##' Output is data frame of summarised future data simulations.  One row per simulation, one column per dimension of the summarised data. 
-rfn <- function(inputs, n=150){
+datagen_fn <- function(inputs, n=150){
     nsim <- nrow(inputs)
     with(inputs, { 
         X.SE1 <- rbinom(nsim, size=n, prob=pi1)
@@ -22,7 +21,7 @@ rfn <- function(inputs, n=150){
 }
 
 ##' Check the function for simulating summarised data works
-Tdata <- rfn(chemo_pars, n=150)
+Tdata <- datagen_fn(chemo_pars, n=150)
 head(Tdata)
 
 ##' Calculate EVSI using GAM method (Strong et al)
@@ -30,22 +29,22 @@ head(Tdata)
 set.seed(1) # method depends on simulating data, so make this test reproducible
 
 ##' Using default GAM formula te(everything, k=4) this is too computationally intensive. 
-# evsi(chemo_nb, chemo_pars, rfn=rfn, nsim=1000) 
+# evsi(chemo_nb, chemo_pars, datagen_fn=datagen_fn, nsim=1000) 
 
 ##' So we simplify the GAM formula 
 ##' Haven't thought about what an appropriate GAM formula might be in this example.  Can we give users guidance - related to how they expect their parameters to affect the outcome, given their model structure?   Similarly - how many simulations to use? 
 
 ##' Fewer parameters in the basis
 gamf <- "te(X.amb, X.SE1, X.SE2, X.N.hosp, X.hosp, X.N.die, k=3, bs='cr')"
-evsi(chemo_nb, chemo_pars, rfn=rfn, gam_formula=gamf, nsim=1000) # 19, runs in a few minutes
+evsi(chemo_nb, chemo_pars, datagen_fn=datagen_fn, gam_formula=gamf, nsim=1000) # 19, runs in a few minutes
 
 ##' All smooths and no interactions 
 gamf <- "s(X.amb) + s(X.SE1) + s(X.SE2) + s(X.N.hosp) + s(X.hosp) + s(X.N.die)"
-evsi(chemo_nb, chemo_pars, rfn=rfn, gam_formula=gamf, nsim=1000) # 16, runs instantly 
+evsi(chemo_nb, chemo_pars, datagen_fn=datagen_fn, gam_formula=gamf, nsim=1000) # 16, runs instantly 
 
 ##' Check works for different outcome formats (note results for same WTP will differ due to random seed)
-evsi(chemo_nb, chemo_pars, rfn=rfn, gam_formula=gamf, nsim=1000) # 
-evsi(chemo_cea, chemo_pars, rfn=rfn, gam_formula=gamf, nsim=1000) # 
+evsi(chemo_nb, chemo_pars, datagen_fn=datagen_fn, gam_formula=gamf, nsim=1000) # 
+evsi(chemo_cea, chemo_pars, datagen_fn=datagen_fn, gam_formula=gamf, nsim=1000) # 
 
 
 
@@ -68,7 +67,7 @@ lik_chemo <- function(Y, inputs){
 
 ##' Check the likelihood function works 
 nsam <- 10
-simdat <- rfn(chemo_pars[1:nsam,])
+simdat <- datagen_fn(chemo_pars[1:nsam,])
 simdat
 lik_chemo(simdat[1,], chemo_pars[1:nsam,])
 
@@ -78,4 +77,4 @@ gamf <- sprintf("te(%s, k=3)", paste(poi, collapse=", "))  # runs very slowly wi
 gamf <- paste0("s(",poi,")", collapse=" + ") # runs fast with this.  10 
 
 evsi(chemo_nb, chemo_pars, method="is", poi=deadpoi, nsim=1000, 
-     rfn=rfn, likelihood=lik_chemo, gam_formula=gamf)
+     datagen_fn=datagen_fn, likelihood=lik_chemo, gam_formula=gamf)

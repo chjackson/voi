@@ -1,23 +1,7 @@
-##' Chemotherapy health economic model
-##'
-##' Functions to generate model inputs and outputs based on current information
+## Chemotherapy health economic model
+##
+## Functions to generate model inputs and outputs based on current information
 
-
-##' Convert mean and SD on natural scale to log normal parameters
-lognPar <- function(m,s) {
-    s2 <- s^2
-    meanlog <- log(m) - 0.5 * log(1 + s2/m^2)
-    s2log <- log(1 + (s2/m^2))
-    sdlog <- sqrt(s2log)
-    list(meanlog = meanlog, sdlog = sdlog)
-}
-
-##' Convert mean and variance for a probability to beta parameters
-betaPar <- function(mu, var) {
-    alpha <- ((1 - mu) / var - 1 / mu) * mu ^ 2
-    beta <- alpha * (1 / mu - 1)
-    list(alpha = alpha, beta = beta)
-}
 
 ##' Chemotherapy health economic model parameters
 ##'
@@ -29,6 +13,8 @@ betaPar <- function(mu, var) {
 ##' analytic forms.  The distributions of pi1, gamma.hosp and
 ##' gamma.dead are obtained from simple beta/binomial conjugate
 ##' Bayesian inference based on current data.
+##'
+##' @param n Number of samples to draw 
 ##' 
 chemo_prior_pars <- function(n){
     num.pat <- 111 # Number of patients (observed data)  
@@ -46,6 +32,13 @@ chemo_prior_pars <- function(n){
     gamma.home <- 1 - gamma.hosp
     gamma.dead <- rbeta(n, 1 + num.dead, 4 + num.hosp - num.dead)
     
+    ## Convert mean and variance for a probability to beta parameters
+    betaPar <- function(mu, var) {
+        alpha <- ((1 - mu) / var - 1 / mu) * mu ^ 2
+        beta <- alpha * (1 / mu - 1)
+        list(alpha = alpha, beta = beta)
+    }
+
     betapars <- betaPar(0.45, 0.02)
     lambda.home.rec.TH <- rbeta(n, betapars$alpha, betapars$beta)
     betapars <- betaPar(0.35, 0.02)
@@ -56,6 +49,15 @@ chemo_prior_pars <- function(n){
     lambda.hosp.dead <- gamma.dead/TH
     lambda.hosp.hosp <- (1 - lambda.hosp.rec.TH)*(1-lambda.hosp.dead)
     lambda.hosp.rec <- (1 - lambda.hosp.dead)*lambda.hosp.rec.TH 
+
+    ## Convert mean and SD on natural scale to log normal parameters
+    lognPar <- function(m,s) {
+        s2 <- s^2
+        meanlog <- log(m) - 0.5 * log(1 + s2/m^2)
+        s2log <- log(1 + (s2/m^2))
+        sdlog <- sqrt(s2log)
+        list(meanlog = meanlog, sdlog = sdlog)
+    }
 
     lnpars <- lognPar(2300, 90)
     c.home <- rlnorm(n, lnpars$meanlog, lnpars$sdlog)
@@ -126,6 +128,35 @@ chemo_markov_model <- function(SE1, SE2,
 ##' Calculate expected costs and effects for two treatments as a function of the input parameters.   Each input parameter is a scalar.
 ##'
 ##' TODO refer to example of looping to generate PSA output matrix (currently in data-raw)
+##'
+##' @param SE1 TODO 
+##'
+##' @param SE2 TODO 
+##'
+##' @param lambda.home.home Transition probability from 
+##'
+##' @param lambda.home.hosp Transition probability from 
+##'
+##' @param lambda.home.rec Transition probability from 
+##'
+##' @param lambda.hosp.hosp Transition probability from
+##'
+##' @param lambda.hosp.rec Transition probability from
+##' 
+##' @param lambda.hosp.dead Transition probability from
+##'
+##' @param c.home Cost TODO 
+##'
+##' @param c.hosp Cost TODO 
+##'
+##' @param c.dead Cost TODO 
+##'
+##' @param e.chemo Effect TODO 
+##
+##' @param e.home Effect TODO 
+##'
+##' @param e.hosp Effect TODO 
+##
 ##' 
 ##' 
 chemo_costeff_fn <- function(SE1, SE2,

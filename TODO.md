@@ -33,9 +33,13 @@ EVPPI
 
 * Any other plots for communication?
 
-EVSI 
+EVSI
 
-* Complete doc and unit tests for regression and IS methods 
+* Complete doc and unit tests for regression and IS methods
+
+* Built-in data generating functions (hence built-in EVSI methods) for common study designs.  E.g. 2-arm binomial trial? 
+
+* Any need to handle designs controlled by more than one sample size?  If so, make sure multiple arguments to datagen_fn are handled nicely
 
 * Guidance for users to specify appropriate GAM formulae for their applications when the default formula is too intensive.  Relatedly, appropriate number of PSA samples to use. 
 
@@ -76,9 +80,8 @@ GENERAL
 
 * Most important!
 
-* Just use it any time you want to do a VoI calculation, and give feedback.  Describe what you had to do to make it work in your example.  If you need to do anything tedious, this may suggest how the package could be more helpful.
-
-* If it gives an error that doesn't make sense, then report that as a bug.  Software should communicate helpfully with the user to help them use it correctly. 
+* Just use it any time you want to do a VoI calculation, and give feedback.
+Describe what you had to do to make it work in your example.  If you need to do anything tedious, this may suggest how the package could be more helpful.
 
 * Does other software do anything better?
 

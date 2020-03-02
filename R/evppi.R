@@ -14,7 +14,7 @@
 ##'
 ##' \code{"k"}: a vector of willingness-to-pay values.
 ##'
-##' Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, may be supplied as the \code{outputs} argument, as they are lists with the required components. 
+##' Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in this "cost-effectiveness analysis" format, therefore they may be supplied as the \code{outputs} argument.
 ##'
 ##' If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.
 ##'

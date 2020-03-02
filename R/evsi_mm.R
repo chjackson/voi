@@ -1,6 +1,6 @@
-evsi_mm <- function(outputs, inputs, output_type, poi, rfn, n=100, likelihood, npreg_method="gam", ...){
+evsi_mm <- function(outputs, inputs, output_type, poi, datagen_fn, analysis_model, model, n=100, likelihood, Q, npreg_method="gam", ...){
     if (output_type=="nb"){
-        evsi_mm_nb(nb=outputs, inputs=inputs, poi=poi, rfn=rfn, n=n,
+        evsi_mm_nb(nb=outputs, inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
                    Q=Q, 
                    analysis_model=analysis_model,
                    model=model, 
@@ -8,7 +8,7 @@ evsi_mm <- function(outputs, inputs, output_type, poi, rfn, n=100, likelihood, n
     }
     else if (output_type=="cea"){
         evsi_mm_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                    inputs=inputs, poi=poi, rfn=rfn, n=n,
+                    inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
                     Q=Q, 
                     analysis_model=analysis_model,
                     model=model, 
@@ -16,7 +16,7 @@ evsi_mm <- function(outputs, inputs, output_type, poi, rfn, n=100, likelihood, n
     }
 }
 
-evsi_mm_nb <- function(nb, inputs, poi, rfn, n, Q=Q, 
+evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q, 
                     analysis_model=analysis_model,
                     model=model, 
                     npreg_method, ...){
@@ -33,4 +33,11 @@ evsi_mm_nb <- function(nb, inputs, poi, rfn, n, Q=Q,
 
     ## Loop, calculate variance, -> EVSI.
 
+}
+
+
+evsi_mm_cea <- function(costs, effects, wtp, inputs, poi, datagen_fn, n, Q=Q, 
+                    analysis_model=analysis_model,
+                    model=model, 
+                    npreg_method, ...){
 }

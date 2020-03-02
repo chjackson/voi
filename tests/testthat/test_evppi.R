@@ -39,7 +39,7 @@ test_that("EVPPI with INLA",{
 })
 
 test_that("4-parameter EVPPI",{
-poi <- c("pi1","rho","gamma","gamma2")
+poi <- c("pi1","rho","gamma.hosp","gamma.dead")
 evppi(chemo_nb, chemo_pars, poi=poi, method="gam") # 17
 })
 
