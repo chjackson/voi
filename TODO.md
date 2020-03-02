@@ -64,8 +64,6 @@ GENERAL
 
 * Suggests or Imports for packages enabling specific methods?   Imports for default methods, suggests for others? 
 
-	- INLA may be problematic as not standard CRAN package. travis already fails due to inla missing 
-
 * BCEA allows different regression methods for effects and costs, handle this? 
 
 * Specify `poi=list("par1", c("par2","par3"), "par4")` if we want independent EVPPI calculations for each component of the list?  Consider in context of object returned by evppi() function, note it can also return EVPPI for multiple WTPs. 
