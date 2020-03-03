@@ -51,11 +51,13 @@ evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q,
         simdata <- datagen_fn(quants[i,], quants[i,"N"])
 
         ## Fit Bayesian model to future data to get posterior
-        ## TODO return data frame of simulations to be passed to model function 
+        ## Skeleton example of an "analysis_model" function is analysis_model_jags below. 
         postpars <- analysis_model(simdata, analysis_options)
 
-        ## TODO append simulations from the prior (decide most sensible place to do this, could be within analysis_model, or outside)
-
+        ## TODO append simulations from the prior for all parameters in by the decision model
+        ## Users could specify these in analysis_model through extra pars in the JAGS model that are simulated from their priors
+        ## Any not supplied there might be filled in through an extra user-supplied function to simulate parameters from the model - a built-in example is chemo_prior_pars 
+        
         ## Run HE model again with posterior sample (TODO get exact arg formats correct )
         inb <- decision_model(postpars)
         var_sim[[q]] <- var(inb)
@@ -71,7 +73,6 @@ evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q,
 
     ## Now rewrite evsi.calc.   Instead of accepting a monolithic mm.var object,
     ## break that object into logical components that might come from inputs to evsi_mm_nb: 
-
     ## * simulated variances
     ## * EVPPIs 
     ## * original simulations from decision model 
@@ -85,11 +86,30 @@ evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q,
                       N=NULL,
                       CI=NULL)
 
+    ## Perhaps split into two functions, one to calculate EVSI the standard moment-matching way, and a second function to interpolate EVSIs for different sample sizes by regression 
     ## For multiple sample sizes, I reckon to just use our favourite MCMC updater to do the nonlinear regression.
     ## It's a different situation from when the user specifies the Bayesian model governing their proposed study.
-    ## Here the Bayesian model is pre-specified, so we can pre-specify our favourite software to fit it 
+    ## Here the Bayesian model is pre-specified, so we can pre-specify our favourite software to fit it [ though will it always follow the same functional shape ? ]
 
-    ## Return object of similar format so we can do same output analysis / graph things
+    ## Return object of similar format so we can do same output analysis / graph things as EVSI package
+}
+
+## Example of "analysis_model" function that user could supply 
+## Main thing user needs to supply is a textfile of JAGS model code
+## All data needed by this model should be returned by the user-supplied datagen_fn. 
+## User would call evsi(..., analysis_model = analysis_model_jags, analysis_options = list(jags_model_file = "my_model.txt", nburn=1000, niter=10000))
+
+analysis_model_jags <- function(simdata, jags_options){
+    if (is.null(jags_options$model_file)) stop("JAGS model file must be specified in `analysis_options`") 
+    if (is.null(jags_options$nburn)) nburn <- 1000
+    if (is.null(jags_options$niter)) niter <- 10000  # or such like 
+    ## then convert simdata from data frame to JAGS format
+
+    ## build inits
+
+    ## run JAGS
+
+    ## extract sample from posterior, return as data frame 
 }
 
 
