@@ -1,4 +1,6 @@
-## from BCEA package TODO PROPER CITATION 
+## Code taken from BCEA package
+## Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
+## https://github.com/giabaio/BCEA
 
 ## TODO identify column that gives error message in make.proj
 
@@ -11,9 +13,7 @@ check_packages <- function(){
     }
 }
 
-## TODO int.ord - allow different one for different column?
-
-inla_default_opts <- list()
+## TODO int.ord - allow different ones for costs and effects 
 
 fitted_inla <- function(y, inputs, poi,
                         verbose = TRUE,
@@ -58,7 +58,7 @@ fitted_inla <- function(y, inputs, poi,
 
 
 ###INLA Fitting
-make.proj <- function(parameter,inputs, x,k,l) {
+make.proj <- function(parameter, inputs, x) {
     tic <- proc.time()
     scale<-8/(range(x)[2]-range(x)[1])
     scale.x <- scale*x -mean(scale*x)
@@ -81,7 +81,7 @@ make.proj <- function(parameter,inputs, x,k,l) {
     toc <- proc.time() - tic
     time <- toc[3]
     if(dim.d>2){
-        warning(paste("The dimension of the sufficient reduction for TODO IDENTIFY COLUMN is",dim.d,".
+        warning(paste("The dimension of the sufficient reduction is",dim.d,".
                     Dimensions greater than 2 imply that the EVPPI approximation using INLA may be inaccurate.
                     Full residual checking using diag.evppi is required."))}
     names(time) = "Time to fit find projections (seconds)"

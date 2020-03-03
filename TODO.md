@@ -15,9 +15,11 @@
 
 EVPPI
 
-* INLA: error handling, document and check non-default args, check plots work
+* Different regression methods and options for effects and costs
 
-* Test earth gam method more, compare against other methods to suggest advantages 
+* INLA: max.edge arg, check plots work
+
+* Test earth gam method more, compare against other methods to suggest advantages, while developing book material. 
 
 * Add single parameter methods for historical interest? 
 
@@ -63,8 +65,6 @@ GENERAL
 * Does the baseline option matter for the purpose of regression-based EVPPI computation - can it always be treatment 1?   For consistency with what BCEA does, incremental for regressions is calculated as reference - active.  That seems backwards, but not sure it matters.
 
 * Suggests or Imports for packages enabling specific methods?   Imports for default methods, suggests for others? 
-
-* BCEA allows different regression methods for effects and costs, handle this? 
 
 * Specify `poi=list("par1", c("par2","par3"), "par4")` if we want independent EVPPI calculations for each component of the list?  Consider in context of object returned by evppi() function, note it can also return EVPPI for multiple WTPs. 
 

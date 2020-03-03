@@ -40,7 +40,7 @@ prepost_evsi_is <- function(nb, inputs, poi, datagen_fn, n=100, likelihood, npre
     if (is.null(npreg_method))
         npreg_method <- default_evppi_method(poi)
     if (verbose) cat("Calculating EVPPI...\n")
-    y <- fitted_npreg(nb, inputs=inputs, poi=poi, method=npreg_method, ...)
+    y <- fitted_npreg(nb, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
 
     if (verbose) cat("Calculating EVSI...\n")
     nsam <- nrow(inputs)

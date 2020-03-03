@@ -52,8 +52,41 @@ TODO earth, single par methods}
 
 \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters in the Gaussian process regression method.  By default, this is the minimum of the following three quantities: 30 times the number of parameters of interest, 250, and the number of simulations being used for calculating EVPPI.
 
-TODO document options to INLA method}
+Options giverning \code{method="inla"} as described in detail in Baio, Berardi and Heath (2017):
+
+\code{int.ord} (integer) maximum order of interaction terms to include in the regression predictor, e.g. if \code{int.ord=k} then all k-way interactions are used.   TODO handle effects and costs separately
+
+ \code{cutoff} (default 0.3) controls the
+density of the points inside the mesh in the spatial part of the mode. 
+Acceptable values are typically in
+the interval (0.1,0.5), with lower values implying more points (and thus
+better approximation and greatercomputational time).
+
+\code{convex.inner} (default = -0.4) and \code{convex.outer} (default =
+-0.7) control the boundaries for the mesh. 
+These should be negative values and can be decreased (say to -0.7 and
+-1, respectively) to increase the distance between the points and the outer
+boundary, which also increases precision and computational time.
+
+\code{robust}. if \code{TRUE} then INLA will
+use a t prior distribution for the coefficients of the linear predictor, rather than the default normal. 
+
+\code{h.value} (default=0.00005) controls the accuracy of the INLA grid-search for the
+estimation of the hyperparameters. 
+ Lower values imply a more refined search
+(and hence better accuracy), at the expense of computational speed.
+
+\code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh. 
+
+TODO \code{max.edge}}
 }
 \description{
 Calculate the expected value of partial perfect information from a decision model
+}
+\references{
+Strong, M., Oakley, J. E., & Brennan, A. (2014). Estimating multiparameter partial expected value of perfect information from a probabilistic sensitivity analysis sample: a nonparametric regression approach. Medical Decision Making, 34(3), 311-326.
+
+Heath, A., Manolopoulou, I., & Baio, G. (2016). Estimating the expected value of partial perfect information in health economic evaluations using integrated nested Laplace approximation. Statistics in medicine, 35(23), 4264-4280.
+
+Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
 }
