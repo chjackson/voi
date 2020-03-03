@@ -5,9 +5,9 @@
 \title{Calculate the expected value of sample information from a decision-analytic model}
 \usage{
 evsi(outputs, inputs, datagen_fn, n = 100, method = NULL,
-  likelihood = NULL, analysis_model = NULL, model = NULL, Q = 30,
-  poi = NULL, npreg_method = "gam", nsim = NULL, verbose = TRUE,
-  ...)
+  likelihood = NULL, analysis_model = NULL, analysis_options = NULL,
+  decision_model = NULL, Q = 30, poi = NULL, npreg_method = "gam",
+  nsim = NULL, verbose = TRUE, ...)
 }
 \arguments{
 \item{outputs}{This could take one of two forms
@@ -38,13 +38,13 @@ The exact names and formats of all these arguments is up for discussion!}
 
 3. the returned data frame should have number of rows equal to the number of parameter simulations in \code{inputs}.
 
-4. if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
+4. if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
 
 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
 
 DEVELOPERS - EXAMPLES OF THIS CURRENTLY in \code{tests/tests_slow}}
 
-\item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO how will this work for randomised trials with multiple arms?}
+\item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
 \item{method}{Character string indicating the calculation method.
 
@@ -58,21 +58,23 @@ Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conju
 
 TODO Heath and Jalal methods}
 
-\item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should take arguments:
+\item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
 
-the first: a data frame with columns defined by the number of outcomes in the data, and with names matching the names of the data frame returned by \code{datagen_fn}. 
+1. a data frame of predicted data. Columns are defined by the number of outcomes in the data, and names matching the data frame returned by \code{datagen_fn}. 
 
-the second: a data frame of parameter values, whose names should all correspond to variables in \code{inputs}.
+2. a data frame of parameter values, whose names should all correspond to variables in \code{inputs}.
 
-The function should return a vector whose length matches the number of rows of the data frame given as the second argument. 
+The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.
 
-POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER.  EXAMPLE OF THIS CURRENTLY in \code{tests/tests_slow} but need a vignette eventually
+POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER.  Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} but need a vignette eventually. 
 
-Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.   CLARIFY.  [ eventually we'll want some built-in common examples where people don't have to specify either datagen_fn or likelihood ]}
+Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.  CLARIFY IN EXAMPLE.  [ eventually we'll want some built-in common examples where people don't have to specify either datagen_fn or likelihood ]}
 
 \item{analysis_model}{Function which fits a Bayesian model to the generated data. TODO work out format, output, JAGS dependencies, etc.  Required for \code{method="mm"} (and Jalal method if n0 not given??)}
 
-\item{model}{Function which evaluates the decision-analytic model, given parameter values.  TODO sort out format for nb, c, e output.   TODO should all function arguments have \code{_fn} suffix, or not? be consistent here}
+\item{analysis_options}{List of arguments required by \code{analysis_model}.  TODO work out examples etc..}
+
+\item{decision_model}{Function which evaluates the decision-analytic model, given parameter values.  TODO sort out format for nb, c, e output.   TODO should all function arguments have \code{_fn} suffix, or not? be consistent here}
 
 \item{Q}{Number of quantiles to use in \code{method="mm"}.}
 

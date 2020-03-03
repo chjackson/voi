@@ -1,4 +1,4 @@
-load_all(".")
+# load_all(".")
 
 #evppi(chemo_nb, chemo_pars, poi="pi1")
 #evppi(chemo_cea, chemo_pars, poi="pi1")

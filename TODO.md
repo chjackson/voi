@@ -33,11 +33,10 @@ EVPPI
 
 * Any other plots for communication?
 
+
 EVSI
 
-* Complete doc and unit tests for regression and IS methods
-
-* Built-in data generating functions (hence built-in EVSI methods) for common study designs.  E.g. 2-arm binomial trial? 
+* Built-in data generating functions (hence built-in EVSI methods) for common study designs.  E.g. 2-arm trial with a binary outcome and same sample size per arm? 
 
 * Any need to handle designs controlled by more than one sample size?  If so, make sure multiple arguments to datagen_fn are handled nicely
 
@@ -50,6 +49,7 @@ EVSI
 * 2-level Monte Carlo again
 
 * Output analysis material from Anna's EVSI package.
+
 
 GENERAL
 
@@ -103,11 +103,21 @@ Describe what you had to do to make it work in your example.  If you need to do 
 
 * Any time you add code, add a unit test - a concise example where that code is executed - to ensure that test gives the expected result every time the code is modified. 
 
+* House style: 
+
+	- underscores not dots to separate words in function or variable names:  my_variable_name
+
+	- use spaces to clearly separate elements of code, e.g. 
+       foo <- fn(a, b, c)  is much easier to read than  foo<-fn(a,b,c) 
+
+
 
 ### Documentation 
 
 * Vignettes with worked examples
 
-* Should at least be worked examples for all case studies in ConVoI papers and book
+* Check can reproduce results from ConVoI 1 four case studies
+
+* Any new ConVoI examples (book, papers) should come with code to do them with this package. 
 
 * Note these may raise "further research is needed" questions!

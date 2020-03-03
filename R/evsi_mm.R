@@ -4,6 +4,7 @@ evsi_mm <- function(outputs,
                     poi,
                     datagen_fn,
                     analysis_model,
+                    analysis_options,
                     decision_model,
                     n=100, likelihood,
                     Q,
@@ -14,6 +15,7 @@ evsi_mm <- function(outputs,
         evsi_mm_nb(nb=outputs, inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
                    Q=Q, 
                    analysis_model=analysis_model,
+                   analysis_options=analysis_options,
                    decision_model=decision_model, 
                    npreg_method=npreg_method,
                    verbose=verbose, ...)
@@ -23,6 +25,7 @@ evsi_mm <- function(outputs,
                     inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
                     Q=Q, 
                     analysis_model=analysis_model,
+                    analysis_options=analysis_options,
                     decision_model=decision_model, 
                     npreg_method=npreg_method,
                     verbose=verbose, ...)
@@ -31,6 +34,7 @@ evsi_mm <- function(outputs,
 
 evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q, 
                        analysis_model,
+                       analysis_options,
                        decision_model, 
                        npreg_method,
                        verbose, ...){
@@ -54,8 +58,8 @@ evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q,
         ## Skeleton example of an "analysis_model" function is analysis_model_jags below. 
         postpars <- analysis_model(simdata, analysis_options)
 
-        ## TODO append simulations from the prior for all parameters in by the decision model
-        ## Users could specify these in analysis_model through extra pars in the JAGS model that are simulated from their priors
+        ## TODO append simulations from the prior for all parameters in the decision model
+        ## Users could specify these in analysis_model through extra pars in their JAGS model that are simulated from their priors
         ## Any not supplied there might be filled in through an extra user-supplied function to simulate parameters from the model - a built-in example is chemo_prior_pars 
         
         ## Run HE model again with posterior sample (TODO get exact arg formats correct )
@@ -68,8 +72,8 @@ evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q,
     evppi_fit <- fitted_npreg(nb, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
 
     ## version that splits costs, effects and WTP 
-    evppi_cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
-    evppi_efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
+#    evppi_cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
+#    evppi_efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
 
     ## Now rewrite evsi.calc.   Instead of accepting a monolithic mm.var object,
     ## break that object into logical components that might come from inputs to evsi_mm_nb: 
@@ -129,7 +133,7 @@ mm_gen_quantiles <- function(poi, inputs, Q, N.size = NULL){
     quantiles.parameters <- array(NA, dim = c(Q, length(poi)))
     colnames(quantiles.parameters) <- poi
     for(i in 1:length(poi)){
-        quantiles.parameters[,i] <- sample(quantile(param.mat[,poi[i]],
+        quantiles.parameters[,i] <- sample(quantile(inputs[,poi[i]],
                                                     probs = 1:Q / (Q + 1), type = 4))
     }
 
