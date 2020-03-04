@@ -35,7 +35,7 @@ evsi_is_cea <- function(costs, effects, wtp, inputs, poi, datagen_fn, n, likelih
 }
 
 prepost_evsi_is <- function(nb, inputs, poi, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
-    simdat <- generate_data(inputs, datagen_fn=datagen_fn, n=n)
+    simdat <- generate_data(inputs, datagen_fn=datagen_fn, n=n, poi=poi)
     ## nb or ce? 
     if (is.null(npreg_method))
         npreg_method <- default_evppi_method(poi)
@@ -47,14 +47,15 @@ prepost_evsi_is <- function(nb, inputs, poi, datagen_fn, n=100, likelihood, npre
     nout <- ncol(y) # TODO make sure 1D handled 
     prepost <- matrix(nrow=nsam, ncol=nout)
     for (i in 1:nsam){
-        ll <- likelihood(simdat[i,], inputs) # vector of length nsim 
+        ll <- likelihood(simdat[i,], inputs, poi=poi) # vector of length nsim 
         w <- ll/sum(ll)
         for (j in 1:nout) { 
             ## to vectorise would need nsam x nsam storage 
             ## could do in C? though could we still work with user's lik fn?
             prepost[i,j] <- w %*% y[,j]
-## turn verbose option on 
-##       cat(sprintf("w1=%s, w2=%s, [%s]\n",w[1],w[2],i))
+## ultra-verbose option
+#            if (verbose)
+#                message(sprintf("sample %s/%s, w1=%s, w2=%s", i, nsam, w[1],w[2]))
         }
     }
     prepost

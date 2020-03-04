@@ -8,4 +8,11 @@ datagen_trial_binary <- function(inputs, n=100, poi){
     )
 }
 
-studies_builtin <- list("trial_binary" = datagen_trial_binary)
+likelihood_trial_binary <- function(Y, inputs, n=100, poi){
+    loglik <-
+        dbinom(Y[,"X1"], size=n, inputs[,poi[1]], log=TRUE) + 
+        dbinom(Y[,"X2"], size=n, inputs[,poi[2]], log=TRUE) 
+    exp(loglik)
+}
+
+studies_builtin <- c("trial_binary")

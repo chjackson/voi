@@ -127,6 +127,7 @@ evsi <- function(outputs,
                    datagen_fn=datagen_fn, poi=poi, n=n, likelihood=likelihood,
                    method=method, verbose=verbose, ...)
     } else if (method=="is") {
+        likelihood <- form_likelihood(study, likelihood, inputs)
         evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
                 poi=poi, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
@@ -160,11 +161,27 @@ default_evsi_method <- function(){
     "gam" # TODO think about this 
 }
 
+form_likelihood <- function(study, likelihood, inputs){
+    if (!is.null(study))
+        likelihood <- get(sprintf("likelihood_%s", study))
+    else {
+        if (is.null(likelihood)) stop("`likelihood` should be supplied for method=\"is\"")
+        if (!is.function(likelihood)) stop("`likelihood` should be a function")
+        formals(likelihood) <- c(formals(likelihood), list(poi=NULL))
+        check_likelihood(likelihood, inputs)
+    }
+    likelihood
+}
+
+check_likelihood <- function(likelihood, inputs, poi){
+    ## TODO 
+}
+
 form_datagen_fn <- function(study, datagen_fn, inputs){
     if (!is.null(study)){
-        if (!is.character(study) || (!(study %in% names(studies_builtin))))
+        if (!is.character(study) || (!(study %in% studies_builtin)))
             stop("``study` should be a character string matching one of the supported study designs")
-        else datagen_fn <- studies_builtin[[study]]
+        else datagen_fn <- get(sprintf("datagen_%s", study))
     } else {
         if (is.null(datagen_fn)) stop("`datagen_fn` should be supplied if `study` is not supplied")
         if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
@@ -174,7 +191,7 @@ form_datagen_fn <- function(study, datagen_fn, inputs){
     datagen_fn
 }
 
-check_datagen_fn <- function(datagen_fn, inputs, poi){
+check_datagen_fn <- function(datagen_fn, inputs, poi=NULL){
     ## If there's more than one argument, check that those args have
     ## defaults (e.g. sample sizes). Give error for now if not, but
     ## consider relaxing if this becomes a problem
