@@ -4,10 +4,10 @@
 \alias{evsi}
 \title{Calculate the expected value of sample information from a decision-analytic model}
 \usage{
-evsi(outputs, inputs, datagen_fn, n = 100, method = NULL,
-  likelihood = NULL, analysis_model = NULL, analysis_options = NULL,
-  decision_model = NULL, Q = 30, poi = NULL, npreg_method = "gam",
-  nsim = NULL, verbose = TRUE, ...)
+evsi(outputs, inputs, study = NULL, datagen_fn = NULL, poi = NULL,
+  n = 100, method = NULL, likelihood = NULL, analysis_model = NULL,
+  analysis_options = NULL, decision_model = NULL, Q = 30,
+  npreg_method = "gam", nsim = NULL, verbose = TRUE, ...)
 }
 \arguments{
 \item{outputs}{This could take one of two forms
@@ -30,7 +30,15 @@ The exact names and formats of all these arguments is up for discussion!}
 
 \item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
-\item{datagen_fn}{Function to sample predicted data from a proposed future study.  This should have the following specification:
+\item{study}{Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of \code{inputs} that correspond to the parameters governing the study data should be identified in \code{poi}.
+
+Currently supported studies are
+
+\code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two parameters: the probability of the outcome in arm 1 and 2 respectively.  The sample size is the same in each arm, specifed in the \code{n} argument to \code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2} respectively. 
+
+Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
+
+\item{datagen_fn}{If the proposed study is not one of the built-in types supported, it can be specified in this argument as an R function to sample predicted data from the study.  This function should have the following specification:
 
 1. the function's first argument should be a data frame of parameter simulations, with one row per simulation and one column per parameter.  The parameters in this data frame must all be found in \code{inputs}.
 
@@ -43,6 +51,14 @@ The exact names and formats of all these arguments is up for discussion!}
 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
 
 DEVELOPERS - EXAMPLES OF THIS CURRENTLY in \code{tests/tests_slow}}
+
+\item{poi}{Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
+
+TODO NOT A NICE NAME. stands for "parameters of interest". that's obscure. change to "params" as or "parameters", same in evppi(). 
+
+For example, if \code{study = "trial_binary"} is specified, then \code{poi} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
+
+The \code{poi} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
@@ -77,10 +93,6 @@ Note the definition of the likelihood should agree with the definition of \code{
 \item{decision_model}{Function which evaluates the decision-analytic model, given parameter values.  TODO sort out format for nb, c, e output.   TODO should all function arguments have \code{_fn} suffix, or not? be consistent here}
 
 \item{Q}{Number of quantiles to use in \code{method="mm"}.}
-
-\item{poi}{Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"} TODO OTHER methods.
-
-This should bee a character vector naming particular columns of \code{inputs}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
 
 \item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES}
 

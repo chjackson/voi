@@ -4,17 +4,26 @@
 #evppi(chemo_cea, chemo_pars, poi="pi1")
 
 ##' Input is data frame of parameter simulations. One row per simulation, one column per parameter
-##' Output is data frame of summarised future data simulations.  One row per simulation, one column per dimension of the summarised data. 
+##' Output is data frame of summarised future data simulations.  One row per simulation, one column per dimension of the summarised data.
+##'
+##' Chemotherapy example: two arm trial, 150 patients per arm,
+##' six outcomes 
+
 datagen_fn <- function(inputs, n=150){
     nsim <- nrow(inputs)
     with(inputs, { 
+        ## number having adverse events [ prob depends on arm ] 
         X.SE1 <- rbinom(nsim, size=n, prob=pi1)
         X.SE2 <- rbinom(nsim, size=n, prob=pi2)
+        ## number treated in hospital (over both arms, since prob is constant) 
         X.N.hosp <- rbinom(nsim, X.SE1 + X.SE2, gamma.hosp)
+        ## number dying (over both arms, since prob is constant) 
         X.N.die <- rbinom(nsim, X.N.hosp, gamma.dead)
         N.amb <- X.SE1 + X.SE2 - X.N.hosp
+        ## recovery time at home for patients having adverse events 
         X.amb <- rgamma(nsim, N.amb, recover.amb) # sum of N.amb independent exponentials
         N.hosp <- X.N.hosp - X.N.die
+        ## recovery time in hospital for patients having adverse events 
         X.hosp <- rgamma(nsim, N.hosp, recover.hosp)
         data.frame(X.amb, X.SE1, X.SE2, X.N.hosp, X.hosp, X.N.die)
     })
@@ -52,6 +61,7 @@ evsi(chemo_cea, chemo_pars, datagen_fn=datagen_fn, gam_formula=gamf, nsim=1000) 
 
 ##' Function to evaluate the likelihood for parameters given simulated data. 
 ##' Returns one row 
+
 lik_chemo <- function(Y, inputs){
   loglik <-
       dbinom(Y[,"X.SE1"], size=150, inputs[,"pi1"], log=TRUE) +

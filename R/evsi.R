@@ -3,8 +3,17 @@
 ##' Calculate the expected value of sample information from a decision-analytic model
 ##'
 ##' @inheritParams evppi
+##'
+##' @param study Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of \code{inputs} that correspond to the parameters governing the study data should be identified in \code{poi}.  
+##'
+##' Currently supported studies are
+##'
+##' \code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two parameters: the probability of the outcome in arm 1 and 2 respectively.  The sample size is the same in each arm, specifed in the \code{n} argument to \code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2} respectively. 
 ##' 
-##' @param datagen_fn Function to sample predicted data from a proposed future study.  This should have the following specification:
+##' Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.  
+##'
+##' 
+##' @param datagen_fn If the proposed study is not one of the built-in types supported, it can be specified in this argument as an R function to sample predicted data from the study.  This function should have the following specification:
 ##'
 ##' 1. the function's first argument should be a data frame of parameter simulations, with one row per simulation and one column per parameter.  The parameters in this data frame must all be found in \code{inputs}.
 ##'
@@ -17,6 +26,14 @@
 ##' 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
 ##'
 ##' DEVELOPERS - EXAMPLES OF THIS CURRENTLY in \code{tests/tests_slow}
+##'
+##' @param poi Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
+##'
+##' TODO NOT A NICE NAME. stands for "parameters of interest". that's obscure. change to "params" as or "parameters", same in evppi(). 
+##' 
+##' For example, if \code{study = "trial_binary"} is specified, then \code{poi} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
+##' 
+##' The \code{poi} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.
 ##'
 ##' @param n Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument. 
 ##'
@@ -52,10 +69,6 @@
 ##'
 ##' @param Q Number of quantiles to use in \code{method="mm"}. 
 ##'
-##' @param poi Parameters of interest, that is, those which are informed by the data in the future study.  Required (and only required) for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"} TODO OTHER methods.
-##'
-##' This should bee a character vector naming particular columns of \code{inputs}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.
-##'
 ##' @param npreg_method Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES
 ##'
 ##' @param nsim Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used. 
@@ -76,7 +89,9 @@
 ##' @export
 evsi <- function(outputs,
                  inputs,
-                 datagen_fn,
+                 study=NULL,
+                 datagen_fn=NULL,
+                 poi=NULL,
                  n=100,
                  method=NULL, # TODO speficy gam here or npreg? 
                  likelihood=NULL,
@@ -84,7 +99,6 @@ evsi <- function(outputs,
                  analysis_options=NULL,
                  decision_model=NULL,
                  Q=30,
-                 poi=NULL,
                  npreg_method="gam",
                  nsim=NULL,
                  verbose=TRUE, 
@@ -105,11 +119,13 @@ evsi <- function(outputs,
     }
     inputs <- inputs[1:nsim,,drop=FALSE]
 
+    datagen_fn <- form_datagen_fn(study, datagen_fn, inputs)
     ## Could use any nonparametric regression method to regress on a summary statistic, in identical way to EVPPI estimation.
     
     if (method %in% npreg_methods) { 
         evsi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
-                   datagen_fn=datagen_fn, n=n, likelihood=likelihood, method=method, verbose=verbose, ...)
+                   datagen_fn=datagen_fn, poi=poi, n=n, likelihood=likelihood,
+                   method=method, verbose=verbose, ...)
     } else if (method=="is") {
         evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
                 poi=poi, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
@@ -126,8 +142,8 @@ evsi <- function(outputs,
     else stop("Other methods not implemented yet")
 }
 
-evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, n, method=NULL, verbose, ...){
-    Tdata <- generate_data(inputs, datagen_fn, n)
+evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, poi, n, method=NULL, verbose, ...){
+    Tdata <- generate_data(inputs, datagen_fn, n, poi)
     if (output_type == "nb")
         evppi_npreg_nb(nb=outputs, inputs=Tdata, poi=names(Tdata), method=method, verbose=verbose, ...)
     else if (output_type == "cea")
@@ -135,28 +151,42 @@ evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, n, method=NULL,
                         inputs=Tdata, poi=names(Tdata), method=method, verbose=verbose, ...)
 }
 
-generate_data <- function(inputs, datagen_fn, n=150){
-    check_datagen_fn(datagen_fn, inputs)
-    datagen_fn(inputs=inputs, n=n)
+generate_data <- function(inputs, datagen_fn, n=150, poi){
+    check_datagen_fn(datagen_fn, inputs, poi)
+    datagen_fn(inputs=inputs, n=n, poi=poi)
 }
 
 default_evsi_method <- function(){
     "gam" # TODO think about this 
 }
 
-check_datagen_fn <- function(datagen_fn, inputs){
-    if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
+form_datagen_fn <- function(study, datagen_fn, inputs){
+    if (!is.null(study)){
+        if (!is.character(study) || (!(study %in% names(studies_builtin))))
+            stop("``study` should be a character string matching one of the supported study designs")
+        else datagen_fn <- studies_builtin[[study]]
+    } else {
+        if (is.null(datagen_fn)) stop("`datagen_fn` should be supplied if `study` is not supplied")
+        if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
+        formals(datagen_fn) <- c(formals(datagen_fn), list(poi=NULL))
+        check_datagen_fn(datagen_fn, inputs)
+    }
+    datagen_fn
+}
+
+check_datagen_fn <- function(datagen_fn, inputs, poi){
     ## If there's more than one argument, check that those args have
     ## defaults (e.g. sample sizes). Give error for now if not, but
     ## consider relaxing if this becomes a problem
     extra_args <- formals(datagen_fn)[-1]
+    extra_args <- extra_args[names(extra_args) != "poi"]
     if (length(extra_args)>0){
         no_defaults <- sapply(extra_args, is.symbol)
         if (any(no_defaults)){
             stop(sprintf("Arguments \"%s\" of `datagen_fn` do not have default values", paste(names(no_defaults),collapse=",")))
         }
-    } 
-    ret <- datagen_fn(inputs)
+    }
+    ret <- datagen_fn(inputs, poi=poi)
     if (!is.data.frame(ret)) stop("`datagen_fn` should return a data frame")
     parnames <- names(ret)[names(ret) %in% names(inputs)]
     if (length(parnames)>0) {

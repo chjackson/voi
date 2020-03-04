@@ -8,6 +8,8 @@
 
 * Nonparametric regression and importance sampling methods added for EVSI, and rough tests written
 
+* Study design for EVSI can be specified as an R function to simulate data from it, or as one of the built-in standard designs - currently only have 2 arm trial of a binary outcome. 
+
 * Chemotherapy model code added to facilitate examples. Note exact format of this code may change as we implement different methods that need access to the decision model function. 
 
 
@@ -38,7 +40,7 @@ EVPPI
 
 EVSI
 
-* Built-in data generating functions (hence built-in EVSI methods) for common study designs.  E.g. 2-arm trial with a binary outcome and same sample size per arm? 
+* More built-in study designs - which ones? 
 
 * Any need to handle designs controlled by more than one sample size?  If so, make sure multiple arguments to datagen_fn are handled nicely
 

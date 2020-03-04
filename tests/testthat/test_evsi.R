@@ -19,7 +19,7 @@ test_that("EVSI GAM method", {
     set.seed(1)
     expect_equal(evsi(chemo_nb, chemo_pars, datagen_fn=chemo_datagen_fn,
                       gam_formula=gamf, nsim=1000),
-                 17.89986, tol=0.01)
+                 18.18446, tol=0.01)
 })
 
 lik_chemo <- function(Y, inputs){
@@ -42,7 +42,12 @@ test_that("EVSI importance sampling method", {
     expect_equal(
         evsi(chemo_nb, chemo_pars, method="is", poi=deadpoi, nsim=1000, 
              datagen_fn=chemo_datagen_fn, likelihood=lik_chemo, gam_formula=gamf, verbose=FALSE),
-        8.926214, tol=0.01)
+        10.90571, tol=0.01)
 })
 
-
+test_that("EVSI with built-in study designs", {
+    set.seed(1)
+    expect_equal(
+        evsi(chemo_nb, chemo_pars, study="trial_binary", poi=c("pi1", "pi2"), verbose=FALSE), 
+        2.285424, tol=0.01)
+})
