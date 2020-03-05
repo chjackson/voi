@@ -210,6 +210,6 @@ check_datagen_fn <- function(datagen_fn, inputs, poi=NULL){
         stop(sprintf("`datagen_fn` returns variables with the same names as parameters (%s).  It should return simulated data", paste(parnames, collapse=",")))
     }
     if (nrow(ret) != nrow(inputs)){
-        stop("`datagen_fn` returns a data frame with %s rows. There should be %s rows, the same number of rows as `inputs`")
+        stop(sprintf("`datagen_fn` returns a data frame with %s rows. There should be %s rows, the same number of rows as `inputs`", nrow(ret), nrow(inputs)))
     }
 }

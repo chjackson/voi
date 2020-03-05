@@ -2,8 +2,6 @@
 ## Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
 ## https://github.com/giabaio/BCEA
 
-## TODO identify column that gives error message in make.proj
-
 check_packages <- function(){
     if (!isTRUE(requireNamespace("INLA", quietly = TRUE))) {
         stop("You need to install the packages 'INLA' and 'splancs'. Please run in your R terminal:\n install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')\n and\n install.packages('splancs')")

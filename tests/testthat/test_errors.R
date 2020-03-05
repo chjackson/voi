@@ -30,10 +30,30 @@ test_that("Errors in data generating function", {
     expect_error(evsi(chemo_nb, chemo_pars, poi=poi, nsim=1000, verbose=FALSE),
                  "`datagen_fn` should be supplied if `study` is not supplied")
 
-    ## TODO no defaults in sample size args
-    ## TODO doesn't return a data frame 
-    ## TODO returns variables with same names as parameters 
-    ## TODO returns wrong number of rows
+    datagen_wrong <- function(inputs, n){}
+    expect_error(evsi(chemo_nb, chemo_pars, poi=poi, datagen_fn=datagen_wrong, nsim=1000, verbose=FALSE),
+                 "do not have default values")
+        
+    datagen_wrong <- function(inputs, n=100){
+        array(dim=dim(inputs))
+    }
+    expect_error(evsi(chemo_nb, chemo_pars, poi=poi, datagen_fn=datagen_wrong, nsim=1000, verbose=FALSE),
+                 "should return a data frame")
+
+    datagen_wrong <- function(inputs, n=100){
+        ret <- data.frame(rnorm(nrow(inputs)))
+        names(ret) <- names(inputs)[1]
+        ret
+    }
+    expect_error(evsi(chemo_nb, chemo_pars, poi=poi, datagen_fn=datagen_wrong, nsim=1000, verbose=FALSE),
+                 "returns variables with the same names as parameters")
+
+    datagen_wrong <- function(inputs, n=100){
+        data.frame(X = rnorm(nrow(inputs) + 1))
+    }
+    expect_error(evsi(chemo_nb, chemo_pars, poi=poi, datagen_fn=datagen_wrong, nsim=1000, verbose=FALSE),
+                 "same number of rows as `inputs`")
+
 })
 
 example_datagen_fn <- function(inputs, n=150){
