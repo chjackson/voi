@@ -42,7 +42,7 @@ test_that("EVSI importance sampling method", {
     expect_equal(
         evsi(chemo_nb, chemo_pars, method="is", poi=poi, nsim=1000, 
              datagen_fn=chemo_datagen_fn, likelihood=lik_chemo, gam_formula=gamf, verbose=FALSE),
-        10.90571, tol=0.01)
+        9.252767, tol=0.01)
 })
 
 test_that("EVSI with built-in study designs", {

@@ -60,3 +60,29 @@ prepost_evsi_is <- function(nb, inputs, poi, datagen_fn, n=100, likelihood, npre
     }
     prepost
 }
+
+
+form_likelihood <- function(study, likelihood, inputs, datagen_fn, poi){
+    if (!is.null(study))
+        likelihood <- get(sprintf("likelihood_%s", study))
+    else {
+        if (is.null(likelihood)) stop("`likelihood` should be supplied for method=\"is\"")
+        if (!is.function(likelihood)) stop("`likelihood` should be a function")
+        formals(likelihood) <- c(formals(likelihood), list(poi=NULL))
+        check_likelihood(likelihood, inputs, datagen_fn, poi)
+    }
+    likelihood
+}
+
+check_likelihood <- function(likelihood, inputs, datagen_fn, poi){
+    ## check that when likelihood is called with first two arguments data frames with
+    ## 1. names matching output of datagen_fn
+    ## 2. names matching inputs 
+    ## returns output: vector length equal to nrow(inputs)
+    data_sim <- datagen_fn(inputs, poi=poi)
+    ret <- likelihood(data_sim, inputs)
+    if (!is.vector(ret) | !is.numeric(ret))
+        stop("likelihood function should return a numeric vector")
+    if (length(ret) != nrow(inputs))
+        stop(sprintf("likelihood function returns a vector of length %s, should be length %s, the number of rows in `inputs`", length(ret), nrow(inputs)))
+}

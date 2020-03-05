@@ -127,7 +127,7 @@ evsi <- function(outputs,
                    datagen_fn=datagen_fn, poi=poi, n=n, likelihood=likelihood,
                    method=method, verbose=verbose, ...)
     } else if (method=="is") {
-        likelihood <- form_likelihood(study, likelihood, inputs)
+        likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, poi)
         evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
                 poi=poi, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
@@ -159,22 +159,6 @@ generate_data <- function(inputs, datagen_fn, n=150, poi){
 
 default_evsi_method <- function(){
     "gam" # TODO think about this 
-}
-
-form_likelihood <- function(study, likelihood, inputs){
-    if (!is.null(study))
-        likelihood <- get(sprintf("likelihood_%s", study))
-    else {
-        if (is.null(likelihood)) stop("`likelihood` should be supplied for method=\"is\"")
-        if (!is.function(likelihood)) stop("`likelihood` should be a function")
-        formals(likelihood) <- c(formals(likelihood), list(poi=NULL))
-        check_likelihood(likelihood, inputs)
-    }
-    likelihood
-}
-
-check_likelihood <- function(likelihood, inputs, poi){
-    ## TODO 
 }
 
 form_datagen_fn <- function(study, datagen_fn, inputs){

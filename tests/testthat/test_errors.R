@@ -74,4 +74,22 @@ expect_error(evsi(chemo_nb, chemo_pars, method="is", poi=poi, nsim=1000,
              "`likelihood` should be supplied")
 })
 
+test_that("Errors in likelihood for importance sampling method", { 
+    lik_wrong <- function(Y, inputs, n=100, poi){ "foo" }
+    expect_error(evsi(chemo_nb, chemo_pars, method="is", poi=poi, nsim=1000, 
+                      datagen_fn=example_datagen_fn, likelihood=lik_wrong, verbose=FALSE),
+                 "likelihood function should return a numeric vector")
+    
+    lik_wrong <- function(Y, inputs, n=100, poi){ matrix(1:4, nrow=2) }
+    expect_error(evsi(chemo_nb, chemo_pars, method="is", poi=poi, nsim=1000, 
+                      datagen_fn=example_datagen_fn, likelihood=lik_wrong, verbose=FALSE),
+                 "likelihood function should return a numeric vector")
 
+    lik_wrong <- function(Y, inputs, n=100, poi){
+        rep(1, nrow(inputs) + 1)
+    }
+    expect_error(evsi(chemo_nb, chemo_pars, method="is", poi=poi, nsim=1000, 
+                      datagen_fn=example_datagen_fn, likelihood=lik_wrong, verbose=FALSE),
+                 "likelihood function returns a vector of length")
+
+})
