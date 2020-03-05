@@ -61,7 +61,11 @@ GENERAL
 
 * Package vignettes explaining merits of different methods - linking to our papers.  Integrate this with the work on the books. 
 
-* Interface to heemod package.  Any other packages to interface with? 
+* Interface to heemod package.  Any other packages to interface with?
+
+* Get travis-ci working on github.   Current error is 
+/home/travis/R/Library/INLA/bin/linux/64bit/inla: /lib/x86_64-linux-gnu/libm.so.6: version `GLIBC_2.27'
+ not found (required by /home/travis/R/Library/INLA/bin/linux/64bit/libgfortran.so.4)
 
 
 ## DISCUSSION 

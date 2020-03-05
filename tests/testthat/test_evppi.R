@@ -33,9 +33,8 @@ test_that("multi-parameter EVPPI, earth",{
 test_that("EVPPI with INLA",{
     expect_error(evppi(chemo_nb, chemo_pars, poi="pi1", method="inla", nsim=100), "2 or more parameters")
     poi <- c("pi1","rho")
+    INLA:::inla.dynload.workaround()
     evppi(chemo_nb, chemo_pars, poi=poi, method="inla", nsim=1000) # 17
-
-    ## FIXME why is inla.require("splancs") not TRUE when run from check, but works when run interactively? 
 })
 
 test_that("4-parameter EVPPI",{
