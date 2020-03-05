@@ -16,5 +16,5 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
 Imports: mgcv
-Suggests: testthat, earth, BCEA, INLA, ldr
+Suggests: testthat, earth, BCEA, INLA, splancs, ldr
 RoxygenNote: 7.0.2
