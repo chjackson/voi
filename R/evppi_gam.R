@@ -11,6 +11,6 @@ fitted_gam <- function(y, inputs, poi, ...){
 }
 
 default_gam_formula <- function(poi){
-    karg <- if (length(poi)==4) ", k=4" else ""
+    karg <- if (length(poi) >=4) ", k=4" else ""
     sprintf("te(%s, bs='cr'%s)", paste(poi, collapse=", "), karg)
 }

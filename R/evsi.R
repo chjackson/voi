@@ -124,7 +124,7 @@ evsi <- function(outputs,
     
     if (method %in% npreg_methods) { 
         evsi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
-                   datagen_fn=datagen_fn, poi=poi, n=n, likelihood=likelihood,
+                   datagen_fn=datagen_fn, poi=poi, n=n, 
                    method=method, verbose=verbose, ...)
     } else if (method=="is") {
         likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, poi)

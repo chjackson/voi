@@ -57,6 +57,8 @@ EVSI
 
 GENERAL
 
+* Makes sense for the parameters of a decision model to be a list 
+
 * Package vignettes explaining merits of different methods - linking to our papers.  Integrate this with the work on the books. 
 
 * Interface to heemod package.  Any other packages to interface with?
