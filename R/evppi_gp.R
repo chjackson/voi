@@ -4,7 +4,7 @@
 
 fitted_gp <- function(y, inputs, poi, ...){
     args <- list(...)
-    gpFunc(NB=y, sets=poi, s=1000, input.parameters=inputs, m=args$gp_hyper_n, session=NULL)$fitted
+    gpFunc(NB=y, sets=poi, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL)$fitted
 }
 
 
@@ -108,7 +108,7 @@ estimate.hyperparameters <- function(NB, inputs, session) {
 
 
 
-gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, session) {
+gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  session) {
   
 #  input.parameters <- cache$params
   paramSet <- cbind(input.parameters[, sets])
@@ -138,9 +138,10 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, session) {
   inputs.of.interest <- sets
   p <- length(inputs.of.interest)
   
-  maxSample <- min(5000, length(NB)) # to avoid trying to invert huge matrix
+  maxSample <- min(maxSample, length(NB)) # to avoid trying to invert huge matrix
   
   input.matrix <- as.matrix(input.parameters[1:maxSample, inputs.of.interest, drop=FALSE])
+    NB <- NB[1:maxSample]
   colmin <- apply(input.matrix, 2, min)
   colmax <- apply(input.matrix, 2, max)
   colrange <- colmax - colmin
