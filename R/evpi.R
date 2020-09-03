@@ -6,7 +6,7 @@
 ##'
 ##' @return The expected value of perfect information, either a single value, or a vector of values for different willingness-to-pay.
 ##' 
-##' 
+##' @export
 evpi <- function(outputs,
                  nsim=NULL)
 {
