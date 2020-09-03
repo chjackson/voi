@@ -135,6 +135,7 @@ fit.inla <- function(parameter, inputs, x, mesh,
                      cutoff, max.edge,h.value,family) {
     tic <- proc.time()
 
+    inputs <- inputs[,parameter,drop=FALSE]
     inputs.scale <- scale(inputs, apply(inputs, 2, mean), apply(inputs, 2, sd))
     scale<-8/(range(x)[2]-range(x)[1])
     scale.x <- scale*x -mean(scale*x)
