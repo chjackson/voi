@@ -26,10 +26,7 @@ evppivar <- function(outputs,
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     check_outputs_vector(outputs, inputs)
-    if (is.null(poi) && ncol(inputs)==1){
-        poi <- colnames(inputs)  ## TODO test and do in evppi() if it works
-    }
-    check_poi(poi, inputs)
+    poi <- check_poi(poi, inputs)
     opts <- list(...)
     if (is.null(method))
         method <- default_evppi_method(poi)

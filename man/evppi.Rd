@@ -4,7 +4,15 @@
 \alias{evppi}
 \title{Calculate the expected value of partial perfect information from a decision model}
 \usage{
-evppi(outputs, inputs, poi, method = NULL, nsim = NULL, verbose = TRUE, ...)
+evppi(
+  outputs,
+  inputs,
+  poi = NULL,
+  method = NULL,
+  nsim = NULL,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{outputs}{This could take one of two forms
@@ -27,7 +35,7 @@ The exact names and formats of all these arguments is up for discussion!}
 
 \item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
-\item{poi}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  [ I thought about allowing numeric indices for this, but perhaps better to encourage good practice by mandating that the parameters are named ]}
+\item{poi}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be}
 
 \item{method}{Character string indicating the calculation method.   Only methods currently implemented are based on nonparametric regression
 

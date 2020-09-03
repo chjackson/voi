@@ -22,7 +22,7 @@
 ##'
 ##' @param inputs Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.
 ##'
-##' @param poi A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  [ I thought about allowing numeric indices for this, but perhaps better to encourage good practice by mandating that the parameters are named ] 
+##' @param poi A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be 
 ##'
 ##' @param method Character string indicating the calculation method.   Only methods currently implemented are based on nonparametric regression
 ##'
@@ -87,15 +87,15 @@
 ##' @export
 evppi <- function(outputs,
                   inputs,
-                  poi,
+                  poi=NULL,
                   method=NULL,
                   nsim=NULL,
                   verbose=TRUE,
                   ...)
 {
-    inputs <- check_inputs(inputs)
+    inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     output_type <- check_outputs(outputs, inputs)
-    check_poi(poi, inputs)
+    poi <- check_poi(poi, inputs)
     opts <- list(...)
     if (is.null(method))
         method <- default_evppi_method(poi)
@@ -236,6 +236,11 @@ check_outputs <- function(outputs, inputs=NULL){
 
 
 check_poi <- function(poi, inputs){
+    if (is.null(poi)){
+        if (ncol(inputs)==1)
+            poi <- colnames(inputs)
+        else stop("`poi` should be specified if there are two or more parameters in `inputs`")
+    }
     if (!is.character(poi))
         stop("`poi` should be a character vector")
     badpoi <- poi[!(poi %in% colnames(inputs))]
@@ -243,5 +248,6 @@ check_poi <- function(poi, inputs){
         stop(sprintf("parameters of interest `%s` not found in columns of `inputs`",
                      paste(badpoi,collapse=",")))
     }
+    poi
 }
 

@@ -17,8 +17,6 @@
 
 EVPPI
 
-* Allow a vector for inputs in evppi() and evsi()
-
 * Different regression methods and options for effects and costs
 
 * INLA: max.edge arg, check plots work

@@ -2,8 +2,12 @@
 #  load_all("voi")
 
 test_that("single-parameter EVPPI",{
-    evppi(chemo_nb, chemo_pars, poi="pi1")
-    evppi(chemo_cea, chemo_pars, poi="pi1")
+    evtest <- evppi(chemo_nb, chemo_pars, poi="pi1")
+    expect_equal(evtest, 3.75833452581155, tol=1e-05)
+    evcea <- evppi(chemo_cea, chemo_pars, poi="pi1")
+    expect_equal(evcea[3], evtest)
+    expect_equal(evppi(chemo_nb, chemo_pars[,"pi1"]),
+                 evtest)
 })
 
 test_that("single-parameter EVPPI, alternative GAM basis",{
