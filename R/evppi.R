@@ -42,7 +42,7 @@
 ##'
 ##' @param ... Other arguments to control specific methods  
 ##'
-##' \code{gam_formula}: a character string giving the right hand side of the formula supplied to the gam() function, when \code{method="gam"}. By default, this is a tensor product of all the parameters of interest, e.g. if \code{poi = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis.   [ This is the default in SAVI ]
+##' \code{gam_formula}: a character string giving the right hand side of the formula supplied to the gam() function, when \code{method="gam"}. By default, this is a tensor product of all the parameters of interest, e.g. if \code{poi = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis.   [ This is the default in SAVI ]
 ##'
 ##' \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters in the Gaussian process regression method.  By default, this is the minimum of the following three quantities: 30 times the number of parameters of interest, 250, and the number of simulations being used for calculating EVPPI.
 ##'
@@ -72,7 +72,9 @@
 #'
 #' \code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh. 
 #'
-#' TODO \code{max.edge} 
+#' TODO \code{max.edge}
+#'
+#' \code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only increase this from the default 5000 if your computer has sufficent memory to invert square matrices with this dimension.
 ##'
 ##' @references
 ##'
@@ -91,7 +93,7 @@ evppi <- function(outputs,
                   verbose=TRUE,
                   ...)
 {
-    check_inputs(inputs)
+    inputs <- check_inputs(inputs)
     output_type <- check_outputs(outputs, inputs)
     check_poi(poi, inputs)
     opts <- list(...)
@@ -190,9 +192,15 @@ default_evppi_method <- function(poi){
     if (length(poi) <= 4) "gam" else "inla"
 }
 
-check_inputs <- function(inputs){
-    if (!is.matrix(inputs) && !is.data.frame(inputs))
-        stop("`inputs` should be a matrix or data frame")
+check_inputs <- function(inputs, iname=NULL){
+    if (is.vector(inputs) && is.numeric(inputs)) {
+        inputs <- data.frame(input = inputs)
+        names(inputs) <- iname
+    }
+    if (!is.matrix(inputs) && !is.data.frame(inputs)){ 
+        stop("`inputs` should be a numeric vector, matrix or data frame")
+    }
+    inputs 
 }
 
 check_outputs_matrix <- function(outputs, inputs, name){

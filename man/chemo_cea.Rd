@@ -6,7 +6,13 @@
 \alias{chemo_nb}
 \alias{chemo_pars}
 \title{Chemotherapy health economic model}
-\format{List}
+\format{
+List
+
+An object of class \code{matrix} (inherits from \code{array}) with 10000 rows and 2 columns.
+
+An object of class \code{data.frame} with 10000 rows and 23 columns.
+}
 \source{
 TODO
 }

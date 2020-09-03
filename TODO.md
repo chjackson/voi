@@ -17,6 +17,8 @@
 
 EVPPI
 
+* Allow a vector for inputs in evppi() and evsi()
+
 * Different regression methods and options for effects and costs
 
 * INLA: max.edge arg, check plots work
@@ -53,6 +55,10 @@ EVSI
 * 2-level Monte Carlo again
 
 * Output analysis material from Anna's EVSI package.
+
+* Handle variables whose names clash with R constants, gam() doesn't play nicely with these 
+c("letters","month.abb","month.name","pi")
+
 
 
 GENERAL

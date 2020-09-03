@@ -5,11 +5,11 @@ test_that("Basic inputs are of the right format",{
 
     nb <- "wrong"
     inputs <- data.frame(baseline=1:11, effect=1:11)
-    expect_error(evppi(nb, inputs, poi), "should be a matrix, data frame")
+    expect_error(evppi(nb, inputs, poi), "matrix, data frame or list")
 
     nb <- data.frame(treatment=1:10, control=1:10)
     inputs <- "wrong"
-    expect_error(evppi(nb, inputs, poi), "should be a matrix or data frame")
+    expect_error(evppi(nb, inputs, poi), "vector, matrix or data frame")
 
     nb <- data.frame(treatment=1:10, control=1:10)
     inputs <- data.frame(baseline=1:11, effect=1:11)

@@ -4,9 +4,22 @@
 \alias{chemo_costeff_fn}
 \title{Chemotherapy health economic model}
 \usage{
-chemo_costeff_fn(SE1, SE2, lambda.home.home, lambda.home.hosp,
-  lambda.home.rec, lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead,
-  c.home, c.hosp, c.dead, e.chemo, e.home, e.hosp)
+chemo_costeff_fn(
+  SE1,
+  SE2,
+  lambda.home.home,
+  lambda.home.hosp,
+  lambda.home.rec,
+  lambda.hosp.hosp,
+  lambda.hosp.rec,
+  lambda.hosp.dead,
+  c.home,
+  c.hosp,
+  c.dead,
+  e.chemo,
+  e.home,
+  e.hosp
+)
 }
 \arguments{
 \item{SE1}{TODO}
