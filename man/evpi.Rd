@@ -21,9 +21,7 @@ evpi(outputs, nsim = NULL)
 
 Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in this "cost-effectiveness analysis" format, therefore they may be supplied as the \code{outputs} argument.
 
-If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.
-
-The exact names and formats of all these arguments is up for discussion!}
+If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.}
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 }

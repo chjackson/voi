@@ -1,31 +1,31 @@
 
 ## Importance sampling method for calculating EVSI (Menzies)
 
-evsi_is <- function(outputs, inputs, output_type, poi, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
+evsi_is <- function(outputs, inputs, output_type, pars, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
     if (output_type=="nb"){
-        evsi_is_nb(nb=outputs, inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
+        evsi_is_nb(nb=outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                    likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
     }
     else if (output_type=="cea"){
         evsi_is_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                    inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
+                    inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                     likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
     }
 }
 
-evsi_is_nb <- function(nb, inputs, poi, datagen_fn, n, likelihood, npreg_method, verbose, ...){
-    nbfit <- prepost_evsi_is(nb, inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
+evsi_is_nb <- function(nb, inputs, pars, datagen_fn, n, likelihood, npreg_method, verbose, ...){
+    nbfit <- prepost_evsi_is(nb, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                              likelihood=likelihood, npreg_method=npreg_method,
                              verbose=verbose, ...)
     calc_evppi(nbfit)
 }
 
-evsi_is_cea <- function(costs, effects, wtp, inputs, poi, datagen_fn, n, likelihood, npreg_method, verbose, ...){ 
+evsi_is_cea <- function(costs, effects, wtp, inputs, pars, datagen_fn, n, likelihood, npreg_method, verbose, ...){ 
     nwtp <- length(wtp)
     res <- numeric(nwtp)
-    cfit <- prepost_evsi_is(costs, inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
+    cfit <- prepost_evsi_is(costs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                             likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
-    efit <- prepost_evsi_is(effects, inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
+    efit <- prepost_evsi_is(effects, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                             likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
     for (i in 1:nwtp){
         nbfit <- efit*wtp[i] - cfit
@@ -34,20 +34,20 @@ evsi_is_cea <- function(costs, effects, wtp, inputs, poi, datagen_fn, n, likelih
     res
 }
 
-prepost_evsi_is <- function(nb, inputs, poi, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
-    simdat <- generate_data(inputs, datagen_fn=datagen_fn, n=n, poi=poi)
+prepost_evsi_is <- function(nb, inputs, pars, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
+    simdat <- generate_data(inputs, datagen_fn=datagen_fn, n=n, pars=pars)
     ## nb or ce? 
     if (is.null(npreg_method))
-        npreg_method <- default_evppi_method(poi)
+        npreg_method <- default_evppi_method(pars)
     if (verbose) cat("Calculating EVPPI...\n")
-    y <- fitted_npreg(nb, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
+    y <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
 
     if (verbose) cat("Calculating EVSI...\n")
     nsam <- nrow(inputs)
     nout <- ncol(y) # TODO make sure 1D handled 
     prepost <- matrix(nrow=nsam, ncol=nout)
     for (i in 1:nsam){
-        ll <- likelihood(simdat[i,], inputs, poi=poi) # vector of length nsim 
+        ll <- likelihood(simdat[i,], inputs, pars=pars) # vector of length nsim 
         w <- ll/sum(ll)
         for (j in 1:nout) { 
             ## to vectorise would need nsam x nsam storage 
@@ -62,24 +62,24 @@ prepost_evsi_is <- function(nb, inputs, poi, datagen_fn, n=100, likelihood, npre
 }
 
 
-form_likelihood <- function(study, likelihood, inputs, datagen_fn, poi){
+form_likelihood <- function(study, likelihood, inputs, datagen_fn, pars){
     if (!is.null(study))
         likelihood <- get(sprintf("likelihood_%s", study))
     else {
         if (is.null(likelihood)) stop("`likelihood` should be supplied for method=\"is\"")
         if (!is.function(likelihood)) stop("`likelihood` should be a function")
-        formals(likelihood) <- c(formals(likelihood), list(poi=NULL))
-        check_likelihood(likelihood, inputs, datagen_fn, poi)
+        formals(likelihood) <- c(formals(likelihood), list(pars=NULL))
+        check_likelihood(likelihood, inputs, datagen_fn, pars)
     }
     likelihood
 }
 
-check_likelihood <- function(likelihood, inputs, datagen_fn, poi){
+check_likelihood <- function(likelihood, inputs, datagen_fn, pars){
     ## check that when likelihood is called with first two arguments data frames with
     ## 1. names matching output of datagen_fn
     ## 2. names matching inputs 
     ## returns output: vector length equal to nrow(inputs)
-    data_sim <- datagen_fn(inputs, poi=poi)
+    data_sim <- datagen_fn(inputs, pars=pars)
     ret <- likelihood(data_sim, inputs)
     if (!is.vector(ret) | !is.numeric(ret))
         stop("likelihood function should return a numeric vector")

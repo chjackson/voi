@@ -18,37 +18,40 @@
 ##'
 ##' If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.
 ##'
-##' The exact names and formats of all these arguments is up for discussion! 
-##'
 ##' @param inputs Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.
 ##'
-##' @param poi A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be 
+##' @param pars A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be 
 ##'
-##' @param method Character string indicating the calculation method.   Only methods currently implemented are based on nonparametric regression
+##' @param method Character string indicating the calculation method.   The only methods currently implemented are based on nonparametric regression:
 ##'
 ##' \code{"gam"} for a generalized additive model implemented in the gam() function from the mgcv() package.
 ##' 
-##' \code{"gp"} for a Gaussian process regression TODO MORE 
+##' \code{"gp"} for a Gaussian process regression, as described by Strong et al. (2014) and implemented in the SAVI package (\url{http://savi.shef.ac.uk/SAVI/}).
 ##'
-##' \code{"inla"} for an INLA/SPDE Gaussian process regression  TODO MORE 
+##' \code{"inla"} for an INLA/SPDE Gaussian process regression method, from Heath et al. (2016). 
 ##'
-##' \code{"earth"} for a multivariate adaptive regression spline with the \pkg{earth} package  TODO MORE 
+##' \code{"earth"} for a multivariate adaptive regression spline with the \pkg{earth} package (Milborrow, 2019). 
 ##'
-##' TODO earth, single par methods
 ##'
 ##' @param nsim Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.
 ##'
 ##' @param verbose If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method. 
 ##'
-##' @param ... Other arguments to control specific methods  
+##' @param ... Other arguments to control specific methods.
 ##'
-##' \code{gam_formula}: a character string giving the right hand side of the formula supplied to the gam() function, when \code{method="gam"}. By default, this is a tensor product of all the parameters of interest, e.g. if \code{poi = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis.   [ This is the default in SAVI ]
+##' For \code{method="gam"}:
+##'
+##' \code{gam_formula}: a character string giving the right hand side of the formula supplied to the \code{gam()} function. By default, this is a tensor product of all the parameters of interest, e.g. if \code{pars = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis, which is currently the default in the SAVI package (\url{http://savi.shef.ac.uk/SAVI/}).
+##'
+##' For \code{method="gp"}:
 ##'
 ##' \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters in the Gaussian process regression method.  By default, this is the minimum of the following three quantities: 30 times the number of parameters of interest, 250, and the number of simulations being used for calculating EVPPI.
 ##'
-##' Options giverning \code{method="inla"} as described in detail in Baio, Berardi and Heath (2017):
+##' \code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only increase this from the default 5000 if your computer has sufficent memory to invert square matrices with this dimension.
 ##'
-##' \code{int.ord} (integer) maximum order of interaction terms to include in the regression predictor, e.g. if \code{int.ord=k} then all k-way interactions are used.   TODO handle effects and costs separately
+##' For \code{method="inla"}, as described in detail in Baio, Berardi and Heath (2017):
+##'
+##' \code{int.ord} (integer) maximum order of interaction terms to include in the regression predictor, e.g. if \code{int.ord=k} then all k-way interactions are used.  TODO handle effects and costs separately
 ##' 
 #'  \code{cutoff} (default 0.3) controls the
 #' density of the points inside the mesh in the spatial part of the mode. 
@@ -72,10 +75,9 @@
 #'
 #' \code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh. 
 #'
-#' TODO \code{max.edge}
+#' \code{max.edge}  Largest allowed triangle edge length when constructing the mesh, passed to \code{\link[INLA]{inla.mesh.2d}}. 
 #'
-#' \code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only increase this from the default 5000 if your computer has sufficent memory to invert square matrices with this dimension.
-##'
+#'
 ##' @references
 ##'
 ##' Strong, M., Oakley, J. E., & Brennan, A. (2014). Estimating multiparameter partial expected value of perfect information from a probabilistic sensitivity analysis sample: a nonparametric regression approach. Medical Decision Making, 34(3), 311-326.
@@ -83,11 +85,14 @@
 ##' Heath, A., Manolopoulou, I., & Baio, G. (2016). Estimating the expected value of partial perfect information in health economic evaluations using integrated nested Laplace approximation. Statistics in medicine, 35(23), 4264-4280.
 ##'
 ##' Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
+##'
+##' Milborrow, S. (2019) earth: Multivariate Adaptive Regression Splines. R package version 5.1.2. Derived from mda:mars by Trevor Hastie and Rob Tibshirani. Uses Alan Miller's Fortran utilities with Thomas Lumley's leaps wrapper. https://CRAN.R-project.org/package=earth. 
+##'
 ##' 
 ##' @export
 evppi <- function(outputs,
                   inputs,
-                  poi=NULL,
+                  pars=NULL,
                   method=NULL,
                   nsim=NULL,
                   verbose=TRUE,
@@ -95,10 +100,10 @@ evppi <- function(outputs,
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     output_type <- check_outputs(outputs, inputs)
-    poi <- check_poi(poi, inputs)
+    pars <- check_pars(pars, inputs)
     opts <- list(...)
     if (is.null(method))
-        method <- default_evppi_method(poi)
+        method <- default_evppi_method(pars)
 
     if (is.null(nsim)) nsim <- nrow(inputs)
     outputs <- subset_outputs(outputs, output_type, nsim)
@@ -106,7 +111,7 @@ evppi <- function(outputs,
     
     if (method %in% npreg_methods) {
         evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
-                    poi=poi, method=method, verbose=verbose, ...)
+                    pars=pars, method=method, verbose=verbose, ...)
     } else stop("Other methods not implemented yet")
 }
 
@@ -122,30 +127,30 @@ subset_outputs <- function(outputs, output_type, nsim){
 
 npreg_methods <- c("gam", "gp", "inla", "earth")
 
-evppi_npreg <- function(outputs, inputs, output_type, poi, method=NULL, verbose, ...){
+evppi_npreg <- function(outputs, inputs, output_type, pars, method=NULL, verbose, ...){
     if (output_type == "nb")
-        evppi_npreg_nb(nb=outputs, inputs=inputs, poi=poi, method=method,
+        evppi_npreg_nb(nb=outputs, inputs=inputs, pars=pars, method=method,
                        verbose=verbose, ...)
     else if (output_type == "cea")
         evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                        inputs=inputs, poi=poi, method=method,
+                        inputs=inputs, pars=pars, method=method,
                         verbose=verbose, ...)
 }
 
-evppi_npreg_nb <- function(nb, inputs, poi, method, verbose, ...){
+evppi_npreg_nb <- function(nb, inputs, pars, method, verbose, ...){
     if (verbose) message("Fitting nonparametric regression") 
-    fit <- fitted_npreg(nb, inputs=inputs, poi=poi, method=method,
+    fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=method,
                         verbose=verbose, ...)
     calc_evppi(fit)
 }
 
-evppi_npreg_cea <- function(costs, effects, wtp, inputs, poi, method, verbose, ...){
+evppi_npreg_cea <- function(costs, effects, wtp, inputs, pars, method, verbose, ...){
     nwtp <- length(wtp)
     res <- numeric(nwtp)
     if (verbose) message("Fitting nonparametric regression for costs") 
-    cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=method, verbose=verbose, ...)
+    cfit <- fitted_npreg(costs, inputs=inputs, pars=pars, method=method, verbose=verbose, ...)
     if (verbose) message("Fitting nonparametric regression for effects") 
-    efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=method, verbose=verbose, ...)
+    efit <- fitted_npreg(effects, inputs=inputs, pars=pars, method=method, verbose=verbose, ...)
     for (i in 1:nwtp){
         inbfit <- efit*wtp[i] - cfit
         res[i] <- calc_evppi(inbfit)
@@ -153,7 +158,7 @@ evppi_npreg_cea <- function(costs, effects, wtp, inputs, poi, method, verbose, .
     res
 }
 
-fitted_npreg <- function(nb, inputs, poi, method, verbose, ...){
+fitted_npreg <- function(nb, inputs, pars, method, verbose, ...){
     nopt <- ncol(nb)
     nsam <- nrow(nb)
     ## Transforming to incremental net benefit allows us to do one fewer regression
@@ -162,23 +167,23 @@ fitted_npreg <- function(nb, inputs, poi, method, verbose, ...){
     fitted <- matrix(0, nrow=nsam, ncol=nopt)
     for (i in 1:(nopt-1)){
         if (verbose) message(sprintf("Decision option %s",i+1)) 
-        fitted[,i+1] <- fitted_npreg_call(inb[,i], inputs, poi, method, verbose=verbose, ...) 
+        fitted[,i+1] <- fitted_npreg_call(inb[,i], inputs, pars, method, verbose=verbose, ...) 
     }
     fitted
 }
 
-fitted_npreg_call <- function(y, inputs, poi, method, verbose, ...){
+fitted_npreg_call <- function(y, inputs, pars, method, verbose, ...){
     if (method=="gam") {
-        fitted <- fitted_gam(y, inputs, poi, ...)
+        fitted <- fitted_gam(y, inputs, pars, ...)
     }
     if (method=="gp") {
-        fitted <- fitted_gp(y, inputs, poi, ...)
+        fitted <- fitted_gp(y, inputs, pars, ...)
     } 
     if (method=="inla") {
-        fitted <- fitted_inla(y, inputs, poi, verbose, ...)
+        fitted <- fitted_inla(y, inputs, pars, verbose, ...)
     } 
     if (method=="earth") {
-        fitted <- fitted_earth(y, inputs, poi, ...)
+        fitted <- fitted_earth(y, inputs, pars, ...)
     } 
     fitted
 }
@@ -188,8 +193,8 @@ calc_evppi <- function(fit) {
     mean(apply(fit, 1, max)) - max(colMeans(fit))
 }
 
-default_evppi_method <- function(poi){
-    if (length(poi) <= 4) "gam" else "inla"
+default_evppi_method <- function(pars){
+    if (length(pars) <= 4) "gam" else "inla"
 }
 
 check_inputs <- function(inputs, iname=NULL){
@@ -235,19 +240,19 @@ check_outputs <- function(outputs, inputs=NULL){
 }
 
 
-check_poi <- function(poi, inputs){
-    if (is.null(poi)){
+check_pars <- function(pars, inputs){
+    if (is.null(pars)){
         if (ncol(inputs)==1)
-            poi <- colnames(inputs)
-        else stop("`poi` should be specified if there are two or more parameters in `inputs`")
+            pars <- colnames(inputs)
+        else stop("`pars` should be specified if there are two or more parameters in `inputs`")
     }
-    if (!is.character(poi))
-        stop("`poi` should be a character vector")
-    badpoi <- poi[!(poi %in% colnames(inputs))]
-    if (length(badpoi)>0){
+    if (!is.character(pars))
+        stop("`pars` should be a character vector")
+    badpars <- pars[!(pars %in% colnames(inputs))]
+    if (length(badpars)>0){
         stop(sprintf("parameters of interest `%s` not found in columns of `inputs`",
-                     paste(badpoi,collapse=",")))
+                     paste(badpars,collapse=",")))
     }
-    poi
+    pars
 }
 

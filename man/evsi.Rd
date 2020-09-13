@@ -9,7 +9,7 @@ evsi(
   inputs,
   study = NULL,
   datagen_fn = NULL,
-  poi = NULL,
+  pars = NULL,
   n = 100,
   method = NULL,
   likelihood = NULL,
@@ -38,9 +38,7 @@ evsi(
 
 Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in this "cost-effectiveness analysis" format, therefore they may be supplied as the \code{outputs} argument.
 
-If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.
-
-The exact names and formats of all these arguments is up for discussion!}
+If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.}
 
 \item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
@@ -64,15 +62,13 @@ Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 
 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
 
-DEVELOPERS - EXAMPLES OF THIS CURRENTLY in \code{tests/tests_slow}}
+Examples of this are currently in the \code{tests/tests_slow} package directory.}
 
-\item{poi}{Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
+\item{pars}{Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
 
-TODO NOT A NICE NAME. stands for "parameters of interest". that's obscure. change to "params" as or "parameters", same in evppi(). 
+For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
 
-For example, if \code{study = "trial_binary"} is specified, then \code{poi} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
-
-The \code{poi} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
+The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
@@ -86,7 +82,7 @@ All the nonparametric regression methods supported for \code{\link{evppi}}, that
 
 Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}. 
 
-TODO Heath and Jalal methods}
+The Heath et al. and Jalal et al. methods are under development.}
 
 \item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
 
@@ -96,19 +92,19 @@ TODO Heath and Jalal methods}
 
 The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.
 
-POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER.  Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} but need a vignette eventually. 
+Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} in the package directory. 
 
-Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.  CLARIFY IN EXAMPLE.  [ eventually we'll want some built-in common examples where people don't have to specify either datagen_fn or likelihood ]}
+Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.}
 
-\item{analysis_model}{Function which fits a Bayesian model to the generated data. TODO work out format, output, JAGS dependencies, etc.  Required for \code{method="mm"} (and Jalal method if n0 not given??)}
+\item{analysis_model}{Function which fits a Bayesian model to the generated data.   Under development (need to decide format, output, JAGS dependencies, etc.). Required for \code{method="mm"} (and Jalal method if n0 not given)}
 
-\item{analysis_options}{List of arguments required by \code{analysis_model}.  TODO work out examples etc..}
+\item{analysis_options}{List of arguments required by \code{analysis_model}.  Under development - for \code{method="mm"} and Jalal method.}
 
-\item{decision_model}{Function which evaluates the decision-analytic model, given parameter values.  TODO sort out format for nb, c, e output.   TODO should all function arguments have \code{_fn} suffix, or not? be consistent here}
+\item{decision_model}{Function which evaluates the decision-analytic model, given parameter values.  Under development - for \code{method="mm"} and Jalal method.  Need to decide the required format for nb, c, e output.}
 
-\item{Q}{Number of quantiles to use in \code{method="mm"}.}
+\item{Q}{Number of quantiles to use in \code{method="mm"} (under development).}
 
-\item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES}
+\item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.  This is passed to \code{\link{evppi}} as the \code{method} argument.}
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 

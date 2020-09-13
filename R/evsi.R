@@ -25,15 +25,13 @@
 ##'
 ##' 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
 ##'
-##' DEVELOPERS - EXAMPLES OF THIS CURRENTLY in \code{tests/tests_slow}
+##' Examples of this are currently in the \code{tests/tests_slow} package directory.
 ##'
-##' @param poi Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
+##' @param pars Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
 ##'
-##' TODO NOT A NICE NAME. stands for "parameters of interest". that's obscure. change to "params" as or "parameters", same in evppi(). 
+##' For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
 ##' 
-##' For example, if \code{study = "trial_binary"} is specified, then \code{poi} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
-##' 
-##' The \code{poi} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.
+##' The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.
 ##'
 ##' @param n Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument. 
 ##'
@@ -47,7 +45,7 @@
 ##'
 ##' Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}. 
 ##' 
-##' TODO Heath and Jalal methods
+##' The Heath et al. and Jalal et al. methods are under development.
 ##'
 ##' @param likelihood Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
 ##'
@@ -57,19 +55,19 @@
 ##'
 ##' The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.
 ##'
-##' POINT TO AN EXAMPLE WHICH WILL MAKE ALL THIS CLEARER.  Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} but need a vignette eventually. 
+##' Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} in the package directory. 
 ##'
-##' Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.  CLARIFY IN EXAMPLE.  [ eventually we'll want some built-in common examples where people don't have to specify either datagen_fn or likelihood ]
+##' Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.
 ##'
-##' @param analysis_model Function which fits a Bayesian model to the generated data. TODO work out format, output, JAGS dependencies, etc.  Required for \code{method="mm"} (and Jalal method if n0 not given??)
+##' @param analysis_model Function which fits a Bayesian model to the generated data.   Under development (need to decide format, output, JAGS dependencies, etc.). Required for \code{method="mm"} (and Jalal method if n0 not given)
 ##'
-##' @param analysis_options List of arguments required by \code{analysis_model}.  TODO work out examples etc..
+##' @param analysis_options List of arguments required by \code{analysis_model}.  Under development - for \code{method="mm"} and Jalal method. 
 ##'
-##' @param decision_model Function which evaluates the decision-analytic model, given parameter values.  TODO sort out format for nb, c, e output.   TODO should all function arguments have \code{_fn} suffix, or not? be consistent here
+##' @param decision_model Function which evaluates the decision-analytic model, given parameter values.  Under development - for \code{method="mm"} and Jalal method.  Need to decide the required format for nb, c, e output.
 ##'
-##' @param Q Number of quantiles to use in \code{method="mm"}. 
+##' @param Q Number of quantiles to use in \code{method="mm"} (under development). 
 ##'
-##' @param npreg_method Method to use to calculate the EVPPI, for those methods that require it.    STATE SUPPORTED VALUES
+##' @param npreg_method Method to use to calculate the EVPPI, for those methods that require it.  This is passed to \code{\link{evppi}} as the \code{method} argument. 
 ##'
 ##' @param nsim Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used. 
 ##'
@@ -91,7 +89,7 @@ evsi <- function(outputs,
                  inputs,
                  study=NULL,
                  datagen_fn=NULL,
-                 poi=NULL,
+                 pars=NULL,
                  n=100,
                  method=NULL, # TODO speficy gam here or npreg? 
                  likelihood=NULL,
@@ -124,16 +122,16 @@ evsi <- function(outputs,
     
     if (method %in% npreg_methods) { 
         evsi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
-                   datagen_fn=datagen_fn, poi=poi, n=n, 
+                   datagen_fn=datagen_fn, pars=pars, n=n, 
                    method=method, verbose=verbose, ...)
     } else if (method=="is") {
-        likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, poi)
+        likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, pars)
         evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
-                poi=poi, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
+                pars=pars, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
     } else if (method=="mm") {
         evsi_mm(outputs=outputs, inputs=inputs, output_type=output_type,
-                poi=poi, datagen_fn=datagen_fn, n=n, Q=Q, 
+                pars=pars, datagen_fn=datagen_fn, n=n, Q=Q, 
                 analysis_model=analysis_model,
                 analysis_options=analysis_options,
                 decision_model=decision_model, 
@@ -143,18 +141,18 @@ evsi <- function(outputs,
     else stop("Other methods not implemented yet")
 }
 
-evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, poi, n, method=NULL, verbose, ...){
-    Tdata <- generate_data(inputs, datagen_fn, n, poi)
+evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, pars, n, method=NULL, verbose, ...){
+    Tdata <- generate_data(inputs, datagen_fn, n, pars)
     if (output_type == "nb")
-        evppi_npreg_nb(nb=outputs, inputs=Tdata, poi=names(Tdata), method=method, verbose=verbose, ...)
+        evppi_npreg_nb(nb=outputs, inputs=Tdata, pars=names(Tdata), method=method, verbose=verbose, ...)
     else if (output_type == "cea")
         evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                        inputs=Tdata, poi=names(Tdata), method=method, verbose=verbose, ...)
+                        inputs=Tdata, pars=names(Tdata), method=method, verbose=verbose, ...)
 }
 
-generate_data <- function(inputs, datagen_fn, n=150, poi){
-    check_datagen_fn(datagen_fn, inputs, poi)
-    datagen_fn(inputs=inputs, n=n, poi=poi)
+generate_data <- function(inputs, datagen_fn, n=150, pars){
+    check_datagen_fn(datagen_fn, inputs, pars)
+    datagen_fn(inputs=inputs, n=n, pars=pars)
 }
 
 default_evsi_method <- function(){
@@ -169,25 +167,25 @@ form_datagen_fn <- function(study, datagen_fn, inputs){
     } else {
         if (is.null(datagen_fn)) stop("`datagen_fn` should be supplied if `study` is not supplied")
         if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
-        formals(datagen_fn) <- c(formals(datagen_fn), list(poi=NULL))
+        formals(datagen_fn) <- c(formals(datagen_fn), list(pars=NULL))
         check_datagen_fn(datagen_fn, inputs)
     }
     datagen_fn
 }
 
-check_datagen_fn <- function(datagen_fn, inputs, poi=NULL){
+check_datagen_fn <- function(datagen_fn, inputs, pars=NULL){
     ## If there's more than one argument, check that those args have
     ## defaults (e.g. sample sizes). Give error for now if not, but
     ## consider relaxing if this becomes a problem
     extra_args <- formals(datagen_fn)[-1]
-    extra_args <- extra_args[names(extra_args) != "poi"]
+    extra_args <- extra_args[names(extra_args) != "pars"]
     if (length(extra_args)>0){
         no_defaults <- sapply(extra_args, is.symbol)
         if (any(no_defaults)){
             stop(sprintf("Arguments \"%s\" of `datagen_fn` do not have default values", paste(names(no_defaults),collapse=",")))
         }
     }
-    ret <- datagen_fn(inputs, poi=poi)
+    ret <- datagen_fn(inputs, pars=pars)
     if (!is.data.frame(ret)) stop("`datagen_fn` should return a data frame")
     parnames <- names(ret)[names(ret) %in% names(inputs)]
     if (length(parnames)>0) {

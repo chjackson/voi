@@ -1,7 +1,7 @@
 evsi_mm <- function(outputs, 
                     inputs,
                     output_type,
-                    poi,
+                    pars,
                     datagen_fn,
                     analysis_model,
                     analysis_options,
@@ -12,7 +12,7 @@ evsi_mm <- function(outputs,
                     verbose, ...){
     ## might be neater to have just one function that does both nb and cea formats 
     if (output_type=="nb"){
-        evsi_mm_nb(nb=outputs, inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
+        evsi_mm_nb(nb=outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                    Q=Q, 
                    analysis_model=analysis_model,
                    analysis_options=analysis_options,
@@ -22,7 +22,7 @@ evsi_mm <- function(outputs,
     }
     else if (output_type=="cea"){
         evsi_mm_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                    inputs=inputs, poi=poi, datagen_fn=datagen_fn, n=n,
+                    inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                     Q=Q, 
                     analysis_model=analysis_model,
                     analysis_options=analysis_options,
@@ -32,7 +32,7 @@ evsi_mm <- function(outputs,
     }
 }
 
-evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q, 
+evsi_mm_nb <- function(nb, inputs, pars, datagen_fn, n, Q=Q, 
                        analysis_model,
                        analysis_options,
                        decision_model, 
@@ -43,7 +43,7 @@ evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q,
 
     ## Get quantiles of input parameters from PSA sample 
     ## TODO multiple sample sizes argument to this 
-    quants <- mm_gen_quantiles(poi, inputs, Q)
+    quants <- mm_gen_quantiles(pars, inputs, Q)
 
     ## Instead of a monolithic "mm.post.var" function
     ## break it down into logical steps
@@ -69,11 +69,11 @@ evsi_mm_nb <- function(nb, inputs, poi, datagen_fn, n, Q=Q,
 
     ## Calculate EVPPI
     ## version that works on net benefit 
-    evppi_fit <- fitted_npreg(nb, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
+    evppi_fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
 
     ## version that splits costs, effects and WTP 
-#    evppi_cfit <- fitted_npreg(costs, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
-#    evppi_efit <- fitted_npreg(effects, inputs=inputs, poi=poi, method=npreg_method, verbose=verbose, ...)
+#    evppi_cfit <- fitted_npreg(costs, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
+#    evppi_efit <- fitted_npreg(effects, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
 
     ## Now rewrite evsi.calc.   Instead of accepting a monolithic mm.var object,
     ## break that object into logical components that might come from inputs to evsi_mm_nb: 
@@ -121,7 +121,7 @@ analysis_model_jags <- function(simdata, jags_options){
 ## Let's see how it works out
 ## Or just have one function that does both if it turns out tidier. 
 
-evsi_mm_cea <- function(costs, effects, wtp, inputs, poi, datagen_fn, n, Q=Q, 
+evsi_mm_cea <- function(costs, effects, wtp, inputs, pars, datagen_fn, n, Q=Q, 
                     analysis_model,
                     decision_model, 
                     npreg_method,
@@ -129,11 +129,11 @@ evsi_mm_cea <- function(costs, effects, wtp, inputs, poi, datagen_fn, n, Q=Q,
 }
 
 
-mm_gen_quantiles <- function(poi, inputs, Q, N.size = NULL){
-    quantiles.parameters <- array(NA, dim = c(Q, length(poi)))
-    colnames(quantiles.parameters) <- poi
-    for(i in 1:length(poi)){
-        quantiles.parameters[,i] <- sample(quantile(inputs[,poi[i]],
+mm_gen_quantiles <- function(pars, inputs, Q, N.size = NULL){
+    quantiles.parameters <- array(NA, dim = c(Q, length(pars)))
+    colnames(quantiles.parameters) <- pars
+    for(i in 1:length(pars)){
+        quantiles.parameters[,i] <- sample(quantile(inputs[,pars[i]],
                                                     probs = 1:Q / (Q + 1), type = 4))
     }
 

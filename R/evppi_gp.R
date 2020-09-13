@@ -2,9 +2,9 @@
 ## Code from SAVI 
 ## [Aren't there also packaged GP regression methods ?  gaupro, GPfit? are they more efficient?]
 
-fitted_gp <- function(y, inputs, poi, ...){
+fitted_gp <- function(y, inputs, pars, ...){
     args <- list(...)
-    gpFunc(NB=y, sets=poi, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL)$fitted
+    gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL)$fitted
 }
 
 

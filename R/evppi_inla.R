@@ -13,7 +13,7 @@ check_packages <- function(){
 
 ## TODO int.ord - allow different ones for costs and effects 
 
-fitted_inla <- function(y, inputs, poi,
+fitted_inla <- function(y, inputs, pars,
                         verbose = TRUE,
                         cutoff = 0.3,
                         convex.inner = -0.4,
@@ -28,13 +28,13 @@ fitted_inla <- function(y, inputs, poi,
     if (!is.element("INLA", (.packages()))) {
         attachNamespace("INLA")
     }
-    if (length(poi)<2){
+    if (length(pars)<2){
         stop("The INLA method can only be used with 2 or more parameters")
     }
     if (verbose) {
         message("Finding projections")
     }
-    projections <- make.proj(parameter = poi, inputs = inputs, x = y)
+    projections <- make.proj(parameter = pars, inputs = inputs, x = y)
     data <- projections$data
     if (verbose) {
         message("Determining Mesh")
@@ -45,7 +45,7 @@ fitted_inla <- function(y, inputs, poi,
     if (verbose) {
         message("Calculating fitted values for the GP regression using INLA/SPDE")
     }
-    fit <- fit.inla(parameter = poi, inputs = inputs,
+    fit <- fit.inla(parameter = pars, inputs = inputs,
                     x = y, mesh = mesh$mesh, data.scale = data, int.ord = int.ord,
                     convex.inner = convex.inner, convex.outer = convex.outer,
                     cutoff = cutoff, max.edge = max.edge, h.value = h.value, family=family)

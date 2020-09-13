@@ -1,30 +1,35 @@
-## Built-in study designs 
+## BUILT-IN STUDY DESIGNS
 
-datagen_binary <- function(inputs, n=100, poi){
+## Single-arm study of a binary outcome
+
+datagen_binary <- function(inputs, n=100, pars){
     nsim <- nrow(inputs)
     data.frame(
-        X1 = rbinom(nsim, size=n, prob=inputs[,poi[1]])
+        X1 = rbinom(nsim, size=n, prob=inputs[,pars[1]])
     )
 }
 
-likelihood_binary <- function(Y, inputs, n=100, poi){
+likelihood_binary <- function(Y, inputs, n=100, pars){
     loglik <-
-        dbinom(Y[,"X1"], size=n, inputs[,poi[1]], log=TRUE) 
+        dbinom(Y[,"X1"], size=n, inputs[,pars[1]], log=TRUE) 
     exp(loglik)
 }
 
-datagen_trial_binary <- function(inputs, n=100, poi){
+
+## Two-arm trial of a binary outcome
+
+datagen_trial_binary <- function(inputs, n=100, pars){
     nsim <- nrow(inputs)
     data.frame(
-        X1 = rbinom(nsim, size=n, prob=inputs[,poi[1]]),
-        X2 = rbinom(nsim, size=n, prob=inputs[,poi[2]])
+        X1 = rbinom(nsim, size=n, prob=inputs[,pars[1]]),
+        X2 = rbinom(nsim, size=n, prob=inputs[,pars[2]])
     )
 }
 
-likelihood_trial_binary <- function(Y, inputs, n=100, poi){
+likelihood_trial_binary <- function(Y, inputs, n=100, pars){
     loglik <-
-        dbinom(Y[,"X1"], size=n, inputs[,poi[1]], log=TRUE) + 
-        dbinom(Y[,"X2"], size=n, inputs[,poi[2]], log=TRUE) 
+        dbinom(Y[,"X1"], size=n, inputs[,pars[1]], log=TRUE) + 
+        dbinom(Y[,"X2"], size=n, inputs[,pars[2]], log=TRUE) 
     exp(loglik)
 }
 

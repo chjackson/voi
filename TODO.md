@@ -8,7 +8,7 @@
 
 * Nonparametric regression and importance sampling methods added for EVSI, and rough tests written
 
-* Study design for EVSI can be specified as an R function to simulate data from it, or as one of the built-in standard designs - currently only have 2 arm trial of a binary outcome. 
+* Study design for EVSI can be specified as an R function to simulate data from it, or as one of the built-in standard designs - currently only have 1-arm or 2 arm trials of a binary outcome. 
 
 * Chemotherapy model code added to facilitate examples. Note exact format of this code may change as we implement different methods that need access to the decision model function. 
 

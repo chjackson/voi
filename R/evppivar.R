@@ -18,7 +18,7 @@
 ##' @export
 evppivar <- function(outputs,
                   inputs,
-                  poi=NULL,
+                  pars=NULL,
                   method=NULL,
                   nsim=NULL,
                   verbose=TRUE,
@@ -26,10 +26,10 @@ evppivar <- function(outputs,
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     check_outputs_vector(outputs, inputs)
-    poi <- check_poi(poi, inputs)
+    pars <- check_pars(pars, inputs)
     opts <- list(...)
     if (is.null(method))
-        method <- default_evppi_method(poi)
+        method <- default_evppi_method(pars)
 
     if (is.null(nsim)) nsim <- nrow(inputs)
     outputs <- outputs[1:nsim]
@@ -37,7 +37,7 @@ evppivar <- function(outputs,
     
     if (method %in% npreg_methods) {
         evppivar_npreg(outputs=outputs, inputs=inputs, 
-                    poi=poi, method=method, verbose=verbose, ...)
+                    pars=pars, method=method, verbose=verbose, ...)
     } else stop("Other methods not implemented yet")
 }
 
@@ -48,7 +48,7 @@ check_outputs_vector <- function(outputs, inputs){
                      length(outputs), nrow(inputs)))
 }
 
-evppivar_npreg <- function(outputs, inputs, poi, method, verbose, ...){
-    fitted <- fitted_npreg_call(outputs, inputs, poi, method, verbose=verbose, ...)
+evppivar_npreg <- function(outputs, inputs, pars, method, verbose, ...){
+    fitted <- fitted_npreg_call(outputs, inputs, pars, method, verbose=verbose, ...)
     var(fitted)
 } 

@@ -7,7 +7,7 @@
 evppi(
   outputs,
   inputs,
-  poi = NULL,
+  pars = NULL,
   method = NULL,
   nsim = NULL,
   verbose = TRUE,
@@ -29,39 +29,41 @@ evppi(
 
 Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in this "cost-effectiveness analysis" format, therefore they may be supplied as the \code{outputs} argument.
 
-If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.
-
-The exact names and formats of all these arguments is up for discussion!}
+If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.}
 
 \item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
-\item{poi}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be}
+\item{pars}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be}
 
-\item{method}{Character string indicating the calculation method.   Only methods currently implemented are based on nonparametric regression
+\item{method}{Character string indicating the calculation method.   The only methods currently implemented are based on nonparametric regression:
 
 \code{"gam"} for a generalized additive model implemented in the gam() function from the mgcv() package.
 
-\code{"gp"} for a Gaussian process regression TODO MORE 
+\code{"gp"} for a Gaussian process regression, as described by Strong et al. (2014) and implemented in the SAVI package (\url{http://savi.shef.ac.uk/SAVI/}).
 
-\code{"inla"} for an INLA/SPDE Gaussian process regression  TODO MORE 
+\code{"inla"} for an INLA/SPDE Gaussian process regression method, from Heath et al. (2016). 
 
-\code{"earth"} for a multivariate adaptive regression spline with the \pkg{earth} package  TODO MORE 
-
-TODO earth, single par methods}
+\code{"earth"} for a multivariate adaptive regression spline with the \pkg{earth} package (Milborrow, 2019).}
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 
 \item{verbose}{If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method.}
 
-\item{...}{Other arguments to control specific methods
+\item{...}{Other arguments to control specific methods.
 
-\code{gam_formula}: a character string giving the right hand side of the formula supplied to the gam() function, when \code{method="gam"}. By default, this is a tensor product of all the parameters of interest, e.g. if \code{poi = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis.   [ This is the default in SAVI ]
+For \code{method="gam"}:
+
+\code{gam_formula}: a character string giving the right hand side of the formula supplied to the \code{gam()} function. By default, this is a tensor product of all the parameters of interest, e.g. if \code{pars = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis, which is currently the default in the SAVI package (\url{http://savi.shef.ac.uk/SAVI/}).
+
+For \code{method="gp"}:
 
 \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters in the Gaussian process regression method.  By default, this is the minimum of the following three quantities: 30 times the number of parameters of interest, 250, and the number of simulations being used for calculating EVPPI.
 
-Options giverning \code{method="inla"} as described in detail in Baio, Berardi and Heath (2017):
+\code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only increase this from the default 5000 if your computer has sufficent memory to invert square matrices with this dimension.
 
-\code{int.ord} (integer) maximum order of interaction terms to include in the regression predictor, e.g. if \code{int.ord=k} then all k-way interactions are used.   TODO handle effects and costs separately
+For \code{method="inla"}, as described in detail in Baio, Berardi and Heath (2017):
+
+\code{int.ord} (integer) maximum order of interaction terms to include in the regression predictor, e.g. if \code{int.ord=k} then all k-way interactions are used.  TODO handle effects and costs separately
 
  \code{cutoff} (default 0.3) controls the
 density of the points inside the mesh in the spatial part of the mode. 
@@ -85,9 +87,7 @@ estimation of the hyperparameters.
 
 \code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh. 
 
-TODO \code{max.edge}
-
-\code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only increase this from the default 5000 if your computer has sufficent memory to invert square matrices with this dimension.}
+\code{max.edge}  Largest allowed triangle edge length when constructing the mesh, passed to \code{\link[INLA]{inla.mesh.2d}}.}
 }
 \description{
 Calculate the expected value of partial perfect information from a decision model
@@ -98,4 +98,6 @@ Strong, M., Oakley, J. E., & Brennan, A. (2014). Estimating multiparameter parti
 Heath, A., Manolopoulou, I., & Baio, G. (2016). Estimating the expected value of partial perfect information in health economic evaluations using integrated nested Laplace approximation. Statistics in medicine, 35(23), 4264-4280.
 
 Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
+
+Milborrow, S. (2019) earth: Multivariate Adaptive Regression Splines. R package version 5.1.2. Derived from mda:mars by Trevor Hastie and Rob Tibshirani. Uses Alan Miller's Fortran utilities with Thomas Lumley's leaps wrapper. https://CRAN.R-project.org/package=earth.
 }
