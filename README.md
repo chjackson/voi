@@ -19,5 +19,5 @@ install_github("chjackson/voi")
  ```
 
   <!-- badges: start -->
-  [![Travis build status](https://travis-ci.org/chjackson/voi.svg?branch=master)](https://travis-ci.org/chjackson/voi)
+  [![Travis build status](https://travis-ci.com/chjackson/voi.svg?branch=master)](https://travis-ci.com/chjackson/voi)
   <!-- badges: end -->

@@ -19,7 +19,7 @@ EVPPI
 
 * Different regression methods and options for effects and costs
 
-* INLA: max.edge arg, check plots work
+* INLA: check plots work
 
 * Test earth gam method more, compare against other methods to suggest advantages, while developing book material. 
 
