@@ -26,21 +26,36 @@ evsi(
 \arguments{
 \item{outputs}{This could take one of two forms
 
-"net benefit" form: a matrix or data frame of samples from the uncertainty distribution of the expected net benefit.  The number of rows should equal the number of samples, and the number of columns should equal the number of decision options.
+  "net benefit" form: a matrix or data frame of samples from the uncertainty
+  distribution of the expected net benefit.  The number of rows should equal
+  the number of samples, and the number of columns should equal the number
+  of decision options.
 
-"cost-effectiveness analysis" form: a list with the following named components:
+  "cost-effectiveness analysis" form: a list with the following named
+  components:
 
-\code{"c"}: a matrix or data frame of samples from the distribution of costs.  There should be one column for each decision option.
+  \code{"c"}: a matrix or data frame of samples from the distribution of
+  costs.  There should be one column for each decision option.
 
-\code{"e"}: a matrix or data frame of samples from the distribution of effects, likewise.
+  \code{"e"}: a matrix or data frame of samples from the distribution of
+  effects, likewise.
 
-\code{"k"}: a vector of willingness-to-pay values.
+  \code{"k"}: a vector of willingness-to-pay values.
 
-Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in this "cost-effectiveness analysis" format, therefore they may be supplied as the \code{outputs} argument.
+Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in
+this "cost-effectiveness analysis" format, therefore they may be supplied as
+the \code{outputs} argument.
 
-If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.}
+If \code{outputs} is a matrix or data frame it is assumed to be of "net
+benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
+effectiveness analysis" form.}
 
-\item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
+\item{inputs}{Matrix or data frame of samples from the uncertainty
+distribution of the input parameters of the decision model.   The number
+of columns should equal the number of parameters, and the columns should
+be named.    This should have the same number of rows as there are samples
+in \code{outputs}, and each row of the samples in \code{outputs} should
+give the model output evaluated at the corresponding parameters.}
 
 \item{study}{Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of \code{inputs} that correspond to the parameters governing the study data should be identified in \code{poi}.
 
@@ -108,7 +123,9 @@ Note the definition of the likelihood should agree with the definition of \code{
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 
-\item{verbose}{If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method.}
+\item{verbose}{If \code{TRUE}, then print messages describing each step of
+the calculation.  Useful to see the progress of slow calculations.
+Currently only supported by the \code{"inla"} EVPPI method.}
 
 \item{...}{Other arguments required by specific methods}
 }

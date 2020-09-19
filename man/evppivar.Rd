@@ -19,7 +19,12 @@ evppivar(
 
 Typically this will come from a Monte Carlo sample, where we first sample from the uncertainty distributions of the parameters, and then compute the quantity of interest as a function of the parameters.  It might also be produced by a Markov Chain Monte Carlo sample from the joint distribution of parameters and outputs.}
 
-\item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
+\item{inputs}{Matrix or data frame of samples from the uncertainty
+distribution of the input parameters of the decision model.   The number
+of columns should equal the number of parameters, and the columns should
+be named.    This should have the same number of rows as there are samples
+in \code{outputs}, and each row of the samples in \code{outputs} should
+give the model output evaluated at the corresponding parameters.}
 
 \item{pars}{A character vector giving the parameters of interest, for which
   a single EVPPI calculation is required.  If the vector has multiple
@@ -30,40 +35,59 @@ Typically this will come from a Monte Carlo sample, where we first sample from t
   then performed, one for each component of \code{pars} defined in the above
   vector form.
 
-  \code{pars} must be specified if \code{inputs} is a matrix or data frame. This
-  should then correspond to particular columns of \code{inputs}.    If
+  \code{pars} must be specified if \code{inputs} is a matrix or data frame.
+  This should then correspond to particular columns of \code{inputs}.    If
   \code{inputs} is a vector, this is assumed to define the single parameter
   of interest, then \code{pars} is not required.}
 
-\item{method}{Character string indicating the calculation method.   The only methods currently implemented are based on nonparametric regression:
+\item{method}{Character string indicating the calculation method.   The only
+  methods currently implemented are based on nonparametric regression:
 
-\code{"gam"} for a generalized additive model implemented in the gam() function from the mgcv() package.
+\code{"gam"} for a generalized additive model implemented in the gam()
+function from the mgcv() package.
 
-\code{"gp"} for a Gaussian process regression, as described by Strong et al. (2014) and implemented in the SAVI package (\url{http://savi.shef.ac.uk/SAVI/}).
+\code{"gp"} for a Gaussian process regression, as described by Strong et al.
+(2014) and implemented in the SAVI package
+(\url{http://savi.shef.ac.uk/SAVI/}).
 
-\code{"inla"} for an INLA/SPDE Gaussian process regression method, from Heath et al. (2016). 
+\code{"inla"} for an INLA/SPDE Gaussian process regression method, from
+Heath et al. (2016).
 
-\code{"earth"} for a multivariate adaptive regression spline with the \pkg{earth} package (Milborrow, 2019).}
+\code{"earth"} for a multivariate adaptive regression spline with the
+\pkg{earth} package (Milborrow, 2019).}
 
-\item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
+\item{nsim}{Number of simulations from the model to use for calculating
+EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
+\code{outputs} are used.}
 
-\item{verbose}{If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method.}
+\item{verbose}{If \code{TRUE}, then print messages describing each step of
+the calculation.  Useful to see the progress of slow calculations.
+Currently only supported by the \code{"inla"} EVPPI method.}
 
 \item{...}{Other arguments to control specific methods.
 
-For \code{method="gam"}:
-
+  For \code{method="gam"}:
+  
 \code{gam_formula}: a character string giving the right hand side of the formula supplied to the \code{gam()} function. By default, this is a tensor product of all the parameters of interest, e.g. if \code{pars = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis, which is currently the default in the SAVI package (\url{http://savi.shef.ac.uk/SAVI/}).
 
 For \code{method="gp"}:
 
-\code{gp_hyper_n}: number of samples to use to estimate the hyperparameters in the Gaussian process regression method.  By default, this is the minimum of the following three quantities: 30 times the number of parameters of interest, 250, and the number of simulations being used for calculating EVPPI.
+\code{gp_hyper_n}: number of samples to use to estimate the hyperparameters
+in the Gaussian process regression method.  By default, this is the minimum
+of the following three quantities: 30 times the number of parameters of
+interest, 250, and the number of simulations being used for calculating
+EVPPI.
 
-\code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only increase this from the default 5000 if your computer has sufficent memory to invert square matrices with this dimension.
+\code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only
+increase this from the default 5000 if your computer has sufficent memory to
+invert square matrices with this dimension.
 
-For \code{method="inla"}, as described in detail in Baio, Berardi and Heath (2017):
+For \code{method="inla"}, as described in detail in Baio, Berardi and Heath
+(2017):
 
-\code{int.ord} (integer) maximum order of interaction terms to include in the regression predictor, e.g. if \code{int.ord=k} then all k-way interactions are used.  TODO handle effects and costs separately
+\code{int.ord} (integer) maximum order of interaction terms to include in
+the regression predictor, e.g. if \code{int.ord=k} then all k-way
+interactions are used.  TODO handle effects and costs separately
 
  \code{cutoff} (default 0.3) controls the
 density of the points inside the mesh in the spatial part of the mode. 
@@ -71,23 +95,24 @@ Acceptable values are typically in
 the interval (0.1,0.5), with lower values implying more points (and thus
 better approximation and greatercomputational time).
 
-\code{convex.inner} (default = -0.4) and \code{convex.outer} (default =
--0.7) control the boundaries for the mesh. 
-These should be negative values and can be decreased (say to -0.7 and
--1, respectively) to increase the distance between the points and the outer
-boundary, which also increases precision and computational time.
+\code{convex.inner} (default = -0.4) and \code{convex.outer} (default = -0.7)
+control the boundaries for the mesh. These should be negative values and can
+be decreased (say to -0.7 and -1, respectively) to increase the distance
+between the points and the outer boundary, which also increases precision and
+computational time.
 
-\code{robust}. if \code{TRUE} then INLA will
-use a t prior distribution for the coefficients of the linear predictor, rather than the default normal. 
+\code{robust}. if \code{TRUE} then INLA will use a t prior distribution for
+the coefficients of the linear predictor, rather than the default normal.
 
-\code{h.value} (default=0.00005) controls the accuracy of the INLA grid-search for the
-estimation of the hyperparameters. 
- Lower values imply a more refined search
-(and hence better accuracy), at the expense of computational speed.
+\code{h.value} (default=0.00005) controls the accuracy of the INLA
+grid-search for the estimation of the hyperparameters. Lower values imply a
+more refined search (and hence better accuracy), at the expense of
+computational speed.
 
-\code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh. 
+\code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh.
 
-\code{max.edge}  Largest allowed triangle edge length when constructing the mesh, passed to \code{\link[INLA]{inla.mesh.2d}}.}
+\code{max.edge}  Largest allowed triangle edge length when constructing the
+mesh, passed to \code{\link[INLA]{inla.mesh.2d}}.}
 }
 \description{
 Calculate the expected value of partial perfect information for an estimation problem.  This computes the expected reduction in variance in some quantity of interest with perfect information about a parameter or parameters of interest.

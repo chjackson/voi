@@ -9,21 +9,33 @@ evpi(outputs, nsim = NULL)
 \arguments{
 \item{outputs}{This could take one of two forms
 
-"net benefit" form: a matrix or data frame of samples from the uncertainty distribution of the expected net benefit.  The number of rows should equal the number of samples, and the number of columns should equal the number of decision options.
+  "net benefit" form: a matrix or data frame of samples from the uncertainty
+  distribution of the expected net benefit.  The number of rows should equal
+  the number of samples, and the number of columns should equal the number
+  of decision options.
 
-"cost-effectiveness analysis" form: a list with the following named components:
+  "cost-effectiveness analysis" form: a list with the following named
+  components:
 
-\code{"c"}: a matrix or data frame of samples from the distribution of costs.  There should be one column for each decision option.
+  \code{"c"}: a matrix or data frame of samples from the distribution of
+  costs.  There should be one column for each decision option.
 
-\code{"e"}: a matrix or data frame of samples from the distribution of effects, likewise.
+  \code{"e"}: a matrix or data frame of samples from the distribution of
+  effects, likewise.
 
-\code{"k"}: a vector of willingness-to-pay values.
+  \code{"k"}: a vector of willingness-to-pay values.
 
-Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in this "cost-effectiveness analysis" format, therefore they may be supplied as the \code{outputs} argument.
+Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in
+this "cost-effectiveness analysis" format, therefore they may be supplied as
+the \code{outputs} argument.
 
-If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit" form.  Otherwise if it is a list, it is assumed to be of "cost effectiveness analysis" form.}
+If \code{outputs} is a matrix or data frame it is assumed to be of "net
+benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
+effectiveness analysis" form.}
 
-\item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
+\item{nsim}{Number of simulations from the model to use for calculating
+EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
+\code{outputs} are used.}
 }
 \value{
 The expected value of perfect information, either a single value, or a vector of values for different willingness-to-pay.
