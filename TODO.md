@@ -23,8 +23,6 @@ EVPPI
 
 * Test earth gam method more, compare against other methods to suggest advantages, while developing book material. 
 
-* Add single parameter methods for historical interest? 
-
 * Standard errors for all nonparametric regression methods at least 
 
 * Diagnostics for fit of nonparametric regression models 

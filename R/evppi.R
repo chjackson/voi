@@ -49,21 +49,29 @@
 ##'   \code{inputs} is a vector, this is assumed to define the single parameter
 ##'   of interest, then \code{pars} is not required.
 ##'
-##' @param method Character string indicating the calculation method.   The only
-##'   methods currently implemented are based on nonparametric regression:
+##' @param method Character string indicating the calculation method.   The default
+##'   methods are based on nonparametric regression:
 ##'
 ##' \code{"gam"} for a generalized additive model implemented in the gam()
-##' function from the mgcv() package.
+##' function from the mgcv() package.  This is the default method for
+##' calculating the EVPPI of 4 or fewer parameters.
 ##'
 ##' \code{"gp"} for a Gaussian process regression, as described by Strong et al.
 ##' (2014) and implemented in the SAVI package
 ##' (\url{http://savi.shef.ac.uk/SAVI/}).
 ##'
 ##' \code{"inla"} for an INLA/SPDE Gaussian process regression method, from
-##' Heath et al. (2016).
-##'
+##' Heath et al. (2016).   This is the default method for calculating the EVPPI
+##' of more than 4 parameters.
+##' 
 ##' \code{"earth"} for a multivariate adaptive regression spline with the
 ##' \pkg{earth} package (Milborrow, 2019).
+##' 
+##' \code{"so"} for the method of Strong and Oakley (2013).  Only supported
+##' for single parameter EVPPI. 
+##' 
+##' \code{"sal"} for the method of Sadatsafavi et al. (2013).  Only supported 
+##' for single parameter EVPPI.
 ##'
 ##'
 ##' @param nsim Number of simulations from the model to use for calculating
@@ -130,6 +138,13 @@
 #' \code{max.edge}  Largest allowed triangle edge length when constructing the
 #' mesh, passed to \code{\link[INLA]{inla.mesh.2d}}.
 #'
+##' For \code{method="so"}:
+##'
+##' \code{n.blocks} Number of blocks to split the sample into. Required.
+##'
+##' For \code{method="sal"}:
+##'
+##' \code{n.seps} Number of separators (default 1). 
 #'
 #' @return If a single EVPPI calculation is being performed, when \code{pars} or
 #'   \code{inputs} is a vector, and \code{outputs} is of "net benefit" form,
@@ -165,6 +180,15 @@
 ##' Tibshirani. Uses Alan Miller's Fortran utilities with Thomas Lumley's leaps
 ##' wrapper. https://CRAN.R-project.org/package=earth.
 ##'
+##' Strong, M., & Oakley, J. E. (2013). An efficient method for computing
+##' single-parameter partial expected value of perfect information. Medical
+##' Decision Making, 33(6), 755-766. Chicago
+##'
+##' Sadatsafavi, M., Bansback, N., Zafari, Z., Najafzadeh, M., & Marra, C.
+##' (2013). Need for speed: an efficient algorithm for calculation of
+##' single-parameter expected value of partial perfect information. Value in
+##' Health, 16(2), 438-448.
+##'
 ##' 
 ##' @export
 evppi <- function(outputs,
@@ -192,6 +216,10 @@ evppi <- function(outputs,
     if (method %in% npreg_methods) {
         res <- evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
                     pars=pars, method=method, verbose=verbose, ...)
+    } else if (method=="so") {
+        res <- evppi_so(outputs, inputs, output_type, pars, ...)
+    } else if (method=="sal") {
+        res <- evppi_sal(outputs, inputs, output_type, pars, ...)
     } else stop("Other methods not implemented yet")
     if (output_type=="cea") 
         res <- if (tidy) data.frame(k=outputs$k, evppi=res) else res
@@ -258,11 +286,11 @@ evppi_npreg_cea <- function(costs, effects, wtp, inputs, pars, method, verbose, 
 
 fitted_npreg <- function(nb, inputs, pars, method, verbose, ...){
     nopt <- ncol(nb)
-    nsam <- nrow(nb)
+    nsim <- nrow(nb)
     ## Transforming to incremental net benefit allows us to do one fewer regression
     ## Assume it doesn't matters which option is the baseline for this purpose
     inb <- nb[,1] - nb[, -1, drop=FALSE] #- nb[,1]
-    fitted <- matrix(0, nrow=nsam, ncol=nopt)
+    fitted <- matrix(0, nrow=nsim, ncol=nopt)
     for (i in 1:(nopt-1)){
         if (verbose) message(sprintf("Decision option %s",i+1)) 
         fitted[,i+1] <- fitted_npreg_call(inb[,i], inputs, pars, method, verbose=verbose, ...) 

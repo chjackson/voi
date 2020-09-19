@@ -66,3 +66,21 @@ test_that("Multiple EVPPI calculations with the same call",{
     evcea <- evppi(chemo_cea, chemo_pars, pars=c("pi1", "pi2"))
     expect_equal(evtest$evppi[evtest$pars=="pi1,pi2" & evtest$k==30000], evcea$evppi[evcea$k==30000], tol=1e-05)
 })
+
+test_that("Strong and Oakley single parameter", {
+    expect_error(evppi(chemo_nb, chemo_pars, pars="pi1", method="so"),
+                 "`n.blocks` is required")
+    expect_error(evppi(chemo_nb, chemo_pars, pars=c("pi1","pi2"), method="so", n.blocks=20),
+                 "only works for single-parameter")
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="so", n.blocks=20), 4.13089907666654)
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="so", n.blocks=40), 4.15912391946767)
+    expect_equal(evppi(chemo_cea, chemo_pars, pars="pi1", method="so", n.blocks=20)$evppi[3], 4.13089907666654)
+    expect_equal(evppi(chemo_cea, chemo_pars, pars="pi1", method="so", n.blocks=40)$evppi[3], 4.15912391946767)
+})
+
+test_that("Sadatsafavi et al single parameter", {
+    expect_error(evppi(chemo_nb, chemo_pars, pars=c("pi1","pi2"), method="sal", n.blocks=20),
+                 "only works for single-parameter")
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="sal"), 4.46688647129122)
+    expect_equal(evppi(chemo_cea, chemo_pars, pars="pi1", method="sal")$evppi[3], 4.46688647129122)
+})
