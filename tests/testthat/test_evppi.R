@@ -5,9 +5,11 @@ test_that("single-parameter EVPPI",{
     evtest <- evppi(chemo_nb, chemo_pars, pars="pi1")
     expect_equal(evtest, 3.75833452581155, tol=1e-05)
     evcea <- evppi(chemo_cea, chemo_pars, pars="pi1")
-    expect_equal(evcea[3], evtest)
+    expect_equal(evcea$evppi[evcea$k==30000], evtest)
     expect_equal(evppi(chemo_nb, chemo_pars[,"pi1"]),
                  evtest)
+    evcea <- evppi(chemo_cea, chemo_pars, pars="pi1", tidy=FALSE)
+    expect_equal(evcea[3], evtest)
 })
 
 test_that("single-parameter EVPPI, alternative GAM basis",{
@@ -49,4 +51,18 @@ evppi(chemo_nb, chemo_pars, pars=pars, method="gam") # 17
 test_that("multi-parameter EVPPI, s() instead of t() formula",{
 pars <- c("pi1","rho")
 evppi(chemo_nb, chemo_pars, pars=pars, method="gam", gam_formula="s(pi1) + s(rho)") # 17
+})
+
+
+test_that("Multiple EVPPI calculations with the same call",{
+    evtest <- evppi(chemo_nb, chemo_pars, pars=list("pi1", "pi2"))
+    expect_equal(evtest$evppi[evtest$pars=="pi1"], 3.75833452581155, tol=1e-05)
+    evtest <- evppi(chemo_nb, chemo_pars, pars=list(c("pi1", "pi2"), "rho"))
+    expect_equal(evtest$evppi[evtest$pars=="pi1,pi2"], 17.1065526416352, tol=1e-05)
+    ## CEA format and multi pars 
+    evtest <- evppi(chemo_cea, chemo_pars, pars=list("pi1", "pi2"))
+    expect_equal(evtest$evppi[evtest$pars=="pi1" & evtest$k==30000], 3.75833452581155, tol=1e-05)
+    evtest <- evppi(chemo_cea, chemo_pars, pars=list(c("pi1", "pi2"), "rho"))
+    evcea <- evppi(chemo_cea, chemo_pars, pars=c("pi1", "pi2"))
+    expect_equal(evtest$evppi[evtest$pars=="pi1,pi2" & evtest$k==30000], evcea$evppi[evcea$k==30000], tol=1e-05)
 })

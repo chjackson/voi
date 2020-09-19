@@ -21,7 +21,19 @@ Typically this will come from a Monte Carlo sample, where we first sample from t
 
 \item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
-\item{pars}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be}
+\item{pars}{A character vector giving the parameters of interest, for which
+  a single EVPPI calculation is required.  If the vector has multiple
+  element, then the joint expected value of perfect information on all these
+  parameters together is calculated.
+
+  Alternatively, \code{pars} may be a list.  Multiple EVPPI calculations are
+  then performed, one for each component of \code{pars} defined in the above
+  vector form.
+
+  \code{pars} must be specified if \code{inputs} is a matrix or data frame. This
+  should then correspond to particular columns of \code{inputs}.    If
+  \code{inputs} is a vector, this is assumed to define the single parameter
+  of interest, then \code{pars} is not required.}
 
 \item{method}{Character string indicating the calculation method.   The only methods currently implemented are based on nonparametric regression:
 

@@ -11,6 +11,7 @@ evppi(
   method = NULL,
   nsim = NULL,
   verbose = TRUE,
+  tidy = TRUE,
   ...
 )
 }
@@ -33,7 +34,19 @@ If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit"
 
 \item{inputs}{Matrix or data frame of samples from the uncertainty distribution of the input parameters of the decision model.   The number of columns should equal the number of parameters, and the columns should be named.    This should have the same number of rows as there are samples in \code{outputs}, and each row of the samples in \code{outputs} should give the model output evaluated at the corresponding parameters.}
 
-\item{pars}{A character vector giving the parameters of interest, for which the EVPPI is required.   This should correspond to particular columns of \code{inputs}.  If this is omitted, then the parameters of interest are assumed to be}
+\item{pars}{A character vector giving the parameters of interest, for which
+  a single EVPPI calculation is required.  If the vector has multiple
+  element, then the joint expected value of perfect information on all these
+  parameters together is calculated.
+
+  Alternatively, \code{pars} may be a list.  Multiple EVPPI calculations are
+  then performed, one for each component of \code{pars} defined in the above
+  vector form.
+
+  \code{pars} must be specified if \code{inputs} is a matrix or data frame. This
+  should then correspond to particular columns of \code{inputs}.    If
+  \code{inputs} is a vector, this is assumed to define the single parameter
+  of interest, then \code{pars} is not required.}
 
 \item{method}{Character string indicating the calculation method.   The only methods currently implemented are based on nonparametric regression:
 
@@ -48,6 +61,12 @@ If \code{outputs} is a matrix or data frame it is assumed to be of "net benefit"
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 
 \item{verbose}{If \code{TRUE}, then print messages describing each step of the calculation.  Useful to see the progress of slow calculations.  Currently only supported by the \code{"inla"} EVPPI method.}
+
+\item{tidy}{Only used if \code{outputs} is in cost-effectiveness form.  Then if
+\code{tidy=TRUE}, \code{\link{evppi}} returns a data frame containing a
+column \code{k} for the willingness-to-pay values and a column
+\code{evppi} for the EVPPIs.  Or if \code{tidy=FALSE} then the function
+returns a vector of the EVPPIs at each willingess-to-pay.}
 
 \item{...}{Other arguments to control specific methods.
 
@@ -88,6 +107,20 @@ estimation of the hyperparameters.
 \code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh. 
 
 \code{max.edge}  Largest allowed triangle edge length when constructing the mesh, passed to \code{\link[INLA]{inla.mesh.2d}}.}
+}
+\value{
+If a single EVPPI calculation is being performed, when \code{pars} or
+  \code{inputs} is a vector, and \code{outputs} is of "net benefit" form,
+  then \code{\link{evppi}} simply returns the numeric value of the EVPPI.
+  
+  If \code{outputs} is of "cost-effectiveness analysis" form so that there is
+  one EVPPI per willingness-to-pay value, then a data frame is returned with
+  one column \code{k} identifying the willingness-to-pay, and another column
+  \code{evppi} with the EVPPI.
+  
+If \code{pars} is a list, so that multiple EVPPI calculations are performed
+with different parameters, then \code{\link{evppi}} also returns a data frame, with
+another column \code{pars} identifying the parameter or parameters.
 }
 \description{
 Calculate the expected value of partial perfect information from a decision model
