@@ -22,6 +22,10 @@ form_nbarray <- function(outputs, inputs, output_type){
     nb
 }
 
+## Code taken from BCEA package
+## Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
+## https://github.com/giabaio/BCEA
+
 evppi_so <- function(outputs, inputs, output_type, pars, ...){
     n.blocks <- list(...)$n.blocks
     if (is.null(n.blocks))

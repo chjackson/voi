@@ -9,7 +9,11 @@ Authors@R:
 	   person(given = "Anna",
 	   family = "Heath",
 	   role = c("aut"), 
-	   email = "anna.heath@sickkids.ca"))
+	   email = "anna.heath@sickkids.ca"),
+	   person(given = "Gianluca",
+	   family = "Baio",
+	   role = c("ctb"), 
+	   email = "g.baio@ucl.ac.uk"))
 Description: Methods to calculate the expected value of partial perfect information (EVPPI) and expected value of sample information (EVSI) from a decision-analytic model.  Intended as an unified interface to all alternative methods for calculating these quantities. 
 License: GPL-3
 Encoding: UTF-8
