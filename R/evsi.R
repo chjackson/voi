@@ -141,13 +141,13 @@ evsi <- function(outputs,
     else stop("Other methods not implemented yet")
 }
 
-evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, pars, n, method=NULL, verbose, ...){
+evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, ...){
     Tdata <- generate_data(inputs, datagen_fn, n, pars)
     if (output_type == "nb")
-        evppi_npreg_nb(nb=outputs, inputs=Tdata, pars=names(Tdata), method=method, verbose=verbose, ...)
+        evppi_npreg_nb(nb=outputs, inputs=Tdata, pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
     else if (output_type == "cea")
         evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                        inputs=Tdata, pars=names(Tdata), method=method, verbose=verbose, ...)
+                        inputs=Tdata, pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
 }
 
 generate_data <- function(inputs, datagen_fn, n=150, pars){

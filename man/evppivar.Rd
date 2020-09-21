@@ -95,7 +95,7 @@ For \code{method="inla"}, as described in detail in Baio, Berardi and Heath
 
 \code{int.ord} (integer) maximum order of interaction terms to include in
 the regression predictor, e.g. if \code{int.ord=k} then all k-way
-interactions are used.  TODO handle effects and costs separately
+interactions are used.  Currently this applies to both effects and costs.
 
  \code{cutoff} (default 0.3) controls the
 density of the points inside the mesh in the spatial part of the mode. 

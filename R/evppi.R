@@ -72,8 +72,12 @@
 ##' 
 ##' \code{"sal"} for the method of Sadatsafavi et al. (2013).  Only supported 
 ##' for single parameter EVPPI.
+##' 
+##' @param se If possible, calculate a standard error for the EVPPI.  Under
+##'   development - not supported yet.
 ##'
-##'
+##' @param B Number of parameter replicates for calculating the standard error.
+##'   
 ##' @param nsim Number of simulations from the model to use for calculating
 ##'   EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 ##'   \code{outputs} are used.
@@ -81,12 +85,6 @@
 ##' @param verbose If \code{TRUE}, then print messages describing each step of
 ##'   the calculation.  Useful to see the progress of slow calculations.
 ##'   Currently only supported by the \code{"inla"} EVPPI method.
-##'
-##' @param tidy Only used if \code{outputs} is in cost-effectiveness form.  Then
-##'   if \code{tidy=TRUE}, \code{\link{evppi}} returns a data frame containing a
-##'   column \code{k} for the willingness-to-pay values and a column
-##'   \code{evppi} for the EVPPIs.  Or if \code{tidy=FALSE} then the function
-##'   returns a vector of the EVPPIs at each willingess-to-pay.
 ##'
 ##' @param ... Other arguments to control specific methods.
 ##'
@@ -111,7 +109,7 @@
 ##'
 ##' \code{int.ord} (integer) maximum order of interaction terms to include in
 ##' the regression predictor, e.g. if \code{int.ord=k} then all k-way
-##' interactions are used.  TODO handle effects and costs separately
+##' interactions are used.  Currently this applies to both effects and costs.
 ##' 
 #'  \code{cutoff} (default 0.3) controls the
 #' density of the points inside the mesh in the spatial part of the mode. 
@@ -146,19 +144,18 @@
 ##'
 ##' \code{n.seps} Number of separators (default 1). 
 #'
-#' @return If a single EVPPI calculation is being performed, when \code{pars} or
-#'   \code{inputs} is a vector, and \code{outputs} is of "net benefit" form,
-#'   then \code{\link{evppi}} simply returns the numeric value of the EVPPI.
+#' @return A data frame with a column \code{evppi} giving the EVPPI. 
 #'
 #'   If \code{outputs} is of "cost-effectiveness analysis" form so that there is
-#'   one EVPPI per willingness-to-pay value, then a data frame is returned with
-#'   one column \code{k} identifying the willingness-to-pay, and another column
-#'   \code{evppi} with the EVPPI.
+#'   one EVPPI per willingness-to-pay value, then a column \code{k} identifies the 
+#'   willingness-to-pay.
 #'
 #'   If \code{pars} is a list, so that multiple EVPPI calculations are performed
-#'   with different parameters, then \code{\link{evppi}} also returns a data
-#'   frame, with another column \code{pars} identifying the parameter or
+#'   with different parameters, then another column \code{pars} identifies the 
 #'   parameters.
+#'   
+#'   If standard errors are requested, then the standard errors are returned in 
+#'   the column \code{se}.
 #'   
 ##' @references
 ##'
@@ -195,15 +192,17 @@ evppi <- function(outputs,
                   inputs,
                   pars=NULL,
                   method=NULL,
+                  se=FALSE,
+                  B=500,
                   nsim=NULL,
                   verbose=TRUE,
-                  tidy=TRUE,
                   ...)
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     output_type <- check_outputs(outputs, inputs)
     if (is.list(pars))
-        return(evppi_list(outputs, inputs, output_type, pars, method, nsim, verbose, ...))
+        return(evppi_list(outputs=outputs, inputs=inputs, output_type=output_type, pars=pars, 
+                          method=method, se=se, B=B, nsim=nsim, verbose=verbose, ...))
     pars <- check_pars(pars, inputs)
     opts <- list(...)
     if (is.null(method))
@@ -214,19 +213,23 @@ evppi <- function(outputs,
     inputs <- inputs[1:nsim,,drop=FALSE]
     
     if (method %in% npreg_methods) {
-        res <- evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
-                    pars=pars, method=method, verbose=verbose, ...)
+        rese <- evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
+                    pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
     } else if (method=="so") {
-        res <- evppi_so(outputs, inputs, output_type, pars, ...)
+        rese <- evppi_so(outputs, inputs, output_type, pars, ...)
     } else if (method=="sal") {
-        res <- evppi_sal(outputs, inputs, output_type, pars, ...)
+        rese <- evppi_sal(outputs, inputs, output_type, pars, ...)
     } else stop("Other methods not implemented yet")
     if (output_type=="cea") 
-        res <- if (tidy) data.frame(k=outputs$k, evppi=res) else res
+        res <- data.frame(k=outputs$k, evppi=rese) 
+    else res <- data.frame(evppi=rese)
+    if (se) {
+        res$se <- attr(rese,"se")
+    }
     res
 }
 
-evppi_list <- function(outputs, inputs, output_type, pars, method, nsim, verbose, ...)
+evppi_list <- function(outputs, inputs, output_type, pars, method, se, B, nsim, verbose, ...)
 {
     npars <- length(pars)
     nouts <- if (output_type=="cea") length(outputs$k) else 1
@@ -235,7 +238,11 @@ evppi_list <- function(outputs, inputs, output_type, pars, method, nsim, verbose
     res$evppi <- numeric(npars*nouts)
     indmat <- matrix(seq_len(npars*nouts), nrow=npars, ncol=nouts)
     for (i in seq_len(npars)){
-        res$evppi[indmat[i,]] <- evppi(outputs, inputs, pars[[i]], method, nsim, verbose, tidy=FALSE, ...)
+        eres <- evppi(outputs=outputs, inputs=inputs, pars=pars[[i]], 
+              method=method, se=se, B=B, nsim=nsim, verbose=verbose,
+              ...)
+        res$evppi[indmat[i,]] <- eres$evppi
+        if (se) res$se[indmat[i,]] <- eres$se
     }
     res$pars <- rep(sapply(pars, function(x)paste(x,collapse=",")), nouts)
     res
@@ -253,51 +260,78 @@ subset_outputs <- function(outputs, output_type, nsim){
 
 npreg_methods <- c("gam", "gp", "inla", "earth")
 
-evppi_npreg <- function(outputs, inputs, output_type, pars, method=NULL, verbose, ...){
+evppi_npreg <- function(outputs, inputs, output_type, pars, method=NULL, se=FALSE, B, verbose, ...){
     if (output_type == "nb")
         evppi_npreg_nb(nb=outputs, inputs=inputs, pars=pars, method=method,
-                       verbose=verbose, ...)
+                       se=se, B=B, verbose=verbose, ...)
     else if (output_type == "cea")
         evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
                         inputs=inputs, pars=pars, method=method,
-                        verbose=verbose, ...)
+                        se=se, B=B, verbose=verbose, ...)
 }
 
-evppi_npreg_nb <- function(nb, inputs, pars, method, verbose, ...){
+evppi_npreg_nb <- function(nb, inputs, pars, method, se, B, verbose, ...){
     if (verbose) message("Fitting nonparametric regression") 
-    fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=method,
+    fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=method, se=se, B=B, 
                         verbose=verbose, ...)
-    calc_evppi(fit)
-}
-
-evppi_npreg_cea <- function(costs, effects, wtp, inputs, pars, method, verbose, ...){
-    nwtp <- length(wtp)
-    res <- numeric(nwtp)
-    if (verbose) message("Fitting nonparametric regression for costs") 
-    cfit <- fitted_npreg(costs, inputs=inputs, pars=pars, method=method, verbose=verbose, ...)
-    if (verbose) message("Fitting nonparametric regression for effects") 
-    efit <- fitted_npreg(effects, inputs=inputs, pars=pars, method=method, verbose=verbose, ...)
-    for (i in 1:nwtp){
-        inbfit <- efit*wtp[i] - cfit
-        res[i] <- calc_evppi(inbfit)
+    res <- calc_evppi(fit)
+    if (se){
+        evppi_rep <- numeric(B)
+        if (verbose) message("Calculating replicate EVPPIs from simulation")
+        for (i in 1:B){
+            ## This bit could be faster.  Is there a vectorised way? 
+            evppi_rep[i] <- calc_evppi(attr(fit, "rep")[i,,])   
+        }
+        attr(res, "se") <-  sd(evppi_rep)
     }
     res
 }
 
-fitted_npreg <- function(nb, inputs, pars, method, verbose, ...){
+evppi_npreg_cea <- function(costs, effects, wtp, inputs, pars, method, se, B, verbose, ...){
+    nwtp <- length(wtp)
+    res <- resse <- numeric(nwtp)
+    if (verbose) message("Fitting nonparametric regression for costs") 
+    cfit <- fitted_npreg(costs, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
+    if (verbose) message("Fitting nonparametric regression for effects") 
+    efit <- fitted_npreg(effects, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
+    for (i in 1:nwtp){
+        evppi_rep <- numeric(B)
+        inbfit <- efit*wtp[i] - cfit
+        if (se){
+            inbrep <- attr(efit, "rep")*wtp[i] - attr(cfit, "rep")
+            if (verbose) message("Calculating replicate EVPPIs from simulation")
+            for (j in 1:B){
+                evppi_rep[j] <- calc_evppi(inbrep[j,,])   
+            }
+            resse[i] <- se(evppi_rep)
+        }
+        res[i] <- calc_evppi(inbfit)
+    }
+    if (se) attr(res, "se") <- resse
+    res
+}
+
+fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
     nopt <- ncol(nb)
     nsim <- nrow(nb)
     ## Transforming to incremental net benefit allows us to do one fewer regression
     ## Assume it doesn't matters which option is the baseline for this purpose
     inb <- nb[,1] - nb[, -1, drop=FALSE] #- nb[,1]
     fitted <- matrix(0, nrow=nsim, ncol=nopt)
+    if (se) 
+        fitted_rep <- array(0, dim=c(B, nsim, nopt))
     for (i in 1:(nopt-1)){
         if (verbose) message(sprintf("Decision option %s",i+1)) 
-        fitted[,i+1] <- fitted_npreg_call(inb[,i], inputs, pars, method, verbose=verbose, ...) 
+        fit <- fitted_npreg_call(inb[,i], inputs, pars, method, verbose=verbose, ...) 
+        fitted[,i+1] <- as.vector(fit)
+        if (se){
+            fitted_rep[,,i+1] <- fitted_npreg_rep_call(method, attr(fit,"model"), B, verbose)
+        }
     }
+    if (se) attr(fitted, "rep") <- fitted_rep
     fitted
 }
-
+    
 fitted_npreg_call <- function(y, inputs, pars, method, verbose, ...){
     if (method=="gam") {
         fitted <- fitted_gam(y, inputs, pars, ...)
@@ -312,6 +346,15 @@ fitted_npreg_call <- function(y, inputs, pars, method, verbose, ...){
         fitted <- fitted_earth(y, inputs, pars, ...)
     } 
     fitted
+}
+
+
+fitted_npreg_rep_call <- function(method, model, B, verbose=FALSE){
+    if (verbose) message("Simulating parameters to calculate standard errors")
+    if (method=="gam") {
+        frep <- fitted_rep_gam(model, B)
+    } else stop("Standard errors only currently available for GAM method")
+    frep
 }
 
 calc_evppi <- function(fit) {

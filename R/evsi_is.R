@@ -34,13 +34,14 @@ evsi_is_cea <- function(costs, effects, wtp, inputs, pars, datagen_fn, n, likeli
     res
 }
 
-prepost_evsi_is <- function(nb, inputs, pars, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
+prepost_evsi_is <- function(nb, inputs, pars, datagen_fn, n=100, 
+                            likelihood, npreg_method="gam", verbose, ...){
     simdat <- generate_data(inputs, datagen_fn=datagen_fn, n=n, pars=pars)
     ## nb or ce? 
     if (is.null(npreg_method))
         npreg_method <- default_evppi_method(pars)
     if (verbose) cat("Calculating EVPPI...\n")
-    y <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
+    y <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, se=FALSE, verbose=verbose, ...)
 
     if (verbose) cat("Calculating EVSI...\n")
     nsam <- nrow(inputs)

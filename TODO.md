@@ -35,6 +35,8 @@ EVPPI
 
 * Any other plots for communication?
 
+* Faster way of combining replicate fitted values to get standard errors when using nonparametric regression
+
 
 EVSI
 
@@ -70,7 +72,6 @@ GENERAL
 
 * Does the baseline option matter for the purpose of regression-based EVPPI computation - can it always be treatment 1?   For consistency with what BCEA does, incremental for regressions is calculated as reference - active.  That seems backwards, but not sure it matters.
 
-* Suggests or Imports for packages enabling specific methods?   Imports for default methods, suggests for others? 
 
 
 ## PRINCIPLES OF PACKAGE DEVELOPMENT

@@ -3,13 +3,13 @@
 
 test_that("single-parameter EVPPI",{
     evtest <- evppi(chemo_nb, chemo_pars, pars="pi1")
-    expect_equal(evtest, 3.75833452581155, tol=1e-05)
+    expect_equal(evtest$evppi, 3.75833452581155, tol=1e-05)
     evcea <- evppi(chemo_cea, chemo_pars, pars="pi1")
-    expect_equal(evcea$evppi[evcea$k==30000], evtest)
+    expect_equal(evcea$evppi[evcea$k==30000], evtest$evppi)
     expect_equal(evppi(chemo_nb, chemo_pars[,"pi1"]),
                  evtest)
     evcea <- evppi(chemo_cea, chemo_pars, pars="pi1", tidy=FALSE)
-    expect_equal(evcea[3], evtest)
+    expect_equal(evcea$evppi[3], evtest$evppi)
 })
 
 test_that("single-parameter EVPPI, alternative GAM basis",{
@@ -44,13 +44,13 @@ test_that("EVPPI with INLA",{
 })
 
 test_that("4-parameter EVPPI",{
-pars <- c("pi1","rho","gamma.hosp","gamma.dead")
-evppi(chemo_nb, chemo_pars, pars=pars, method="gam") # 17
+    pars <- c("pi1","rho","gamma.hosp","gamma.dead")
+    evppi(chemo_nb, chemo_pars, pars=pars, method="gam") # 17
 })
 
 test_that("multi-parameter EVPPI, s() instead of t() formula",{
-pars <- c("pi1","rho")
-evppi(chemo_nb, chemo_pars, pars=pars, method="gam", gam_formula="s(pi1) + s(rho)") # 17
+    pars <- c("pi1","rho")
+    evppi(chemo_nb, chemo_pars, pars=pars, method="gam", gam_formula="s(pi1) + s(rho)") # 17
 })
 
 
@@ -72,8 +72,8 @@ test_that("Strong and Oakley single parameter", {
                  "`n.blocks` is required")
     expect_error(evppi(chemo_nb, chemo_pars, pars=c("pi1","pi2"), method="so", n.blocks=20),
                  "only works for single-parameter")
-    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="so", n.blocks=20), 4.13089907666654)
-    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="so", n.blocks=40), 4.15912391946767)
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="so", n.blocks=20)$evppi, 4.13089907666654)
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="so", n.blocks=40)$evppi, 4.15912391946767)
     expect_equal(evppi(chemo_cea, chemo_pars, pars="pi1", method="so", n.blocks=20)$evppi[3], 4.13089907666654)
     expect_equal(evppi(chemo_cea, chemo_pars, pars="pi1", method="so", n.blocks=40)$evppi[3], 4.15912391946767)
 })
@@ -81,6 +81,15 @@ test_that("Strong and Oakley single parameter", {
 test_that("Sadatsafavi et al single parameter", {
     expect_error(evppi(chemo_nb, chemo_pars, pars=c("pi1","pi2"), method="sal", n.blocks=20),
                  "only works for single-parameter")
-    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="sal"), 4.46688647129122)
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="sal")$evppi, 4.46688647129122)
     expect_equal(evppi(chemo_cea, chemo_pars, pars="pi1", method="sal")$evppi[3], 4.46688647129122)
+})
+
+
+test_that("Standard errors for GAM",{
+    set.seed(1)
+    evtest <- evppi(chemo_nb, chemo_pars, pars="pi1", se=TRUE, B=10)
+    expect_equal(evtest$se[1], 0.2, tol=1e-01)
+    evtest <- evppi(chemo_nb, chemo_pars, pars=list("pi1", "pi2"), se=TRUE, B=10)
+    expect_equal(evtest$se[2], 0.017, tol=1e-01)
 })

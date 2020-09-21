@@ -9,9 +9,10 @@ evppi(
   inputs,
   pars = NULL,
   method = NULL,
+  se = FALSE,
+  B = 500,
   nsim = NULL,
   verbose = TRUE,
-  tidy = TRUE,
   ...
 )
 }
@@ -87,6 +88,11 @@ for single parameter EVPPI.
 \code{"sal"} for the method of Sadatsafavi et al. (2013).  Only supported 
 for single parameter EVPPI.}
 
+\item{se}{If possible, calculate a standard error for the EVPPI.  Under
+development - not supported yet.}
+
+\item{B}{Number of parameter replicates for calculating the standard error.}
+
 \item{nsim}{Number of simulations from the model to use for calculating
 EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 \code{outputs} are used.}
@@ -94,12 +100,6 @@ EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 \item{verbose}{If \code{TRUE}, then print messages describing each step of
 the calculation.  Useful to see the progress of slow calculations.
 Currently only supported by the \code{"inla"} EVPPI method.}
-
-\item{tidy}{Only used if \code{outputs} is in cost-effectiveness form.  Then
-if \code{tidy=TRUE}, \code{\link{evppi}} returns a data frame containing a
-column \code{k} for the willingness-to-pay values and a column
-\code{evppi} for the EVPPIs.  Or if \code{tidy=FALSE} then the function
-returns a vector of the EVPPIs at each willingess-to-pay.}
 
 \item{...}{Other arguments to control specific methods.
 
@@ -124,7 +124,7 @@ For \code{method="inla"}, as described in detail in Baio, Berardi and Heath
 
 \code{int.ord} (integer) maximum order of interaction terms to include in
 the regression predictor, e.g. if \code{int.ord=k} then all k-way
-interactions are used.  TODO handle effects and costs separately
+interactions are used.  Currently this applies to both effects and costs.
 
  \code{cutoff} (default 0.3) controls the
 density of the points inside the mesh in the spatial part of the mode. 
@@ -160,19 +160,18 @@ For \code{method="sal"}:
 \code{n.seps} Number of separators (default 1).}
 }
 \value{
-If a single EVPPI calculation is being performed, when \code{pars} or
-  \code{inputs} is a vector, and \code{outputs} is of "net benefit" form,
-  then \code{\link{evppi}} simply returns the numeric value of the EVPPI.
+A data frame with a column \code{evppi} giving the EVPPI. 
 
   If \code{outputs} is of "cost-effectiveness analysis" form so that there is
-  one EVPPI per willingness-to-pay value, then a data frame is returned with
-  one column \code{k} identifying the willingness-to-pay, and another column
-  \code{evppi} with the EVPPI.
+  one EVPPI per willingness-to-pay value, then a column \code{k} identifies the 
+  willingness-to-pay.
 
   If \code{pars} is a list, so that multiple EVPPI calculations are performed
-  with different parameters, then \code{\link{evppi}} also returns a data
-  frame, with another column \code{pars} identifying the parameter or
+  with different parameters, then another column \code{pars} identifies the 
   parameters.
+  
+  If standard errors are requested, then the standard errors are returned in 
+  the column \code{se}.
 }
 \description{
 Calculate the expected value of partial perfect information from a decision model
