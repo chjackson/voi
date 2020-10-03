@@ -10,12 +10,12 @@
 evpi <- function(outputs,
                  nsim=NULL)
 {
-    output_type <- check_outputs(outputs)
-    if (is.null(nsim)) nsim <- if (output_type=="nb") nrow(outputs) else nrow(outputs$e)
-    outputs <- subset_outputs(outputs, output_type, nsim)
-    if (output_type=="nb"){
+    outputs <- check_outputs(outputs)
+    if (is.null(nsim)) nsim <- if (inherits(outputs, "nb")) nrow(outputs) else nrow(outputs$e)
+    outputs <- subset_outputs(outputs, nsim)
+    if (inherits(outputs, "nb")){
         res <- mean(apply(outputs, 1, max)) - max(colMeans(outputs))
-    } else if (output_type=="cea"){
+    } else if (inherits(outputs, "cea")){
         nwtp <- length(outputs$k)
         res <- numeric(length(nwtp))
         for (i in 1:nwtp){

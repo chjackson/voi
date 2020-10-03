@@ -1,12 +1,12 @@
 
 ## Importance sampling method for calculating EVSI (Menzies)
 
-evsi_is <- function(outputs, inputs, output_type, pars, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
-    if (output_type=="nb"){
+evsi_is <- function(outputs, inputs, pars, datagen_fn, n=100, likelihood, npreg_method="gam", verbose, ...){
+    if (inherits(outputs, "nb")){
         evsi_is_nb(nb=outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                    likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
     }
-    else if (output_type=="cea"){
+    else if (inherits(outputs, "cea")){
         evsi_is_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
                     inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                     likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)

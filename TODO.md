@@ -23,7 +23,7 @@ EVPPI
 
 * Test earth gam method more, compare against other methods to suggest advantages, while developing book material. 
 
-* Standard errors for all nonparametric regression methods at least 
+* Standard errors for GP, earth.  INLA too?
 
 * Diagnostics for fit of nonparametric regression models 
 
@@ -34,8 +34,6 @@ EVPPI
 * Anything to facilitate algebraic methods?
 
 * Any other plots for communication?
-
-* Faster way of combining replicate fitted values to get standard errors when using nonparametric regression
 
 
 EVSI

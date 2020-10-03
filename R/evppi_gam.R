@@ -1,4 +1,3 @@
-## TODO standard errors 
 
 fitted_gam <- function(y, inputs, pars, ...){
     opts <- list(...)

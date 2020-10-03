@@ -40,3 +40,5 @@ vignettes/*.pdf
 
 # Emacs backup files
 *~
+
+man/form_nbarray.Rd

@@ -51,7 +51,7 @@ evsivar <- function(outputs,
     else stop("Other methods not implemented yet")
 }
 
-evsivar_npreg <- function(outputs, inputs, output_type, datagen_fn, pars, n, method=NULL, verbose, ...){
+evsivar_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, verbose, ...){
     Tdata <- generate_data(inputs, datagen_fn, n, pars)
     evppivar_npreg(outputs=outputs, inputs=Tdata, pars=names(Tdata), 
                    method=method, verbose=verbose, ...)

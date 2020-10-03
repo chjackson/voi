@@ -4,8 +4,8 @@
 ##' WTP value when `outputs` is in "net benefit" form.
 ##' 
 ##' @keywords internal
-form_nbarray <- function(outputs, inputs, output_type){
-    if (output_type == "cea"){
+form_nbarray <- function(outputs, inputs){
+    if (inherits(outputs, "cea")){
         nsim <- nrow(outputs$c)
         nk <- length(outputs$k)
         nopt <- ncol(outputs$c) # number of decision options 
@@ -26,12 +26,12 @@ form_nbarray <- function(outputs, inputs, output_type){
 ## Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
 ## https://github.com/giabaio/BCEA
 
-evppi_so <- function(outputs, inputs, output_type, pars, ...){
+evppi_so <- function(outputs, inputs, pars, ...){
     n.blocks <- list(...)$n.blocks
     if (is.null(n.blocks))
         stop("`n.blocks` is required for method=\"so\"")
         
-    U <- form_nbarray(outputs, inputs, output_type)
+    U <- form_nbarray(outputs, inputs)
     nsim <- dim(U)[1]
     nk <- dim(U)[2]
     nopt <- dim(U)[3]

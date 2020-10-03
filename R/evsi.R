@@ -103,34 +103,28 @@ evsi <- function(outputs,
                  ...)
 {
     check_inputs(inputs)
-    output_type <- check_outputs(outputs, inputs)
+    outputs <- check_outputs(outputs, inputs)
     if (is.null(method))
         method <- default_evsi_method()
 
-    ## Take subset of full PSA sample 
     if (is.null(nsim)) nsim <- nrow(inputs)
-    if (output_type == "nb") {
-        outputs <- outputs[1:nsim,,drop=FALSE]
-    } else if (output_type == "cea") {
-        outputs$c <- outputs$c[1:nsim,,drop=FALSE]
-        outputs$e <- outputs$e[1:nsim,,drop=FALSE]
-    }
+    outputs <- subset_outputs(outputs, nsim)
     inputs <- inputs[1:nsim,,drop=FALSE]
 
     datagen_fn <- form_datagen_fn(study, datagen_fn, inputs)
     ## Could use any nonparametric regression method to regress on a summary statistic, in identical way to EVPPI estimation.
     
     if (method %in% npreg_methods) { 
-        evsi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
+        evsi_npreg(outputs=outputs, inputs=inputs, 
                    datagen_fn=datagen_fn, pars=pars, n=n, 
                    method=method, verbose=verbose, ...)
     } else if (method=="is") {
         likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, pars)
-        evsi_is(outputs=outputs, inputs=inputs, output_type=output_type,
+        evsi_is(outputs=outputs, inputs=inputs, 
                 pars=pars, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
     } else if (method=="mm") {
-        evsi_mm(outputs=outputs, inputs=inputs, output_type=output_type,
+        evsi_mm(outputs=outputs, inputs=inputs, 
                 pars=pars, datagen_fn=datagen_fn, n=n, Q=Q, 
                 analysis_model=analysis_model,
                 analysis_options=analysis_options,
@@ -141,13 +135,10 @@ evsi <- function(outputs,
     else stop("Other methods not implemented yet")
 }
 
-evsi_npreg <- function(outputs, inputs, output_type, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, ...){
+evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, ...){
     Tdata <- generate_data(inputs, datagen_fn, n, pars)
-    if (output_type == "nb")
-        evppi_npreg_nb(nb=outputs, inputs=Tdata, pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
-    else if (output_type == "cea")
-        evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                        inputs=Tdata, pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
+    evppi_npreg(outputs=outputs, inputs=Tdata, 
+                pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
 }
 
 generate_data <- function(inputs, datagen_fn, n=150, pars){

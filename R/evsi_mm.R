@@ -1,6 +1,5 @@
 evsi_mm <- function(outputs, 
                     inputs,
-                    output_type,
                     pars,
                     datagen_fn,
                     analysis_model,
@@ -11,7 +10,7 @@ evsi_mm <- function(outputs,
                     npreg_method="gam",
                     verbose, ...){
     ## might be neater to have just one function that does both nb and cea formats 
-    if (output_type=="nb"){
+    if (inherits(outputs,"nb")){
         evsi_mm_nb(nb=outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                    Q=Q, 
                    analysis_model=analysis_model,
@@ -20,7 +19,7 @@ evsi_mm <- function(outputs,
                    npreg_method=npreg_method,
                    verbose=verbose, ...)
     }
-    else if (output_type=="cea"){
+    else if (inherits(outputs,"cea")){
         evsi_mm_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
                     inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                     Q=Q, 

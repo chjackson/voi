@@ -2,11 +2,11 @@
 ## Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness analysis with the R package BCEA. New York: Springer.
 ## https://github.com/giabaio/BCEA
 
-evppi_sal <- function(outputs, inputs, output_type, pars, ...){
+evppi_sal <- function(outputs, inputs, pars, ...){
     n.seps <- list(...)$n.seps
     if (is.null(n.seps)) n.seps <- 1
 
-    U <- form_nbarray(outputs, inputs, output_type)
+    U <- form_nbarray(outputs, inputs)
     nsim <- dim(U)[1]
     nk <- dim(U)[2]
     nopt <- dim(U)[3]

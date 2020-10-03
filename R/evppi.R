@@ -199,9 +199,9 @@ evppi <- function(outputs,
                   ...)
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
-    output_type <- check_outputs(outputs, inputs)
+    outputs <- check_outputs(outputs, inputs)
     if (is.list(pars))
-        return(evppi_list(outputs=outputs, inputs=inputs, output_type=output_type, pars=pars, 
+        return(evppi_list(outputs=outputs, inputs=inputs, pars=pars, 
                           method=method, se=se, B=B, nsim=nsim, verbose=verbose, ...))
     pars <- check_pars(pars, inputs)
     opts <- list(...)
@@ -209,18 +209,18 @@ evppi <- function(outputs,
         method <- default_evppi_method(pars)
     
     if (is.null(nsim)) nsim <- nrow(inputs)
-    outputs <- subset_outputs(outputs, output_type, nsim)
+    outputs <- subset_outputs(outputs, nsim)
     inputs <- inputs[1:nsim,,drop=FALSE]
     
     if (method %in% npreg_methods) {
-        rese <- evppi_npreg(outputs=outputs, inputs=inputs, output_type=output_type,
+        rese <- evppi_npreg(outputs=outputs, inputs=inputs, 
                     pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
     } else if (method=="so") {
-        rese <- evppi_so(outputs, inputs, output_type, pars, ...)
+        rese <- evppi_so(outputs, inputs, pars, ...)
     } else if (method=="sal") {
-        rese <- evppi_sal(outputs, inputs, output_type, pars, ...)
+        rese <- evppi_sal(outputs, inputs, pars, ...)
     } else stop("Other methods not implemented yet")
-    if (output_type=="cea") 
+    if (inherits(outputs, "cea"))
         res <- data.frame(k=outputs$k, evppi=rese) 
     else res <- data.frame(evppi=rese)
     if (se) {
@@ -229,12 +229,12 @@ evppi <- function(outputs,
     res
 }
 
-evppi_list <- function(outputs, inputs, output_type, pars, method, se, B, nsim, verbose, ...)
+evppi_list <- function(outputs, inputs, pars, method, se, B, nsim, verbose, ...)
 {
     npars <- length(pars)
-    nouts <- if (output_type=="cea") length(outputs$k) else 1
+    nouts <- if (inherits(outputs, "cea")) length(outputs$k) else 1
     res <- data.frame(pars=character(npars*nouts)) 
-    if (output_type=="cea") res$k <- rep(outputs$k, each=npars)
+    if (inherits(outputs, "cea")) res$k <- rep(outputs$k, each=npars)
     res$evppi <- numeric(npars*nouts)
     indmat <- matrix(seq_len(npars*nouts), nrow=npars, ncol=nouts)
     for (i in seq_len(npars)){
@@ -248,38 +248,42 @@ evppi_list <- function(outputs, inputs, output_type, pars, method, se, B, nsim, 
     res
 }
 
-subset_outputs <- function(outputs, output_type, nsim){
-    if (output_type == "nb") {
-        outputs <- outputs[1:nsim,,drop=FALSE]
-    } else if (output_type == "cea") {
-        outputs$c <- outputs$c[1:nsim,,drop=FALSE]
-        outputs$e <- outputs$e[1:nsim,,drop=FALSE]
-    }
+## could do fancier S3 stuff with implementing subset operator, but too much
+## faff
+
+subset_outputs <- function(outputs, ...){
+    UseMethod("subset_outputs", outputs)
+}
+
+subset_outputs.nb <- function(outputs, nsim){
+    outputs <- outputs[1:nsim,,drop=FALSE]
+    class(outputs) <- c("nb", attr(outputs, "class"))
+    outputs 
+}
+
+subset_outputs.cea <- function(outputs, nsim){
+    outputs$c <- outputs$c[1:nsim,,drop=FALSE]
+    outputs$e <- outputs$e[1:nsim,,drop=FALSE]
+    class(outputs) <- c("cea", attr(outputs, "class"))
     outputs
 }
 
 npreg_methods <- c("gam", "gp", "inla", "earth")
 
-evppi_npreg <- function(outputs, inputs, output_type, pars, method=NULL, se=FALSE, B, verbose, ...){
-    if (output_type == "nb")
-        evppi_npreg_nb(nb=outputs, inputs=inputs, pars=pars, method=method,
-                       se=se, B=B, verbose=verbose, ...)
-    else if (output_type == "cea")
-        evppi_npreg_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                        inputs=inputs, pars=pars, method=method,
-                        se=se, B=B, verbose=verbose, ...)
+evppi_npreg <- function(outputs, ...){
+    UseMethod("evppi_npreg", outputs)
 }
 
-evppi_npreg_nb <- function(nb, inputs, pars, method, se, B, verbose, ...){
+evppi_npreg.nb <- function(outputs, inputs, pars, method, se, B, verbose, ...){
     if (verbose) message("Fitting nonparametric regression") 
-    fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=method, se=se, B=B, 
+    fit <- fitted_npreg(outputs, inputs=inputs, pars=pars, method=method, se=se, B=B, 
                         verbose=verbose, ...)
     res <- calc_evppi(fit)
     if (se){
-        evppi_rep <- numeric(B)
         if (verbose) message("Calculating replicate EVPPIs from simulation")
+        evppi_rep <- numeric(B)
         for (i in 1:B){
-            ## This bit could be faster.  Is there a vectorised way? 
+            ## This bit could be faster.  Is there a vectorised way?  Naive apply doesn't help
             evppi_rep[i] <- calc_evppi(attr(fit, "rep")[i,,])   
         }
         attr(res, "se") <-  sd(evppi_rep)
@@ -287,13 +291,14 @@ evppi_npreg_nb <- function(nb, inputs, pars, method, se, B, verbose, ...){
     res
 }
 
-evppi_npreg_cea <- function(costs, effects, wtp, inputs, pars, method, se, B, verbose, ...){
+evppi_npreg.cea <- function(outputs, inputs, pars, method, se, B, verbose, ...){
+    wtp <- outputs$k
     nwtp <- length(wtp)
     res <- resse <- numeric(nwtp)
     if (verbose) message("Fitting nonparametric regression for costs") 
-    cfit <- fitted_npreg(costs, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
+    cfit <- fitted_npreg(outputs$c, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
     if (verbose) message("Fitting nonparametric regression for effects") 
-    efit <- fitted_npreg(effects, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
+    efit <- fitted_npreg(outputs$e, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
     for (i in 1:nwtp){
         evppi_rep <- numeric(B)
         inbfit <- efit*wtp[i] - cfit
@@ -322,7 +327,7 @@ fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
         fitted_rep <- array(0, dim=c(B, nsim, nopt))
     for (i in 1:(nopt-1)){
         if (verbose) message(sprintf("Decision option %s",i+1)) 
-        fit <- fitted_npreg_call(inb[,i], inputs, pars, method, verbose=verbose, ...) 
+        fit <- fitted_npreg_fn(method)(y=inb[,i], inputs=inputs, pars=pars, ...) 
         fitted[,i+1] <- as.vector(fit)
         if (se){
             fitted_rep[,,i+1] <- fitted_npreg_rep_call(method, attr(fit,"model"), B, verbose)
@@ -331,23 +336,14 @@ fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
     if (se) attr(fitted, "rep") <- fitted_rep
     fitted
 }
-    
-fitted_npreg_call <- function(y, inputs, pars, method, verbose, ...){
-    if (method=="gam") {
-        fitted <- fitted_gam(y, inputs, pars, ...)
-    }
-    if (method=="gp") {
-        fitted <- fitted_gp(y, inputs, pars, ...)
-    } 
-    if (method=="inla") {
-        fitted <- fitted_inla(y, inputs, pars, verbose, ...)
-    } 
-    if (method=="earth") {
-        fitted <- fitted_earth(y, inputs, pars, ...)
-    } 
-    fitted
-}
 
+fitted_npreg_fn <- function(method){
+    switch(method, 
+           gam = fitted_gam,
+           gp = fitted_gp,
+           inla = fitted_inla,
+           earth = fitted_earth)
+}
 
 fitted_npreg_rep_call <- function(method, model, B, verbose=FALSE){
     if (verbose) message("Simulating parameters to calculate standard errors")
@@ -387,12 +383,12 @@ check_outputs_matrix <- function(outputs, inputs, name){
 
 check_outputs <- function(outputs, inputs=NULL){
     if (is.matrix(outputs) || is.data.frame(outputs)){
-        output_type <- "nb"
+        class(outputs) <- c("nb", attr(outputs, "class"))
         if (!is.null(inputs)) # check not required for EVPI 
             check_outputs_matrix(outputs, inputs, "outputs")
     }
     else if (is.list(outputs)){
-        output_type <- "cea"
+        class(outputs) <- c("cea", attr(outputs, "class"))
         required_names <- c("c","e","k")
         for (i in required_names){
             if (!(i %in% names(outputs)))
@@ -405,7 +401,7 @@ check_outputs <- function(outputs, inputs=NULL){
         ## TODO Also check wtp
     }
     else stop("`outputs` should be a matrix, data frame or list, see help(evppi)")
-    output_type
+    outputs
 }
 
 
