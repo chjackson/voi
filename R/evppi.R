@@ -321,6 +321,7 @@ fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
     nsim <- nrow(nb)
     ## Transforming to incremental net benefit allows us to do one fewer regression
     ## Assume it doesn't matters which option is the baseline for this purpose
+    ## or which way round the difference is calculated
     inb <- nb[,1] - nb[, -1, drop=FALSE] #- nb[,1]
     fitted <- matrix(0, nrow=nsim, ncol=nopt)
     if (se) 

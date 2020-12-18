@@ -18,6 +18,10 @@ library(devtools)
 install_github("chjackson/voi")
  ```
 
+## Source code
+
+[Github repository](http://github.com/chjackson/voi)
+
   <!-- badges: start -->
   [![Travis build status](https://travis-ci.com/chjackson/voi.svg?branch=master)](https://travis-ci.com/chjackson/voi)
   <!-- badges: end -->

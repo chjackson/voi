@@ -66,9 +66,6 @@ GENERAL
 * Interface to heemod package.  Any other packages to interface with?
 
 
-## DISCUSSION 
-
-* Does the baseline option matter for the purpose of regression-based EVPPI computation - can it always be treatment 1?   For consistency with what BCEA does, incremental for regressions is calculated as reference - active.  That seems backwards, but not sure it matters.
 
 
 
