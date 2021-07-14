@@ -88,8 +88,8 @@ for single parameter EVPPI.
 \code{"sal"} for the method of Sadatsafavi et al. (2013).  Only supported 
 for single parameter EVPPI.}
 
-\item{se}{If possible, calculate a standard error for the EVPPI.  Under
-development - not supported yet.}
+\item{se}{If possible, calculate a standard error for the EVPPI.  Currently
+only supported for \code{method="gam"}.}
 
 \item{B}{Number of parameter replicates for calculating the standard error.}
 

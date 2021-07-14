@@ -73,8 +73,8 @@
 ##' \code{"sal"} for the method of Sadatsafavi et al. (2013).  Only supported 
 ##' for single parameter EVPPI.
 ##' 
-##' @param se If possible, calculate a standard error for the EVPPI.  Under
-##'   development - not supported yet.
+##' @param se If possible, calculate a standard error for the EVPPI.  Currently
+##'   only supported for \code{method="gam"}.
 ##'
 ##' @param B Number of parameter replicates for calculating the standard error.
 ##'   
@@ -308,7 +308,7 @@ evppi_npreg.cea <- function(outputs, inputs, pars, method, se, B, verbose, ...){
             for (j in 1:B){
                 evppi_rep[j] <- calc_evppi(inbrep[j,,])   
             }
-            resse[i] <- se(evppi_rep)
+            resse[i] <- sd(evppi_rep)
         }
         res[i] <- calc_evppi(inbfit)
     }
