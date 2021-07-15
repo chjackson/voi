@@ -19,6 +19,6 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
-Imports: mgcv, earth, mvtnorm
+Imports: mgcv, earth, mvtnorm, progress
 Suggests: testthat, BCEA, INLA, splancs, ldr
 RoxygenNote: 7.1.1

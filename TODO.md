@@ -12,6 +12,8 @@
 
 * Chemotherapy model code added to facilitate examples. Note exact format of this code may change as we implement different methods that need access to the decision model function. 
 
+* Standard 2-level Monte Carlo 
+
 
 ## TODO
 
@@ -29,7 +31,7 @@ EVPPI
 
 * MLMC and QMC methods
 
-* Standard 2 level Monte Carlo.  Not recommended for use, but for tutorial purposes and methods development.
+* Parallel processing for standard 2 level Monte Carlo, and partial results for convergence checking 
 
 * Anything to facilitate algebraic methods?
 

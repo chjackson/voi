@@ -2,11 +2,13 @@
 
 export(evpi)
 export(evppi)
+export(evppi_mc)
 export(evppivar)
 export(evsi)
 export(evsivar)
 importFrom(grDevices,dev.off)
 importFrom(graphics,points)
+importFrom(progress,progress_bar)
 importFrom(stats,as.formula)
 importFrom(stats,coef)
 importFrom(stats,dbinom)
