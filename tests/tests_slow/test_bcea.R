@@ -3,6 +3,8 @@ library(BCEA)
 #load_all("voi")
 #load_all("../../../BCEA")
 
+if (0) {  ## TEST DISABLED WHILE ldr has been taken off CRAN
+
 chemo_bcea <- bcea(e=chemo_cea$e, c=chemo_cea$c, wtp=30000)
 
 test_that("Agrees with BCEA: single parameter, default GAM",{
@@ -33,3 +35,6 @@ test_that("Agrees with BCEA: single parameter, INLA",{
         voi::evppi(outputs=chemo_cea, inputs=chemo_pars, poi=pars, method="inla", nsim=100)[chemo_cea$k == 30000]
     )
 })
+
+
+    }

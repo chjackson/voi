@@ -36,12 +36,14 @@ test_that("multi-parameter EVPPI, earth",{
     evppi(chemo_nb, chemo_pars, pars=pars, method="earth") # 17
 })
 
+if (0) { # DISABLE TEST WHILE ldr has been removed from CRAN 
 test_that("EVPPI with INLA",{
     expect_error(evppi(chemo_nb, chemo_pars, pars="pi1", method="inla", nsim=100), "2 or more parameters")
     pars <- c("pi1","rho")
     INLA:::inla.dynload.workaround()
     evppi(chemo_nb, chemo_pars, pars=pars, method="inla", nsim=1000) # 17
 })
+}
 
 test_that("4-parameter EVPPI",{
     pars <- c("pi1","rho","gamma.hosp","gamma.dead")

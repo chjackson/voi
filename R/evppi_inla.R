@@ -23,6 +23,7 @@ fitted_inla <- function(y, inputs, pars,
                         h.value = 5e-05,
                         robust = FALSE,
                         int.ord = 1){
+    stop("INLA EVPPI method currently unavailable, as the `ldr` package has been removed from CRAN")
     check_packages()
     family <- if (robust) "T" else "gaussian"
     if (!is.element("INLA", (.packages()))) {
