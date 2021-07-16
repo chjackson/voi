@@ -6,7 +6,7 @@ evppi_sal <- function(outputs, inputs, pars, ...){
     n.seps <- list(...)$n.seps
     if (is.null(n.seps)) n.seps <- 1
 
-    U <- form_nbarray(outputs, inputs)
+    U <- form_nbarray(outputs)
     nsim <- dim(U)[1]
     nk <- dim(U)[2]
     nopt <- dim(U)[3]

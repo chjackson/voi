@@ -4,7 +4,7 @@
 ##' WTP value when `outputs` is in "net benefit" form.
 ##' 
 ##' @keywords internal
-form_nbarray <- function(outputs, inputs){
+form_nbarray <- function(outputs){
     if (inherits(outputs, "cea")){
         nsim <- nrow(outputs$c)
         nk <- length(outputs$k)
@@ -17,7 +17,7 @@ form_nbarray <- function(outputs, inputs){
         nsim <- nrow(outputs)
         nk <- 1
         nopt <- ncol(outputs)
-        nb <- array(outputs, dim=c(nsim, nk, nopt))
+        nb <- array(as.matrix(outputs), dim=c(nsim, nk, nopt))
     }
     nb
 }
@@ -31,7 +31,7 @@ evppi_so <- function(outputs, inputs, pars, ...){
     if (is.null(n.blocks))
         stop("`n.blocks` is required for method=\"so\"")
         
-    U <- form_nbarray(outputs, inputs)
+    U <- form_nbarray(outputs)
     nsim <- dim(U)[1]
     nk <- dim(U)[2]
     nopt <- dim(U)[3]
