@@ -1,6 +1,8 @@
-TODO.md
+TODO\.md
 R/evsi_mm.R
 data-raw
 ^\.travis\.yml$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^doc$
+^Meta$

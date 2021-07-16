@@ -195,7 +195,7 @@ evppi <- function(outputs,
                   se=FALSE,
                   B=500,
                   nsim=NULL,
-                  verbose=TRUE,
+                  verbose=FALSE,
                   ...)
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))

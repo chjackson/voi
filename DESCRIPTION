@@ -19,6 +19,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
+VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress
-Suggests: testthat, BCEA, INLA, splancs, ldr
+Suggests: testthat, BCEA, INLA, splancs, ldr, knitr, rmarkdown
 RoxygenNote: 7.1.1

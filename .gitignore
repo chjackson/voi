@@ -43,3 +43,5 @@ vignettes/*.pdf
 
 man/form_nbarray.Rd
 voi.Rproj
+/doc/
+/Meta/

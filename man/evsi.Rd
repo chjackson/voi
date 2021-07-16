@@ -19,7 +19,7 @@ evsi(
   Q = 30,
   npreg_method = "gam",
   nsim = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   ...
 )
 }

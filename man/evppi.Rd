@@ -12,7 +12,7 @@ evppi(
   se = FALSE,
   B = 500,
   nsim = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   ...
 )
 }

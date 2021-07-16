@@ -7,7 +7,7 @@ check_packages <- function(){
         stop("You need to install the packages 'INLA' and 'splancs'. Please run in your R terminal:\n install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')\n and\n install.packages('splancs')")
     }
     if (!isTRUE(requireNamespace("ldr", quietly = TRUE))) {
-        stop("You need to install the package 'ldr'. Please run in your R terminal:\n install.packages('ldr')")
+        stop("You need to install the package 'ldr'. Please run in your R terminal:\ninstall.packages('devtools')\ndevtools::install_version('ldr', version = '1.3.3', repos = 'http://cran.rstudio.com')")
     }
 }
 
@@ -23,7 +23,7 @@ fitted_inla <- function(y, inputs, pars,
                         h.value = 5e-05,
                         robust = FALSE,
                         int.ord = 1){
-    stop("INLA EVPPI method currently unavailable, as the `ldr` package has been removed from CRAN")
+#    stop("INLA EVPPI method currently unavailable, as the `ldr` package has been removed from CRAN")
     check_packages()
     family <- if (robust) "T" else "gaussian"
     if (!is.element("INLA", (.packages()))) {

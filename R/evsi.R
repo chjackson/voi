@@ -99,7 +99,7 @@ evsi <- function(outputs,
                  Q=30,
                  npreg_method="gam",
                  nsim=NULL,
-                 verbose=TRUE, 
+                 verbose=FALSE, 
                  ...)
 {
     check_inputs(inputs)

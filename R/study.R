@@ -33,4 +33,22 @@ likelihood_trial_binary <- function(Y, inputs, n=100, pars){
     exp(loglik)
 }
 
-studies_builtin <- c("binary","trial_binary")
+
+## Single-arm study of a normal outcome with known variance (supplied as an argument) 
+## Return an estimate of the mean from a study of size n 
+
+datagen_normal_known <- function(inputs, n=100, pars, sig=1){
+    nsim <- nrow(inputs)
+    mu <- inputs[,pars[1]]
+    data.frame(
+        X1 = rnorm(nsim, mu, sig/sqrt(n))
+    )
+}
+
+likelihood_normal_known <- function(Y, inputs, n=100, pars, sig=1){
+    mu <- inputs[,pars[1]]
+    dnorm(Y[,"X1"], mu, sig/sqrt(n))
+}
+
+
+studies_builtin <- c("binary","trial_binary","normal_known")
