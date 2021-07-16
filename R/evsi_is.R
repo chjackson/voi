@@ -48,7 +48,7 @@ prepost_evsi_is <- function(nb, inputs, pars, datagen_fn, n=100,
     nout <- ncol(y) # TODO make sure 1D handled 
     prepost <- matrix(nrow=nsam, ncol=nout)
     for (i in 1:nsam){
-        ll <- likelihood(simdat[i,], inputs, pars=pars) # vector of length nsim 
+        ll <- likelihood(simdat[i,,drop=FALSE], inputs, pars=pars) # vector of length nsim 
         w <- ll/sum(ll)
         for (j in 1:nout) { 
             ## to vectorise would need nsam x nsam storage 
@@ -81,7 +81,7 @@ check_likelihood <- function(likelihood, inputs, datagen_fn, pars){
     ## 2. names matching inputs 
     ## returns output: vector length equal to nrow(inputs)
     data_sim <- datagen_fn(inputs, pars=pars)
-    ret <- likelihood(data_sim, inputs)
+    ret <- likelihood(data_sim, inputs=inputs)
     if (!is.vector(ret) | !is.numeric(ret))
         stop("likelihood function should return a numeric vector")
     if (length(ret) != nrow(inputs))
