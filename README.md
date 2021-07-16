@@ -18,10 +18,12 @@ library(devtools)
 install_github("chjackson/voi")
  ```
 
+## User guide 
+
+[`voi` for Value of Information calculation: package overview](https://chjackson.github.io/doc/voi.html)
+
+
 ## Source code
 
 [Github repository](http://github.com/chjackson/voi)
 
-  <!-- badges: start -->
-  [![Travis build status](https://travis-ci.com/chjackson/voi.svg?branch=master)](https://travis-ci.com/chjackson/voi)
-  <!-- badges: end -->
