@@ -20,7 +20,7 @@ install_github("chjackson/voi")
 
 ## User guide 
 
-[`voi` for Value of Information calculation: package overview](https://chjackson.github.io/doc/voi.html)
+[`voi` for Value of Information calculation: package overview](https://chjackson.github.io/articles/voi.html)
 
 
 ## Source code
