@@ -102,6 +102,14 @@ par_fn <- function(n){
 #  evppi_mc(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 
 ## -----------------------------------------------------------------------------
+par_fn_corr <- function(n, p1=NULL){
+  p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
+  data.frame(p1 = p1_new,
+             p2 = rnorm(n, p1_new, 2))
+}
+evppi_mc(model_fn_nb, par_fn_corr, pars="p1", ninner=100, nouter=50)
+
+## -----------------------------------------------------------------------------
 datagen_normal <- function(inputs, n=100, sigma=1){
   data.frame(xbar = rnorm(n = nrow(inputs),
                           mean = inputs[,"p1"],

@@ -278,6 +278,23 @@ These functions are then supplied as arguments to `evppi_mc`, along with the num
 evppi_mc(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 ```
 
+The parameters may be correlated.   In that case, `par_fn` requires an extra argument or arguments to enable a sample to be drawn from the appropriate conditional distribution.   For example, the function below specifies a bivariate
+normal distribution for $(p_1,p_2)$ where a correlation is induced by defining $E(p_2|p_1) = p_1$.   To draw a sample from the conditional distribution of $p_2$ given $p_1=2$, for example, call `par_fn_corr(1, p1=2)$p2`. 
+
+If the argument `p1` is not supplied, then the function should return a sample from the joint distribution marginalised over $p_1$, as in this case where if we do not supply `p1` then the default value of 0 is used. 
+
+A function of this form should then be passed to `evppi_mc` if the parameters are correlated. This allows `evppi_mc` to draw from the appropriate distribution in the inner loop.  
+
+```{r}
+par_fn_corr <- function(n, p1=NULL){
+  p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
+  data.frame(p1 = p1_new,
+             p2 = rnorm(n, p1_new, 2))
+}
+evppi_mc(model_fn_nb, par_fn_corr, pars="p1", ninner=100, nouter=50)
+```
+
+
 
 
 ## Expected value of sample information 
