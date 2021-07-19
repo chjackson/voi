@@ -2,9 +2,9 @@
 ## Code from SAVI 
 ## [Aren't there also packaged GP regression methods ?  gaupro, GPfit? are they more efficient?]
 
-fitted_gp <- function(y, inputs, pars, ...){
+fitted_gp <- function(y, inputs, pars, verbose=FALSE, ...){
     args <- list(...)
-    gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL)$fitted
+    gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL, verbose=verbose)$fitted
 }
 
 
@@ -74,7 +74,7 @@ post.density <- function(hyperparams, NB, input.m) {
 }
 
 
-estimate.hyperparameters <- function(NB, inputs, session) {
+estimate.hyperparameters <- function(NB, inputs, session, verbose=FALSE) {
   
   p <- NCOL(inputs)
   
@@ -90,7 +90,8 @@ estimate.hyperparameters <- function(NB, inputs, session) {
 #    progress1$set(value = d)
     initial.values <- rep(0, p + 1)
     repeat {
-      print(paste("calling optim function for net benefit"))
+        if (verbose) 
+            print(paste("calling optim function for net benefit"))
       log.hyperparameters <- optim(initial.values, fn=post.density, 
                                    NB=NB, input.m=inputs,
                                    method="Nelder-Mead",
@@ -108,7 +109,7 @@ estimate.hyperparameters <- function(NB, inputs, session) {
 
 
 
-gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  session) {
+gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  session, verbose=FALSE) {
   
 #  input.parameters <- cache$params
   paramSet <- cbind(input.parameters[, sets])
@@ -124,7 +125,8 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
   while(length(unique(rankifremoved)) > 1) {
     linearCombs <- which(rankifremoved == max(rankifremoved))
     # print(linearCombs)
-    print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
+    if (verbose) 
+        print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
     paramSet <- cbind(paramSet[, -max(linearCombs)])
     sets <- sets[-max(linearCombs)]
     rankifremoved <- sapply(1:NCOL(paramSet), function(x) qr(paramSet[, -x])$rank)
@@ -132,7 +134,8 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
   if(qr(paramSet)$rank == rankifremoved[1]) {
     paramSet <- cbind(paramSet[, -1]) # special case only lincomb left
     sets <- sets[-1]
-    print(paste("Linear dependence: removing column", colnames(paramSet)[1]))
+    if (verbose) 
+        print(paste("Linear dependence: removing column", colnames(paramSet)[1]))
   }
   
   inputs.of.interest <- sets
@@ -158,7 +161,7 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
     }
     setForHyperparamEst <- 1:m # sample(1:N, m, replace=FALSE)
     hyperparameters <- estimate.hyperparameters(NB[setForHyperparamEst], 
-                                              input.matrix[setForHyperparamEst, ], session)
+                                              input.matrix[setForHyperparamEst, ], session, verbose=verbose)
     
 #  progress1 <- shiny::Progress$new(session, min=1, max=D)
   #on.exit(progress1$close())

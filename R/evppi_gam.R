@@ -1,5 +1,5 @@
 
-fitted_gam <- function(y, inputs, pars, ...){
+fitted_gam <- function(y, inputs, pars, verbose=FALSE, ...){
     opts <- list(...)
     gam_formula <- opts$gam_formula
     if (is.null(gam_formula))
