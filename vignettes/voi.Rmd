@@ -285,13 +285,13 @@ If the argument `p1` is not supplied, then the function should return a sample f
 
 A function of this form should then be passed to `evppi_mc` if the parameters are correlated. This allows `evppi_mc` to draw from the appropriate distribution in the inner loop.  
 
-```{r}
+```{r,eval=FALSE}
 par_fn_corr <- function(n, p1=NULL){
   p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
   data.frame(p1 = p1_new,
              p2 = rnorm(n, p1_new, 2))
 }
-evppi_mc(model_fn_nb, par_fn_corr, pars="p1", ninner=100, nouter=50)
+evppi_mc(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
 ```
 
 
