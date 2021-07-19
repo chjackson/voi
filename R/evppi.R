@@ -82,9 +82,9 @@
 ##'   EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 ##'   \code{outputs} are used.
 ##'
-##' @param verbose If \code{TRUE}, then print messages describing each step of
-##'   the calculation.  Useful to see the progress of slow calculations.
-##'   Currently only supported by the \code{"inla"} EVPPI method.
+##' @param verbose If \code{TRUE}, then messages are printed describing each step of
+##'   the calculation, if the method supplies these.  Useful to see the progress
+##' of slow calculations.  
 ##'
 ##' @param ... Other arguments to control specific methods.
 ##'
@@ -328,7 +328,7 @@ fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
         fitted_rep <- array(0, dim=c(B, nsim, nopt))
     for (i in 1:(nopt-1)){
         if (verbose) message(sprintf("Decision option %s",i+1)) 
-        fit <- fitted_npreg_fn(method)(y=inb[,i], inputs=inputs, pars=pars, ...) 
+        fit <- fitted_npreg_fn(method)(y=inb[,i], inputs=inputs, pars=pars, verbose=verbose, ...) 
         fitted[,i+1] <- as.vector(fit)
         if (se){
             fitted_rep[,,i+1] <- fitted_npreg_rep_call(method, attr(fit,"model"), B, verbose)
@@ -360,7 +360,7 @@ calc_evppi <- function(fit) {
 }
 
 default_evppi_method <- function(pars){
-    if (length(pars) <= 4) "gam" else "inla"
+    if (length(pars) <= 4) "gam" else "gp"
 }
 
 check_inputs <- function(inputs, iname=NULL){
