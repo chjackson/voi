@@ -303,9 +303,7 @@
   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="va">p1_new</span>,
              p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">p1_new</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="fu"><a href="../reference/evppi_mc.html">evppi_mc</a></span><span class="op">(</span><span class="va">model_fn_nb</span>, <span class="va">par_fn_corr</span>, pars<span class="op">=</span><span class="st">"p1"</span>, ninner<span class="op">=</span><span class="fl">100</span>, nouter<span class="op">=</span><span class="fl">50</span><span class="op">)</span></code></pre></div>
-<pre><code>##        evppi
-## 1 -0.3159542</code></pre>
+<span class="fu"><a href="../reference/evppi_mc.html">evppi_mc</a></span><span class="op">(</span><span class="va">model_fn_nb</span>, <span class="va">par_fn_corr</span>, pars<span class="op">=</span><span class="st">"p1"</span>, ninner<span class="op">=</span><span class="fl">1000</span>, nouter<span class="op">=</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="expected-value-of-sample-information" class="section level2">
@@ -330,7 +328,7 @@
 <p>The function <code>datagen_normal</code> below does this in a vectorised way for the example. Each row of the returned data frame is based on a different simulated <span class="math inline">\(p_1\)</span> taken from the first column of <code>inputs</code>, and contains a summary statistic <span class="math inline">\(\bar{x}\)</span> obtained from a dataset generated conditionally on that value of <span class="math inline">\(p_1\)</span>.</p>
 <p>The sample size is included as an argument <code>n</code> to the data generation function. The names of the returned data-frame can be anything (<code>xbar</code> was used in this case to be descriptive).</p>
 <p>The <code>evsi</code> function can then be used to compute the EVSI for a series of different sample sizes from this design. Note how the EVSI converges to the EVPPI as the sample size increases.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">datagen_normal</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">inputs</span>, <span class="va">n</span><span class="op">=</span><span class="fl">100</span>, <span class="va">sigma</span><span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>xbar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span>,
                           mean <span class="op">=</span> <span class="va">inputs</span><span class="op">[</span>,<span class="st">"p1"</span><span class="op">]</span>,
@@ -338,12 +336,12 @@
 <span class="op">}</span>
 
 <span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, datagen_fn <span class="op">=</span> <span class="va">datagen_normal</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.07078461</code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<pre><code>## [1] 0.07184449</code></pre>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
 <span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, datagen_fn <span class="op">=</span> <span class="va">datagen_normal</span>, n<span class="op">=</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08184203</code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, datagen_fn <span class="op">=</span> <span class="va">datagen_normal</span>, n<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08177885</code></pre>
 </div>
@@ -351,10 +349,10 @@
 <h3 class="hasAnchor">
 <a href="#built-in-study-designs" class="anchor"></a>Built-in study designs</h3>
 <p>The function <code>datagen_normal</code> is also included in the <code>voi</code> package as a built-in study design. To invoke the <code>evsi</code> function for a built-in study design, we have to supply the name of the design (in this case <code>"normal_known"</code>) and the name of the parameter or parameters (corresponding to a column of “inputs”) which is estimated by the study data. (Note that the results will vary every time the function is invoked due to Monte Carlo error)</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">100</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.0809309</code></pre>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">1000</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08226843</code></pre>
 <p>Other built-in study designs include</p>
@@ -369,7 +367,7 @@
 <p>This is illustrated here for the simple normal example. The likelihood function acts on one row of the data frame <span class="math inline">\(Y\)</span> which is produced by the data generation function, and returns a data frame with number of rows matching the rows of <code>inputs</code>. Each row of the returned data frame gives the sampling density for that row of <span class="math inline">\(Y\)</span> given the corresponding parameter values in <code>inputs</code>. The corresponding EVSI calculation then involves building a large matrix of likelihoods for combinations of simulated datasets and simulated parameters.</p>
 <p>Any user-supplied likelihood function should consistently define the same model for the data as the data generation function (the package does not check this!), and any names of parameters and outputs should match the names defined in <code>inputs</code> and the data generation function.</p>
 <p>This method is typically slower than the default nonparametric regression method, so it may be worth setting <code>nsim</code> to a value lower than the number of samples in <code>inputs</code>. Below <code>nsim=1000</code> is used so that only 1000 samples are used, instead of the full 10000 samples contained in <code>inputs</code>.</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">likelihood_normal</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Y</span>, <span class="va">inputs</span>, <span class="va">n</span><span class="op">=</span><span class="fl">100</span>, <span class="va">sig</span><span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">{</span>
   <span class="va">mu</span> <span class="op">&lt;-</span> <span class="va">inputs</span><span class="op">[</span>,<span class="st">"p1"</span><span class="op">]</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">[</span>,<span class="st">"xbar"</span><span class="op">]</span>, <span class="va">mu</span>, <span class="va">sig</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>
@@ -379,7 +377,7 @@
      n<span class="op">=</span><span class="fl">100</span>, pars <span class="op">=</span> <span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"is"</span>, nsim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08917379</code></pre>
 <p>Again, this study model is available as a built-in study design, so instead of writing a user-defined likelihood and data generation function, <code>evsi</code> can also be invoked with <code>study="normal_known", method="is"</code>.</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">100</span>, pars <span class="op">=</span> <span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"is"</span>, nsim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08603906</code></pre>
 </div>
