@@ -123,9 +123,9 @@ Note the definition of the likelihood should agree with the definition of \code{
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 
-\item{verbose}{If \code{TRUE}, then print messages describing each step of
-the calculation.  Useful to see the progress of slow calculations.
-Currently only supported by the \code{"inla"} EVPPI method.}
+\item{verbose}{If \code{TRUE}, then messages are printed describing each step of
+  the calculation, if the method supplies these.  Useful to see the progress
+of slow calculations.}
 
 \item{...}{Other arguments required by specific methods}
 }

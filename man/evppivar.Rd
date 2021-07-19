@@ -68,9 +68,9 @@ for single parameter EVPPI.}
 EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 \code{outputs} are used.}
 
-\item{verbose}{If \code{TRUE}, then print messages describing each step of
-the calculation.  Useful to see the progress of slow calculations.
-Currently only supported by the \code{"inla"} EVPPI method.}
+\item{verbose}{If \code{TRUE}, then messages are printed describing each step of
+  the calculation, if the method supplies these.  Useful to see the progress
+of slow calculations.}
 
 \item{...}{Other arguments to control specific methods.
 
