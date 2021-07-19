@@ -121,7 +121,16 @@ simplest of examples.  For realistically complex examples, the methods
 implemented in the <code><a href='evppi.html'>evppi</a></code> function will usually be preferred.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>evppi_mc</span><span class='op'>(</span><span class='va'>model_fn</span>, <span class='va'>par_fn</span>, <span class='va'>pars</span>, <span class='va'>nouter</span>, <span class='va'>ninner</span>, wtp <span class='op'>=</span> <span class='cn'>NULL</span>, mfargs <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>evppi_mc</span><span class='op'>(</span>
+  <span class='va'>model_fn</span>,
+  <span class='va'>par_fn</span>,
+  <span class='va'>pars</span>,
+  <span class='va'>nouter</span>,
+  <span class='va'>ninner</span>,
+  wtp <span class='op'>=</span> <span class='cn'>NULL</span>,
+  mfargs <span class='op'>=</span> <span class='cn'>NULL</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,6 +197,11 @@ implemented in the <code><a href='evppi.html'>evppi</a></code> function will usu
       <th>mfargs</th>
       <td><p>Named list of additional arguments to supply to
 <code>model_fn</code>.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Set to <code>TRUE</code> to print some additional messages to
+help with debugging.</p></td>
     </tr>
     </table>
 
