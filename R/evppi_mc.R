@@ -63,10 +63,13 @@
 ##' @param mfargs Named list of additional arguments to supply to
 ##'   \code{model_fn}.
 ##'
+##' @param verbose Set to \code{TRUE} to print some additional messages to
+##' help with debugging.
+##'
 ##' @export
 evppi_mc <- function(model_fn, par_fn, pars, nouter, ninner,
-                     wtp=NULL, mfargs=NULL){
-    model_fn <- check_model_fn(model_fn, par_fn, mfargs)
+                     wtp=NULL, mfargs=NULL, verbose=FALSE){
+    model_fn <- check_model_fn(model_fn, par_fn, mfargs, verbose=verbose)
     nopt <- attr(model_fn, "nopt")
     check_parfnn(par_fn, model_fn)
     check_int(nouter, "nouter")

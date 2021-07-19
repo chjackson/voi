@@ -4,7 +4,16 @@
 \alias{evppi_mc}
 \title{Traditional two-level Monte Carlo estimator of EVPPI.}
 \usage{
-evppi_mc(model_fn, par_fn, pars, nouter, ninner, wtp = NULL, mfargs = NULL)
+evppi_mc(
+  model_fn,
+  par_fn,
+  pars,
+  nouter,
+  ninner,
+  wtp = NULL,
+  mfargs = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{model_fn}{A function to evaluate a decision-analytic model at a given
@@ -63,6 +72,9 @@ evppi_mc(model_fn, par_fn, pars, nouter, ninner, wtp = NULL, mfargs = NULL)
 
 \item{mfargs}{Named list of additional arguments to supply to
 \code{model_fn}.}
+
+\item{verbose}{Set to \code{TRUE} to print some additional messages to
+help with debugging.}
 }
 \description{
 Traditional two-level Monte Carlo estimator of the expected value of partial

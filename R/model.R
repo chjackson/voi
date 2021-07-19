@@ -9,7 +9,7 @@
 ##' number of decision options. 
 ##' 
 ##' @keywords internal 
-check_model_fn <- function(model_fn, par_fn, mfargs){
+check_model_fn <- function(model_fn, par_fn, mfargs, verbose=FALSE){
     ## Test by evaluating the model function at a single set of parameters/arguments
     pars <- check_parfn1(par_fn, model_fn, mfargs)
     defaults <- get_default_args(model_fn, pars)
@@ -25,7 +25,8 @@ check_model_fn <- function(model_fn, par_fn, mfargs){
             stop("If `model_fn` returns a matrix or data frame it should have two rows, one for effects and one for costs")
         }
     } else stop("`model_fn` should return a vector, matrix or data frame")
-    describe_modelfn(model_fn)
+    if (verbose) 
+        describe_modelfn(model_fn)
     if (attr(model_fn, "nopt")==1)
         stop("model_fn should describe more than one decision option")
     model_fn
