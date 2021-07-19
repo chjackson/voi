@@ -35,7 +35,8 @@ test_that("Errors in Monte Carlo EVPPI",{
   bad_parfn <- function(n){cbind(p1=rnorm(n,0,s1), p3=rnorm(n,0,s2))}
   expect_error(evppi_mc(model_fn, bad_parfn, pars="p2", nouter=10, ninner=100), "parameters of `model_fn` were not found")
   bad_parfn <- function(n){stop()}
-  expect_error(evppi_mc(model_fn, bad_parfn, pars="p2", nouter=10, ninner=100), "returned an error")
+  expect_error(evppi_mc(model_fn, bad_parfn, pars="p2", nouter=10, ninner=100), "returned the following error")
+  expect_error(evppi_mc(model_fn, par_fn_foo, pars="p1", nouter=100, ninner=50)$evppi, "not found")
   bad_parfn <- function(n){c(p1=1,p2=1)}
   expect_error(evppi_mc(model_fn, bad_parfn, pars="p2", nouter=10, ninner=100), 
                "for n>1 should return a matrix or data frame")
@@ -74,4 +75,16 @@ test_that("Monte Carlo EVPPI: Additional arguments to model_fn",{
   expect_error(evppi_mc(model_fn, par_fn, pars="p1", nouter=10, ninner=10), NA)
   ## note that mfargs will override any default value
   expect_error(evppi_mc(model_fn, par_fn, pars="p1", nouter=10, ninner=10, mfargs=list(basenb=0)), NA)
+})
+
+
+test_that("Monte Carlo EVPPI: Correlated parameters",{
+  model_fn <- function(p1, p2) {c(0, p1 + p2)}
+  par_fn_corr <- function(n, p1=NULL){
+    p1_new <- if (is.null(p1)) rnorm(n, 1, 1) else p1
+    data.frame(p1 = p1_new,
+               p2 = rnorm(n, p1_new, 2))
+  }
+  set.seed(1)
+  expect_equal(evppi_mc(model_fn, par_fn_corr, pars="p1", nouter=100, ninner=50)$evppi, 0.237, tol=1e-01)
 })

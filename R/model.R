@@ -46,7 +46,8 @@ describe_modelfn.cea <- function(model_fn, ...){
 check_parfn1 <- function(par_fn, model_fn, mfargs){
     fn_try <- try(pars <- par_fn(1), silent=TRUE)
     if (inherits(fn_try, "try-error")){
-        stop("Evaluating `par_fn` returned an error")
+        stop("Evaluating `par_fn` returned the following error:\n", 
+             attr(fn_try,"condition")$message)
     }
     if (is.vector(pars)) {
         if (is.null(names(pars)))
@@ -81,7 +82,8 @@ get_default_args <- function(fn, supplied=NULL){
 check_parfnn <- function(par_fn, model_fn){
     fn_try <- try(pars <- par_fn(2), silent=TRUE)
     if (inherits(fn_try, "try-error")){
-        stop("Evaluating `par_fn` returned an error") # TODO print the actual error? 
+        stop("Evaluating `par_fn` returned the following error\n",
+             attr(fn_try,"condition")$message)
     }
     if (!(is.matrix(pars) || is.data.frame(pars)))
         stop("par_fn(n) for n>1 should return a matrix or data frame")

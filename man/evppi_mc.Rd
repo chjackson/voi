@@ -37,7 +37,15 @@ evppi_mc(model_fn, par_fn, pars, nouter, ninner, wtp = NULL, mfargs = NULL)
   the number of random values to draw for each parameter.  The object
   returned by \code{par_fn} should then have \code{n} rows, and one column
   for each parameter. If one value is drawn, then \code{par_fn} is also
-  allowed to return a vector, but this should still be named.}
+  allowed to return a vector, but this should still be named.
+
+  The parameters may be correlated.  If we wish to compute the EVPPI for a
+  parameter which is correlated with a different parameter q, then `par_fn`
+  must have an argument with the name of that parameter.  If that argument
+  is set to a fixed value, then `par_fn` should return a sample drawn
+  conditionally on that value.  If that argument is not supplied, then
+  `par_fn` must return a sample drawn from the marginal distribution. See
+  the vignette for an example.}
 
 \item{pars}{A character vector giving the parameters of interest, for which
   the EVPPI is required.   This should correspond to an explicit argument to
@@ -50,9 +58,11 @@ evppi_mc(model_fn, par_fn, pars, nouter, ninner, wtp = NULL, mfargs = NULL)
 
 \item{ninner}{Number of inner samples}
 
-\item{wtp}{Vector of willingness-to-pay values.  Only used if \code{model_fn} is in cost-effectiveness analyis format.}
+\item{wtp}{Vector of willingness-to-pay values.  Only used if
+\code{model_fn} is in cost-effectiveness analyis format.}
 
-\item{mfargs}{Named list of additional arguments to supply to \code{model_fn}.}
+\item{mfargs}{Named list of additional arguments to supply to
+\code{model_fn}.}
 }
 \description{
 Traditional two-level Monte Carlo estimator of the expected value of partial

@@ -44,15 +44,25 @@
 ##'   returned by \code{par_fn} should then have \code{n} rows, and one column
 ##'   for each parameter. If one value is drawn, then \code{par_fn} is also
 ##'   allowed to return a vector, but this should still be named.
-##'   
+##'
+##'   The parameters may be correlated.  If we wish to compute the EVPPI for a
+##'   parameter which is correlated with a different parameter q, then `par_fn`
+##'   must have an argument with the name of that parameter.  If that argument
+##'   is set to a fixed value, then `par_fn` should return a sample drawn
+##'   conditionally on that value.  If that argument is not supplied, then
+##'   `par_fn` must return a sample drawn from the marginal distribution. See
+##'   the vignette for an example.
+##'
 ##' @param nouter Number of outer samples
 ##'
 ##' @param ninner Number of inner samples
 ##'
-##' @param wtp Vector of willingness-to-pay values.  Only used if \code{model_fn} is in cost-effectiveness analyis format.
+##' @param wtp Vector of willingness-to-pay values.  Only used if
+##'   \code{model_fn} is in cost-effectiveness analyis format.
 ##'
-##' @param mfargs Named list of additional arguments to supply to \code{model_fn}. 
-##' 
+##' @param mfargs Named list of additional arguments to supply to
+##'   \code{model_fn}.
+##'
 ##' @export
 evppi_mc <- function(model_fn, par_fn, pars, nouter, ninner,
                      wtp=NULL, mfargs=NULL){
@@ -80,13 +90,13 @@ evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, w
     nb_ppi <- numeric(nouter)
     nf <- names(formals(model_fn))
     defaults <- get_default_args(model_fn, pars_rep)   
+    pars_corr <- intersect(names(formals(par_fn)), nf)
 #    registerDoParallel() # TODO 
     pb <- progress::progress_bar$new(total = nouter) 
     for (i in 1:nouter){
         nbi <- matrix(nrow=ninner, ncol=nopt)
         for (j in 1:ninner){
-            parsfix <- par_fn(1)
-            parsfix[,pars] <- pars_rep[i,]
+            parsfix <- sample_conditional(par_fn, pars, pars_corr, vals=pars_rep[i,,drop=FALSE])
             args <- c(parsfix, mfargs, defaults)[nf]
             nbi[j,] <- do.call(model_fn, args)
         }
@@ -107,11 +117,11 @@ evppimc.cea <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, 
     cost_ppi <- eff_ppi <- matrix(nrow=nouter, ncol=nopt)
     nf <- names(formals(model_fn))
     defaults <- get_default_args(model_fn, pars_rep)   
+    pars_corr <- intersect(names(formals(par_fn)), nf)
     for (i in 1:nouter){
         cei <- array(dim=c(ninner, 2, nopt))
         for (j in 1:ninner){
-            parsfix <- par_fn(1)
-            parsfix[,pars] <- pars_rep[i,]
+            parsfix <- sample_conditional(par_fn, pars, pars_corr, vals=pars_rep[i,,drop=FALSE])
             args <- c(parsfix, mfargs, defaults)[nf]
             resj <- do.call(model_fn, args)
             cei[j,,] <- resj
@@ -128,6 +138,22 @@ evppimc.cea <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, 
         res[k] <- mean(nb_ppi) - max(colMeans(nb_current))
     }
     res
+}
+
+## Sample from the joint distribution defined by `par_fn`, given fixed values
+## `vals` for parameters `pars`.   If `par_fn` has any arguments other than `n`
+## (named in `pars_corr`), these are assumed to be parameters that are
+## correlated with other parameters, so that fixing their value will change the
+## conditional distribution of the remaining parameters.  The values `vals` of
+## the parameters fixed in the inner EVPPI loop are then supplied for these
+## arguments, to allow par_fn to compute the appropriate conditional
+## distribution
+
+sample_conditional <- function(par_fn, pars, pars_corr, vals) {
+    args_fixed <- if (length(pars_corr) == 0) NULL else as.list(vals[,pars_corr])
+    parsfix <- do.call("par_fn", c(list(n=1), args_fixed))
+    parsfix[,pars] <- vals
+    parsfix
 }
 
 check_int <- function(n, name){
