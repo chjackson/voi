@@ -23,7 +23,7 @@ The theory of the methods and details on how to use them in practice are describ
 
 While some details may not be fully explained in the current draft of this document, the `voi` package is intended to accompany a book which is under preparation.  When the book is finished, it will provide all background information that users of the package will need to know. 
 
-This document gives a very simple overview of how the package is used.  A simple example model is used, but the same methods work for more complex models. 
+This document gives a simple overview of how the package is used.  A simple example model is used, but the same methods work for more complex models. 
 
 
 
@@ -35,7 +35,7 @@ Suppose that the net benefit is simply defined as the difference between two unc
 
 To make a decision under parameter uncertainty, one option is preferred to another if the _expectation_ of its net benefit, with respect to the uncertainty, is greater.   In this case, we choose treatment 2, because the net benefit is distributed as $N(1, \sqrt{1^2+2^2}) = N(1, \sqrt{5})$ which has an expectation of 1, whereas treatment 1 has a known net benefit of zero. 
 
-Most of the functions in the `voi` package work with a _random sample_ of model inputs and outputs.  For the example model, these are simple to generate, as follows.  
+Most of the functions in the `voi` package work with a _random sample_ of model inputs and outputs, generated from "uncertainty analysis", also known as "probabilistic sensitivity analysis".   For the example model, these are simple to generate, as follows.  
 
 ### Specifying model inputs
 
@@ -61,14 +61,14 @@ outputs_nb <- data.frame(t1 = 0,
 
 **Cost-effectiveness analysis** form.   This should be a list that includes the following three named elements (in any order) 
 
-* `"c"`: a data frame with one column per treatment and one row per random sample, containing the expected costs of the treatment. 
+* `"c"`: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected costs of the treatment. 
 
-* `"e"`: a data frame with one column per treatment and one row per random sample, containing the expected effects of the treatment. 
+* `"e"`: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected effects of the treatment. 
 
 * `"k"`: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net benefit is $e \times k - c$.    [ TODO accept the name wtp too ] 
 
 In this simple example, the parameter $p_1$ gives the effects, and $p_2$ the costs of treatment 2, and the 
-net benefit $y = p_1 - p_2$ defined in `outputs_nb` corresponds to a willingness-to-pay of $k=1$.  The cost-effectiveness format allows us compare VoI between different willingness-to-pay values, e.g. 1, 2 and 3 say here. 
+net benefit $y = p_1 - p_2$ defined in `outputs_nb` corresponds to a willingness-to-pay of $k=1$.  The cost-effectiveness format allows us to compare VoI between different willingness-to-pay values, e.g. 1, 2 and 3 say here. 
 
 ```{r}
 outputs_cea <- list( 
@@ -78,33 +78,37 @@ outputs_cea <- list(
 )
 ```
 
-Note that objects returned by the `bcea` function in the [BCEA](https://CRAN.R-project.org/package=BCEA) package satisfy this format. 
+Note that objects returned by the `bcea` function in the [BCEA](https://CRAN.R-project.org/package=BCEA) package satisfy this "cost-effectiveness analysis" format. 
 
 
 ## Expected value of perfect information 
 
 The _expected value of perfect information_ is the expected net benefit given perfect information minus the expected net benefit given current information.  
 
-Given current information, we decided on treatment 2.  Our expected net benefit under current information is 1, the mean of the distribution of treatment 2's net benefit. 
+#### Computation using random sampling 
 
-Random sampling can be used to illustrate how to compute the expected net benefit given perfect information.  Each sample of parameter values mimics a situation of decision-making given perfect information, where we know the parameters take these values.   For each sample, we compare the corresponding treatment 2 net benefit to the threshold of zero, and prefer treatment 1 if the net benefit is negative, and treatment 2 if the net benefit is positive.    The net benefit in each case is the net benefit of the chosen treatment given the "known" parameter values from the current samples. 
+* Given current information, we decided on treatment 2.  Our expected net benefit under current information is 1, the mean of the distribution of treatment 2's net benefit. 
+
+* Random sampling can be used to illustrate how to compute the expected net benefit given perfect information.  Each sample of parameter values mimics a situation of decision-making given perfect information, where we know the parameters take these values.   For each sample, we compare the corresponding treatment 2 net benefit to the threshold of zero, and prefer treatment 1 if the net benefit is negative, and treatment 2 if the net benefit is positive.    The net benefit for each sample is the net benefit of the chosen treatment given the "known" sampled parameter values.  The expected net benefit given perfect information is then computed as the average of this sample (`nb_perfect`).
 
 ```{r}
 decision_current <- 2
 nb_current <- 1
 decision_perfect <- ifelse(outputs_nb$t2 < 0, 1, 2)
 nb_perfect <- ifelse(decision_perfect == 1, 0, outputs_nb$t2)
-(evpi <- mean(nb_perfect) - nb_current)
+(evpi1 <- mean(nb_perfect) - nb_current)
 ```
 
-An alternative view is in terms of _opportunity loss_ which is the net benefit of the better decision we should have made (if we had known the truth), minus the net benefit of the decision we did make.  The opportunity loss can be computed at each sample as follows.  The EVPI is the mean of the opportunity loss. 
+Note that taking the mean over sampled values corresponds to estimating an expectation of the uncertainty distribution from which the values were sampled. 
+
+An alternative view of EVPI is in terms of _opportunity loss_, which is the net benefit of the better decision we should have made (if we had known the truth), minus the net benefit of the decision we did make.  The opportunity loss can be computed at each sample as follows.  The EVPI is the mean of the opportunity loss. 
 
 ```{r}
 opp_loss <- nb_perfect - nb_current
 mean(opp_loss)
 ```
 
-Note that taking the mean over sampled values corresponds to estimating an expectation of the uncertainty distribution from which the values were sampled. 
+#### Using the `voi` package to calculate EVPI
 
 The `voi` package contains a simple function `evpi` to compute the EVPI using the above procedure.  The function automatically detects whether your outputs are in net benefit or cost-effectiveness format. 
 
@@ -114,13 +118,18 @@ evpi(outputs_nb)
 evpi(outputs_cea)
 ```
 
-In this simple example, the EVPI can also be calculated "by hand", because the model just involves normal distributions.   The probability that the decision under perfect information agrees with the decision under current information, in this case, is the probability that the true value of a $y \sim N(1, \sqrt{5})$ is actually positive.
+Note the result is slightly different from `evpi1`, since to get that, we used a value of exactly 1 for the expected net benefit under current information, because we knew the exact distribution of the net benefit given current information was normal with mean 1.  In realistic models, we will need to compute this mean as an average over the random sample.  In this example, this mean is estimated as `r max(colMeans(outputs_nb))`, which leads to a slightly less accurate estimate than the one based on a known mean of 1. 
+
+
+#### Analytic computation
+
+In this simple example, the EVPI can also be calculated "by hand", because the model just involves normal distributions.   The probability that the decision under perfect information agrees with the decision under current information, in this case, is the probability that the true value of a $N(1, \sqrt{5})$ is actually positive.
 
 ```{r}
 prob_correct <- 1 - pnorm(0, 1, sqrt(5))
 ```
 
-The mean of `nb_perfect` can then be calculated as the expected net benefit given a correct decision, multiplied by the probability of a correct decision.  The former is the mean of the values of `outputs_nb$t2` which are positive, which is the mean of a $N(1,\sqrt{5})$ truncated below at zero, and the mean of the truncated normal distribution has a [analytic form](https://en.wikipedia.org/wiki/Truncated_normal_distribution)
+The mean of `nb_perfect` can then be calculated as the expected net benefit given a correct decision, multiplied by the probability of a correct decision.  The former is the mean of the values of `outputs_nb$t2` which are positive, which is the mean of a $N(1,\sqrt{5})$ truncated below at zero. The mean of the truncated normal distribution has a [known analytic form](https://en.wikipedia.org/wiki/Truncated_normal_distribution), represented in the following R function.
 
 ```{r}
 mean_truncnorm <- function(mu, sig, lower=-Inf, upper=Inf){ 
@@ -130,10 +139,10 @@ mean_truncnorm <- function(mu, sig, lower=-Inf, upper=Inf){
 }
 enb_correct <- mean_truncnorm(1, sqrt(5), lower=0) 
 mean_nb_perfect <- enb_correct * prob_correct
-(evpi <- mean_nb_perfect - nb_current)
+(evpi_exact <- mean_nb_perfect - nb_current)
 ```
 
-This analytic result is expected to be more accurate than the value from Monte Carlo simulation.  Unfortunately most realistic decision-analytic models do not have such a nice form, and we must rely on Monte Carlo methods to calculate the expected value of information. 
+This is the exact value of the EVPI in this example, which differs slightly from the estimate based on Monte Carlo simulation.  Unfortunately most realistic decision-analytic models do not have such a nice form, and we must rely on Monte Carlo methods to calculate the expected value of information. 
 
 
 
@@ -146,12 +155,12 @@ The EVPPI is defined as the expected net benefit given perfect knowledge of $\ph
 
 The function `evppi` can be used to compute this. 
 
-There are a variety of alternative computational methods implemented in this function.   The default methods are based on nonparametric regression, and come from [Strong et al.](https://doi.org/10.1177/0272989X13505910).  If there are four or fewer parameters, then a generalized additive model is used.   With five or more, then (TODO FIX INLA) is used. 
+There are a variety of alternative computational methods implemented in this function.   The default methods are based on nonparametric regression, and come from [Strong et al.](https://doi.org/10.1177/0272989X13505910).  If there are four or fewer parameters, then a generalized additive model is used.   With five or more, then Gaussian process regression is used. 
 
 
 ### Invoking the `evppi` function. 
 
-To call `evppi`, supply a sample of outputs and inputs (in the same form REF) in the first two arguments.  The parameter or parameters of interest (whose EVPPI is desired) is supplied in the `"pars"` argument.   This can be expressed in various ways.  
+To call `evppi`, supply a sample of outputs and inputs (in the same form as defined above) in the first two arguments.  The parameter or parameters of interest (whose EVPPI is desired) is supplied in the `"pars"` argument.   This can be expressed in various ways.  
 
 **(a) As a vector**.  The joint EVPPI is computed for all parameters in this vector.  If the vector has more than one element, then the function returns the expected value of perfect information on all of these parameters simultaneously (described as the "multiparameter" EVPPI by [Strong et al.](https://doi.org/10.1177/0272989X13505910)).
 
@@ -160,7 +169,7 @@ evppi(outputs_nb, inputs, pars="p1")
 evppi(outputs_nb, inputs, pars=c("p1","p2"))
 ```
 
-**(b) As a list**.  A separate EVPPI is computed for each element of the list.  In the second example below, this is the EVPPI of $p_1$, followed by the multiparameter EVPPI of "p_1" and "p_2".   Note that the multiparameter EVPPI is the same as the EVPI if, as in this case, the vector includes all of the parameters in the model.
+**(b) As a list**.  A separate EVPPI is computed for each element of the list.  In the second example below, this is the EVPPI of $p_1$, followed by the multiparameter EVPPI of $(p_1,p_2)$.   Note that the multiparameter EVPPI is the theoretically same as the EVPI if, as in this case, the vector includes all of the parameters in the model (though note the difference from EVPI estimates above due to the different computational method).
 
 ```{r}
 evppi(outputs_nb, inputs, pars=list("p1","p2"))
@@ -173,7 +182,6 @@ The `evppi` function returns a data frame with columns indicating the parameter 
 evppi(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
 ```
 
-Some methods have a SE option TODO 
 
 
 ### Changing the default calculation method 
@@ -183,7 +191,7 @@ The method can be changed by supplying the `method` argument to `evppi`.   Some 
 
 
 #### Gaussian process regression
-([Strong et al.](https://doi.org/10.1177/0272989X13505910)).  The number of random samples to use in this computation can be changed using the `nsim` argument, which can be useful for this method as it can be prohibitive for large samples.  Here the sample of 10000 is reduced to 1000. 
+(from [Strong et al.](https://doi.org/10.1177/0272989X13505910)).  The number of random samples to use in this computation can be changed using the `nsim` argument, which can be useful for this method as it can be prohibitive for large samples.  Here the sample of 10000 is reduced to 1000. 
 
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
@@ -196,13 +204,15 @@ evppi(outputs_nb, inputs, pars="p1", method="earth")
 ```
 
 #### INLA method
-([Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) ).  This needs the following extra packages to be installed, using the following commands.   (As of writing, the `ldr` package is not on CRAN due to lack of maintenance, but the archived version has been used without any noticeable problem.) 
+(from [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) ).  This needs the following extra packages to be installed, using the following commands.   (As of writing, the `ldr` package is not on CRAN due to lack of maintenance, but the archived version has been used without any noticeable problem.) 
 
 ```{r,eval=FALSE}
 install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')
 install.packages('splancs')
 devtools::install_version("ldr", version = "1.3.3", repos = "http://cran.uk.r-project.org")
 ```
+
+It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters.   FIXME why doesn't it work in this example? 
 
 ```{r,eval=FALSE}
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla")
@@ -214,24 +224,35 @@ evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla")
 The generalized additive model formula can be changed with the `gam_formula` argument.  This is 
 supplied to the `gam` function from the `mgcv` package.  The default formula uses a tensor product, and 
 if there are more than four parameters, then a basis dimension of 4 terms per parameter is assumed.  
+A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficiently flexible to represent how 
+the outputs depend on the inputs, but can also be estimated in practice, given the complexity
+of the GAM and the number of random samples available to fit it to. 
 
 ```{r}
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
 ```
 
+A standard error for the EVPPI estimates from the GAM method, resulting from uncertainty about the parameters of the GAM approximation, can be obtained by calling `evppi` with `se=TRUE`.  This uses $B$ samples from the distribution of the GAM parameters, thus the standard error can be estimated more accurately by increasing B. 
+
+```{r}
+evppi(outputs_nb, inputs, pars="p1", se=TRUE, B=100)
+```
+
+
 #### Single-parameter methods 
 
 These are only applicable for computing the EVPPI for a single scalar parameter.   They are 
 supplied in the package for technical completeness, but for single-parameter EVPPI we have
-found it to be sufficiently reliable to use the default GAM method. 
+found it to be sufficiently reliable to use the default GAM method, which requires less tuning than
+these methods. 
 
-([Strong and Oakley](https://journals.sagepub.com/doi/full/10.1177/0272989X12465123))
+The method of [Strong and Oakley](https://journals.sagepub.com/doi/full/10.1177/0272989X12465123):
 
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")
 ```
 
-([Sadatsafavi et al.](https://doi.org/10.1016/j.jval.2012.10.018))
+The method of [Sadatsafavi et al.](https://doi.org/10.1016/j.jval.2012.10.018):
 
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", method="sal")
@@ -241,13 +262,15 @@ evppi(outputs_nb, inputs, pars="p1", method="sal")
 
 ### Traditional Monte Carlo nested loop method
 
-([Brennan et al.](https://doi.org/10.1177/0272989x07302555))
+(see e.g. [Brennan et al.](https://doi.org/10.1177/0272989x07302555))
 
 This is generally too slow to provide reliable EVPPI estimates in realistic models, but is provided in this package for technical completeness.
 
-This method is available in the function `evppi_mc`.  It requires the user to supply two functions.  
+This method is available in the function `evppi_mc`.  It requires the user to supply two functions; one to evaluate the decision-analytic model, and one to generate parameter values. 
 
-(a) a function to evaluate the decision-analytic model for specific parameter values.  This must have one argument for each parameter.  The return value can be in either a "net benefit" form or a "costs and effects" form.   The "net benefit" form is a vector giving the net benefit for each decision option. 
+#### Model evaluation function 
+
+This function evaluates the decision-analytic model for specific parameter values.  This must have one argument for each parameter.  The return value can be in either a "net benefit" form or a "costs and effects" form.   The "net benefit" form is a vector giving the net benefit for each decision option. 
 
 ```{r}
 model_fn_nb <- function(p1, p2){ 
@@ -263,7 +286,9 @@ model_fn_cea <- function(p1, p2){
 }
 ```
 
-(b) a function to generate a random sample of $n$ values from the current (joint) uncertainty distribution of the model parameters.  This returns a data frame with $n$ rows and one named column for each parameter.
+#### Parameter simulation function 
+
+This function generates a random sample of $n$ values from the current (joint) uncertainty distribution of the model parameters.  This returns a data frame with $n$ rows and one named column for each parameter.
 
 ```{r}
 par_fn <- function(n){
@@ -272,13 +297,19 @@ par_fn <- function(n){
 }
 ```
 
+
+#### Invoking `evppi_mc`
+
 These functions are then supplied as arguments to `evppi_mc`, along with the number of samples to draw in the inner and outer loops.   1000 inner samples and 100 outer samples give a reasonable EVPPI estimate in this example, but many more samples may be required for the result to converge to the EVPPI in more complex models. 
 
 ```{r,eval=FALSE}
 evppi_mc(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 ```
 
-The parameters may be correlated.   In that case, `par_fn` requires an extra argument or arguments to enable a sample to be drawn from the appropriate conditional distribution.   For example, the function below specifies a bivariate
+
+#### Accounting for parameter correlation 
+
+We may want the EVPPI for a parameter which is correlated with another parameter.  To account for this correlation, `par_fn` requires an extra argument or arguments to enable a sample to be drawn from the appropriate conditional distribution.   For example, the function below specifies a bivariate
 normal distribution for $(p_1,p_2)$ where a correlation is induced by defining $E(p_2|p_1) = p_1$.   To draw a sample from the conditional distribution of $p_2$ given $p_1=2$, for example, call `par_fn_corr(1, p1=2)$p2`. 
 
 If the argument `p1` is not supplied, then the function should return a sample from the joint distribution marginalised over $p_1$, as in this case where if we do not supply `p1` then the default value of 0 is used. 
@@ -339,18 +370,17 @@ datagen_normal <- function(inputs, n=100, sigma=1){
                           sd = sigma / sqrt(n)))
 }
 
-evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=10)
 set.seed(1)
+evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=10)
 evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=100)
 evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=1000)
-
 ```
 
 
 
 ### Built-in study designs 
 
-The function `datagen_normal` is also included in the `voi` package as a built-in study design.  To invoke the `evsi` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.   (Note that the results will vary every time the function is invoked due to Monte Carlo error) 
+The function `datagen_normal` is also included in the `voi` package as a built-in study design.  To invoke the `evsi` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.   Note that the results will be slightly different every time the function is invoked, due to Monte Carlo error from generating the data.
 
 ```{r}
 evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1")
