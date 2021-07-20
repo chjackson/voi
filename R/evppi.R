@@ -226,6 +226,8 @@ evppi <- function(outputs,
     if (se) {
         res$se <- attr(rese,"se")
     }
+    res <- cbind(pars = paste(pars, collapse=","), 
+                 res)
     res
 }
 
@@ -236,15 +238,17 @@ evppi_list <- function(outputs, inputs, pars, method, se, B, nsim, verbose, ...)
     res <- data.frame(pars=character(npars*nouts)) 
     if (inherits(outputs, "cea")) res$k <- rep(outputs$k, each=npars)
     res$evppi <- numeric(npars*nouts)
+    res$pars <- character(npars*nouts)
+    if (se) res$se <- numeric(npars*nouts)
     indmat <- matrix(seq_len(npars*nouts), nrow=npars, ncol=nouts)
     for (i in seq_len(npars)){
         eres <- evppi(outputs=outputs, inputs=inputs, pars=pars[[i]], 
               method=method, se=se, B=B, nsim=nsim, verbose=verbose,
               ...)
         res$evppi[indmat[i,]] <- eres$evppi
+        res$pars[indmat[i,]] <- eres$pars
         if (se) res$se[indmat[i,]] <- eres$se
     }
-    res$pars <- rep(sapply(pars, function(x)paste(x,collapse=",")), nouts)
     res
 }
 
