@@ -6,8 +6,8 @@ test_that("single-parameter EVPPI",{
     expect_equal(evtest$evppi, 3.75833452581155, tol=1e-05)
     evcea <- evppi(chemo_cea, chemo_pars, pars="pi1")
     expect_equal(evcea$evppi[evcea$k==30000], evtest$evppi)
-    expect_equal(evppi(chemo_nb, chemo_pars[,"pi1"]),
-                 evtest)
+    expect_equal(evppi(chemo_nb, chemo_pars[,"pi1"])$evppi,
+                 evtest$evppi)
     evcea <- evppi(chemo_cea, chemo_pars, pars="pi1", tidy=FALSE)
     expect_equal(evcea$evppi[3], evtest$evppi)
 })
