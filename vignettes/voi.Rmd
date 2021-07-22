@@ -1,7 +1,7 @@
 ---
 title: 'voi for Value of Information calculation: package overview'
 author: "Christopher Jackson"
-date: "16/07/2021"
+date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -87,7 +87,7 @@ The _expected value of perfect information_ is the expected net benefit given pe
 
 #### Computation using random sampling 
 
-* Given current information, we decided on treatment 2.  Our expected net benefit under current information is 1, the mean of the distribution of treatment 2's net benefit. 
+* Given current information, we decided on treatment 2.   In the example we know that the expected net benefit under current information is 1, the mean of the distribution of treatment 2's net benefit.  
 
 * Random sampling can be used to illustrate how to compute the expected net benefit given perfect information.  Each sample of parameter values mimics a situation of decision-making given perfect information, where we know the parameters take these values.   For each sample, we compare the corresponding treatment 2 net benefit to the threshold of zero, and prefer treatment 1 if the net benefit is negative, and treatment 2 if the net benefit is positive.    The net benefit for each sample is the net benefit of the chosen treatment given the "known" sampled parameter values.  The expected net benefit given perfect information is then computed as the average of this sample (`nb_perfect`).
 
@@ -99,7 +99,7 @@ nb_perfect <- ifelse(decision_perfect == 1, 0, outputs_nb$t2)
 (evpi1 <- mean(nb_perfect) - nb_current)
 ```
 
-Note that taking the mean over sampled values corresponds to estimating an expectation of the uncertainty distribution from which the values were sampled. 
+In practice we would not usually know the exact expectation (under the current uncertainty distribution) of the net benefit for any treatment, so we must compute it as the mean of the random sample. In this case, `colMeans(outputs_nb)` would give a vector of the expected net benefit for each treatment.  The maximum of these is the net benefit of the decision we take under current information, which in this case is `r max(colMeans(outputs_nb))`.  This would become closer to the exact value of 1, the more random samples are drawn. 
 
 An alternative view of EVPI is in terms of _opportunity loss_, which is the net benefit of the better decision we should have made (if we had known the truth), minus the net benefit of the decision we did make.  The opportunity loss can be computed at each sample as follows.  The EVPI is the mean of the opportunity loss. 
 
@@ -118,8 +118,7 @@ evpi(outputs_nb)
 evpi(outputs_cea)
 ```
 
-Note the result is slightly different from `evpi1`, since to get that, we used a value of exactly 1 for the expected net benefit under current information, because we knew the exact distribution of the net benefit given current information was normal with mean 1.  In realistic models, we will need to compute this mean as an average over the random sample.  In this example, this mean is estimated as `r max(colMeans(outputs_nb))`, which leads to a slightly less accurate estimate than the one based on a known mean of 1. 
-
+Note the result is slightly different from `evpi1`, since it uses the sample-based estimate of `r max(colMeans(outputs_nb))` of the expected net benefit under current information, rather than the known expectation of 1. 
 
 #### Analytic computation
 
@@ -155,7 +154,7 @@ The EVPPI is defined as the expected net benefit given perfect knowledge of $\ph
 
 The function `evppi` can be used to compute this. 
 
-There are a variety of alternative computational methods implemented in this function.   The default methods are based on nonparametric regression, and come from [Strong et al.](https://doi.org/10.1177/0272989X13505910).  If there are four or fewer parameters, then a generalized additive model is used.   With five or more, then Gaussian process regression is used. 
+There are a variety of alternative computational methods implemented in this function.   The default methods are based on nonparametric regression, and come from [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910).  If there are four or fewer parameters, then a generalized additive model is used.   With five or more, then Gaussian process regression is used. 
 
 
 ### Invoking the `evppi` function. 
@@ -191,14 +190,14 @@ The method can be changed by supplying the `method` argument to `evppi`.   Some 
 
 
 #### Gaussian process regression
-(from [Strong et al.](https://doi.org/10.1177/0272989X13505910)).  The number of random samples to use in this computation can be changed using the `nsim` argument, which can be useful for this method as it can be prohibitive for large samples.  Here the sample of 10000 is reduced to 1000. 
+(from [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910)).  The number of random samples to use in this computation can be changed using the `nsim` argument, which can be useful for this method as it can be prohibitive for large samples.  Here the sample of 10000 is reduced to 1000. 
 
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
 ```
 
 #### Multivariate adaptive regression splines
-This is a variant of generalized additive models based on linear splines, and is based on a package called [earth](https://CRAN.R-project.org/package=earth).  
+This is a variant of generalized additive models based on linear splines, which uses a package called [earth](https://CRAN.R-project.org/package=earth).  
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", method="earth")
 ```
@@ -312,7 +311,7 @@ evppi_mc(model_fn_nb, par_fn, pars="p1", ninner=1000, nouter=100)
 We may want the EVPPI for a parameter which is correlated with another parameter.  To account for this correlation, `par_fn` requires an extra argument or arguments to enable a sample to be drawn from the appropriate conditional distribution.   For example, the function below specifies a bivariate
 normal distribution for $(p_1,p_2)$ where a correlation is induced by defining $E(p_2|p_1) = p_1$.   To draw a sample from the conditional distribution of $p_2$ given $p_1=2$, for example, call `par_fn_corr(1, p1=2)$p2`. 
 
-If the argument `p1` is not supplied, then the function should return a sample from the joint distribution marginalised over $p_1$, as in this case where if we do not supply `p1` then the default value of 0 is used. 
+If the argument `p1` is not supplied, then the function should return a sample from the joint distribution marginalised over $p_1$, as in this case where if we do not supply `p1` then a random `p1` is drawn followed by `p2|p1`. 
 
 A function of this form should then be passed to `evppi_mc` if the parameters are correlated. This allows `evppi_mc` to draw from the appropriate distribution in the inner loop.  
 
@@ -380,12 +379,14 @@ evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=1000)
 
 ### Built-in study designs 
 
-The function `datagen_normal` is also included in the `voi` package as a built-in study design.  To invoke the `evsi` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.   Note that the results will be slightly different every time the function is invoked, due to Monte Carlo error from generating the data.
+The function `datagen_normal` is also included in the `voi` package as a built-in study design.  To invoke the `evsi` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.   
 
 ```{r}
 evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1")
 evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1")
 ```
+
+Note that the results will be slightly different every time the `evsi` function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with `set_seed` before each invocation).
 
 Other built-in study designs include 
 
@@ -398,7 +399,7 @@ Other built-in study designs include
 
 ### Importance sampling method
 
-An alternative method comes from [Menzies](https://doi.org/10.1177/0272989X15583495) and is based on importance sampling.   This can be invoked as `evsi(..., method="is")`.
+An alternative method comes from [Menzies (2015)](https://doi.org/10.1177/0272989X15583495) and is based on importance sampling.   This can be invoked as `evsi(..., method="is")`.
 
 As well as a data generation function in the above format, this also requires the user to supply a  _likelihood function_ for the study data. 
 

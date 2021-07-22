@@ -144,15 +144,12 @@
 ##'
 ##' \code{n.seps} Number of separators (default 1). 
 #'
-#' @return A data frame with a column \code{evppi} giving the EVPPI. 
+#' @return A data frame with a column \code{pars} indicating the parameter(s)
+#'   and a column \code{evppi} giving the corresponding EVPPI. 
 #'
 #'   If \code{outputs} is of "cost-effectiveness analysis" form so that there is
 #'   one EVPPI per willingness-to-pay value, then a column \code{k} identifies the 
 #'   willingness-to-pay.
-#'
-#'   If \code{pars} is a list, so that multiple EVPPI calculations are performed
-#'   with different parameters, then another column \code{pars} identifies the 
-#'   parameters.
 #'   
 #'   If standard errors are requested, then the standard errors are returned in 
 #'   the column \code{se}.
