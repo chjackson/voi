@@ -66,7 +66,7 @@
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
                         <h4 class="author">Christopher Jackson</h4>
             
-            <h4 class="date">16/07/2021</h4>
+            <h4 class="date">2021-07-22</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -128,7 +128,7 @@
 <h4 class="hasAnchor">
 <a href="#computation-using-random-sampling" class="anchor"></a>Computation using random sampling</h4>
 <ul>
-<li><p>Given current information, we decided on treatment 2. Our expected net benefit under current information is 1, the mean of the distribution of treatment 2’s net benefit.</p></li>
+<li><p>Given current information, we decided on treatment 2. In the example we know that the expected net benefit under current information is 1, the mean of the distribution of treatment 2’s net benefit.</p></li>
 <li><p>Random sampling can be used to illustrate how to compute the expected net benefit given perfect information. Each sample of parameter values mimics a situation of decision-making given perfect information, where we know the parameters take these values. For each sample, we compare the corresponding treatment 2 net benefit to the threshold of zero, and prefer treatment 1 if the net benefit is negative, and treatment 2 if the net benefit is positive. The net benefit for each sample is the net benefit of the chosen treatment given the “known” sampled parameter values. The expected net benefit given perfect information is then computed as the average of this sample (<code>nb_perfect</code>).</p></li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -138,7 +138,7 @@
 <span class="va">nb_perfect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">decision_perfect</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">0</span>, <span class="va">outputs_nb</span><span class="op">$</span><span class="va">t2</span><span class="op">)</span>
 <span class="op">(</span><span class="va">evpi1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">nb_perfect</span><span class="op">)</span> <span class="op">-</span> <span class="va">nb_current</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.4778316</code></pre>
-<p>Note that taking the mean over sampled values corresponds to estimating an expectation of the uncertainty distribution from which the values were sampled.</p>
+<p>In practice we would not usually know the exact expectation (under the current uncertainty distribution) of the net benefit for any treatment, so we must compute it as the mean of the random sample. In this case, <code><a href="https://rdrr.io/r/base/colSums.html">colMeans(outputs_nb)</a></code> would give a vector of the expected net benefit for each treatment. The maximum of these is the net benefit of the decision we take under current information, which in this case is 1.0018431. This would become closer to the exact value of 1, the more random samples are drawn.</p>
 <p>An alternative view of EVPI is in terms of <em>opportunity loss</em>, which is the net benefit of the better decision we should have made (if we had known the truth), minus the net benefit of the decision we did make. The opportunity loss can be computed at each sample as follows. The EVPI is the mean of the opportunity loss.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">opp_loss</span> <span class="op">&lt;-</span> <span class="va">nb_perfect</span> <span class="op">-</span> <span class="va">nb_current</span>
@@ -156,7 +156,7 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evpi.html">evpi</a></span><span class="op">(</span><span class="va">outputs_cea</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.4759885 0.4028003 0.4174207</code></pre>
-<p>Note the result is slightly different from <code>evpi1</code>, since to get that, we used a value of exactly 1 for the expected net benefit under current information, because we knew the exact distribution of the net benefit given current information was normal with mean 1. In realistic models, we will need to compute this mean as an average over the random sample. In this example, this mean is estimated as 1.0018431, which leads to a slightly less accurate estimate than the one based on a known mean of 1.</p>
+<p>Note the result is slightly different from <code>evpi1</code>, since it uses the sample-based estimate of 1.0018431 of the expected net benefit under current information, rather than the known expectation of 1.</p>
 </div>
 <div id="analytic-computation" class="section level4">
 <h4 class="hasAnchor">
@@ -184,7 +184,7 @@
 <p>The <em>expected value of partial perfect information</em> (EVPPI) for a parameter <span class="math inline">\(\phi\)</span> in a decision-analytic model is the expected value of learning the exact value of that parameter, while the other parameters remain uncertain. <span class="math inline">\(\phi\)</span> can comprise a single scalar parameter, or multiple parameters. If <span class="math inline">\(\phi\)</span> refers to multiple parameters then the EVPPI describes the expected value of learning <em>all</em> of these parameters, often referred to as the <em>multiparameter</em> EVPPI.</p>
 <p>The EVPPI is defined as the expected net benefit given perfect knowledge of <span class="math inline">\(\phi\)</span>, minus the expected net benefit given current information. [ algebraic def ]</p>
 <p>The function <code>evppi</code> can be used to compute this.</p>
-<p>There are a variety of alternative computational methods implemented in this function. The default methods are based on nonparametric regression, and come from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al.</a>. If there are four or fewer parameters, then a generalized additive model is used. With five or more, then Gaussian process regression is used.</p>
+<p>There are a variety of alternative computational methods implemented in this function. The default methods are based on nonparametric regression, and come from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a>. If there are four or fewer parameters, then a generalized additive model is used. With five or more, then Gaussian process regression is used.</p>
 <div id="invoking-the-evppi-function-" class="section level3">
 <h3 class="hasAnchor">
 <a href="#invoking-the-evppi-function-" class="anchor"></a>Invoking the <code>evppi</code> function.</h3>
@@ -227,7 +227,7 @@
 <div id="gaussian-process-regression" class="section level4">
 <h4 class="hasAnchor">
 <a href="#gaussian-process-regression" class="anchor"></a>Gaussian process regression</h4>
-<p>(from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al.</a>). The number of random samples to use in this computation can be changed using the <code>nsim</code> argument, which can be useful for this method as it can be prohibitive for large samples. Here the sample of 10000 is reduced to 1000.</p>
+<p>(from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a>). The number of random samples to use in this computation can be changed using the <code>nsim</code> argument, which can be useful for this method as it can be prohibitive for large samples. Here the sample of 10000 is reduced to 1000.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"gp"</span>, nsim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></code></pre></div>
 <pre><code>##   pars      evppi
@@ -236,7 +236,7 @@
 <div id="multivariate-adaptive-regression-splines" class="section level4">
 <h4 class="hasAnchor">
 <a href="#multivariate-adaptive-regression-splines" class="anchor"></a>Multivariate adaptive regression splines</h4>
-<p>This is a variant of generalized additive models based on linear splines, and is based on a package called <a href="https://CRAN.R-project.org/package=earth">earth</a>.</p>
+<p>This is a variant of generalized additive models based on linear splines, which uses a package called <a href="https://CRAN.R-project.org/package=earth">earth</a>.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"earth"</span><span class="op">)</span></code></pre></div>
 <pre><code>##   pars      evppi
@@ -328,7 +328,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <h4 class="hasAnchor">
 <a href="#accounting-for-parameter-correlation" class="anchor"></a>Accounting for parameter correlation</h4>
 <p>We may want the EVPPI for a parameter which is correlated with another parameter. To account for this correlation, <code>par_fn</code> requires an extra argument or arguments to enable a sample to be drawn from the appropriate conditional distribution. For example, the function below specifies a bivariate normal distribution for <span class="math inline">\((p_1,p_2)\)</span> where a correlation is induced by defining <span class="math inline">\(E(p_2|p_1) = p_1\)</span>. To draw a sample from the conditional distribution of <span class="math inline">\(p_2\)</span> given <span class="math inline">\(p_1=2\)</span>, for example, call <code>par_fn_corr(1, p1=2)$p2</code>.</p>
-<p>If the argument <code>p1</code> is not supplied, then the function should return a sample from the joint distribution marginalised over <span class="math inline">\(p_1\)</span>, as in this case where if we do not supply <code>p1</code> then the default value of 0 is used.</p>
+<p>If the argument <code>p1</code> is not supplied, then the function should return a sample from the joint distribution marginalised over <span class="math inline">\(p_1\)</span>, as in this case where if we do not supply <code>p1</code> then a random <code>p1</code> is drawn followed by <code>p2|p1</code>.</p>
 <p>A function of this form should then be passed to <code>evppi_mc</code> if the parameters are correlated. This allows <code>evppi_mc</code> to draw from the appropriate distribution in the inner loop.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">par_fn_corr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">p1</span><span class="op">=</span><span class="cn">NULL</span><span class="op">)</span><span class="op">{</span>
@@ -382,13 +382,14 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <div id="built-in-study-designs" class="section level3">
 <h3 class="hasAnchor">
 <a href="#built-in-study-designs" class="anchor"></a>Built-in study designs</h3>
-<p>The function <code>datagen_normal</code> is also included in the <code>voi</code> package as a built-in study design. To invoke the <code>evsi</code> function for a built-in study design, we have to supply the name of the design (in this case <code>"normal_known"</code>) and the name of the parameter or parameters (corresponding to a column of “inputs”) which is estimated by the study data. Note that the results will be slightly different every time the function is invoked, due to Monte Carlo error from generating the data.</p>
+<p>The function <code>datagen_normal</code> is also included in the <code>voi</code> package as a built-in study design. To invoke the <code>evsi</code> function for a built-in study design, we have to supply the name of the design (in this case <code>"normal_known"</code>) and the name of the parameter or parameters (corresponding to a column of “inputs”) which is estimated by the study data.</p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">100</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08093851</code></pre>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">1000</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08162026</code></pre>
+<p>Note that the results will be slightly different every time the <code>evsi</code> function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with <code>set_seed</code> before each invocation).</p>
 <p>Other built-in study designs include</p>
 <p><code>"binary"</code>: A single sample of observations of a binary outcome. Requires one parameter to be specified in <code>pars</code>, that is, the probability of the outcome.</p>
 <p><code>"trial_binary"</code>: A two-arm trial with a binary outcome. Requires two parameters to be specified in <code>pars</code>: the probability of the outcome in arm 1 and 2 respectively. The sample size is the same in each arm, specifed in the <code>n</code> argument to <code>evsi</code>, and the binomial outcomes are returned in the first and second column respectively.</p>
@@ -396,7 +397,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <div id="importance-sampling-method" class="section level3">
 <h3 class="hasAnchor">
 <a href="#importance-sampling-method" class="anchor"></a>Importance sampling method</h3>
-<p>An alternative method comes from <a href="https://doi.org/10.1177/0272989X15583495">Menzies</a> and is based on importance sampling. This can be invoked as <code><a href="../reference/evsi.html">evsi(..., method="is")</a></code>.</p>
+<p>An alternative method comes from <a href="https://doi.org/10.1177/0272989X15583495">Menzies (2015)</a> and is based on importance sampling. This can be invoked as <code><a href="../reference/evsi.html">evsi(..., method="is")</a></code>.</p>
 <p>As well as a data generation function in the above format, this also requires the user to supply a <em>likelihood function</em> for the study data.</p>
 <p>This is illustrated here for the simple normal example. The likelihood function acts on one row of the data frame <span class="math inline">\(Y\)</span> which is produced by the data generation function, and returns a data frame with number of rows matching the rows of <code>inputs</code>. Each row of the returned data frame gives the sampling density for that row of <span class="math inline">\(Y\)</span> given the corresponding parameter values in <code>inputs</code>. The corresponding EVSI calculation then involves building a large matrix of likelihoods for combinations of simulated datasets and simulated parameters.</p>
 <p>Any user-supplied likelihood function should consistently define the same model for the data as the data generation function (the package does not check this!), and any names of parameters and outputs should match the names defined in <code>inputs</code> and the data generation function.</p>

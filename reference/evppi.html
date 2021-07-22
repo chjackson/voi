@@ -262,13 +262,11 @@ mesh, passed to <code>inla.mesh.2d</code>.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data frame with a column <code>evppi</code> giving the EVPPI.</p>
+    <p>A data frame with a column <code>pars</code> indicating the parameter(s)
+  and a column <code>evppi</code> giving the corresponding EVPPI.</p>
 <p>If <code>outputs</code> is of "cost-effectiveness analysis" form so that there is
   one EVPPI per willingness-to-pay value, then a column <code>k</code> identifies the 
-  willingness-to-pay.</p>
-<p>If <code>pars</code> is a list, so that multiple EVPPI calculations are performed
-  with different parameters, then another column <code>pars</code> identifies the 
-  parameters.</p>  
+  willingness-to-pay.</p>  
 <p>If standard errors are requested, then the standard errors are returned in 
   the column <code>se</code>.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
