@@ -66,7 +66,7 @@
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
                         <h4 class="author">Christopher Jackson</h4>
             
-            <h4 class="date">2021-07-22</h4>
+            <h4 class="date">2021-07-28</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -263,11 +263,12 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"gam"</span>, gam_formula<span class="op">=</span><span class="st">"s(p1) + s(p2)"</span><span class="op">)</span></code></pre></div>
 <pre><code>##    pars     evppi
 ## 1 p1,p2 0.4759885</code></pre>
+<p>Note that if there are spaces in the variable names in <code>inputs</code> and <code>pars</code>, then for <code>gam_formula</code> the spaces should be converted to underscores, or else an <code>"unexpected symbol"</code> error will be returned from <code>gam</code>.</p>
 <p>A standard error for the EVPPI estimates from the GAM method, resulting from uncertainty about the parameters of the GAM approximation, can be obtained by calling <code>evppi</code> with <code>se=TRUE</code>. This uses <span class="math inline">\(B\)</span> samples from the distribution of the GAM parameters, thus the standard error can be estimated more accurately by increasing B.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, se<span class="op">=</span><span class="cn">TRUE</span>, B<span class="op">=</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
 <pre><code>##   pars      evppi          se
-## 1   p1 0.08210074 0.007138732</code></pre>
+## 1   p1 0.08210074 0.007046717</code></pre>
 </div>
 <div id="single-parameter-methods" class="section level4">
 <h4 class="hasAnchor">
