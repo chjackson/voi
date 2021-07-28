@@ -384,7 +384,7 @@ check_inputs <- function(inputs, iname=NULL){
     if (!is.matrix(inputs) && !is.data.frame(inputs)){ 
         stop("`inputs` should be a numeric vector, matrix or data frame")
     }
-    inputs 
+    as.data.frame(inputs) 
 }
 
 check_outputs_matrix <- function(outputs, inputs, name){
