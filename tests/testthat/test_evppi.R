@@ -95,3 +95,11 @@ test_that("Standard errors for GAM",{
     evtest <- evppi(chemo_nb, chemo_pars, pars=list("pi1", "pi2"), se=TRUE, B=10)
     expect_equal(evtest$se[2], 0.017, tol=1e-01)
 })
+
+test_that("Spaces in variable names", {
+    cp <- chemo_pars
+    names(cp)[names(cp)=="pi1"] <- "pi 1"
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1")$evppi,
+                 evppi(chemo_nb, cp, pars="pi 1")$evppi)
+    
+})

@@ -231,6 +231,9 @@ of the GAM and the number of random samples available to fit it to.
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="gam", gam_formula="s(p1) + s(p2)")
 ```
 
+Note that if there are spaces in the variable names in `inputs` and  `pars`, then for `gam_formula`
+the spaces should be converted to underscores, or else an `"unexpected symbol"` error will be returned from `gam`. 
+
 A standard error for the EVPPI estimates from the GAM method, resulting from uncertainty about the parameters of the GAM approximation, can be obtained by calling `evppi` with `se=TRUE`.  This uses $B$ samples from the distribution of the GAM parameters, thus the standard error can be estimated more accurately by increasing B. 
 
 ```{r}
