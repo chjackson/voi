@@ -2,6 +2,8 @@
 fitted_gam <- function(y, inputs, pars, verbose=FALSE, ...){
     opts <- list(...)
     gam_formula <- opts$gam_formula
+    pars <- clean_pars(pars)
+    colnames(inputs) <- clean_pars(colnames(inputs))
     if (is.null(gam_formula))
         gam_formula <- default_gam_formula(pars)
     gam_formula <- formula(sprintf("y ~ %s", gam_formula))
