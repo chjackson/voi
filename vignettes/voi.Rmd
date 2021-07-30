@@ -389,7 +389,7 @@ evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1")
 evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1")
 ```
 
-The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling \code{evsi} with an \code{aux_pars} argument, e.g. \code{evsi(..., aux_pars=list(sd=2), ...)}.
+The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling \code{evsi} with an \code{aux_pars} argument, e.g. `evsi(..., aux_pars=list(sd=2), ...)`.
 
 Note that the results will be slightly different every time the `evsi` function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with `set_seed` before each invocation).
 
