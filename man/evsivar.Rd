@@ -11,6 +11,7 @@ evsivar(
   datagen_fn = NULL,
   pars = NULL,
   n = 100,
+  aux_pars = NULL,
   method = NULL,
   likelihood = NULL,
   analysis_model = NULL,
@@ -33,11 +34,30 @@ be named.    This should have the same number of rows as there are samples
 in \code{outputs}, and each row of the samples in \code{outputs} should
 give the model output evaluated at the corresponding parameters.}
 
-\item{study}{Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of \code{inputs} that correspond to the parameters governing the study data should be identified in \code{poi}.
+\item{study}{Name of one of the built-in study types supported by this
+  package for EVSI calculation.  If this is supplied, then the columns of
+  \code{inputs} that correspond to the parameters governing the study data
+  should be identified in \code{poi}.
 
-Currently supported studies are
+  Currently supported studies are
 
-\code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two parameters: the probability of the outcome in arm 1 and 2 respectively.  The sample size is the same in each arm, specifed in the \code{n} argument to \code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2} respectively. 
+  \code{"binary"} A study with a binary outcome observed on one sample of
+  individuals.   Requires one parameter: the probability of the outcome.
+  The sample size is specifed in the \code{n} argument to \code{evsi()}, and
+  the binomially-distributed outcome is named \code{X1}.
+
+\code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two
+parameters: the probability of the outcome in arm 1 and 2 respectively.  The
+sample size is the same in each arm, specifed in the \code{n} argument to
+\code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2}
+respectively.
+
+\code{"normal_known"} A study of a normally-distributed outcome, with a
+known standard deviation, on one sample of individuals.  Likewise the sample
+size is specified in the \code{n} argument to \code{evsi()}.  The standard
+deviation defaults to 1, and can be changed by specifying \code{sd} as a
+component of the \code{aux_pars} argument, e.g. 
+\code{evsi(..., aux_pars=list(sd=2))}.
 
 Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 
@@ -62,6 +82,10 @@ For example, if \code{study = "trial_binary"} is specified, then \code{pars} sho
 The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
+
+\item{aux_pars}{A list of additional fixed arguments to supply to the function to generate the data, 
+whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the 
+fixed standard deviation in the \code{"normal_known"} model.}
 
 \item{method}{See \code{\link{evsi}}, only nonparametric regression methods are
 currently supported in \code{\link{evsivar}}.}

@@ -2,7 +2,8 @@
 % Please edit documentation in R/evsi.R
 \name{evsi}
 \alias{evsi}
-\title{Calculate the expected value of sample information from a decision-analytic model}
+\title{Calculate the expected value of sample information from a decision-analytic
+model}
 \usage{
 evsi(
   outputs,
@@ -11,6 +12,7 @@ evsi(
   datagen_fn = NULL,
   pars = NULL,
   n = 100,
+  aux_pars = NULL,
   method = NULL,
   likelihood = NULL,
   analysis_model = NULL,
@@ -57,11 +59,30 @@ be named.    This should have the same number of rows as there are samples
 in \code{outputs}, and each row of the samples in \code{outputs} should
 give the model output evaluated at the corresponding parameters.}
 
-\item{study}{Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of \code{inputs} that correspond to the parameters governing the study data should be identified in \code{poi}.
+\item{study}{Name of one of the built-in study types supported by this
+  package for EVSI calculation.  If this is supplied, then the columns of
+  \code{inputs} that correspond to the parameters governing the study data
+  should be identified in \code{poi}.
 
-Currently supported studies are
+  Currently supported studies are
 
-\code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two parameters: the probability of the outcome in arm 1 and 2 respectively.  The sample size is the same in each arm, specifed in the \code{n} argument to \code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2} respectively. 
+  \code{"binary"} A study with a binary outcome observed on one sample of
+  individuals.   Requires one parameter: the probability of the outcome.
+  The sample size is specifed in the \code{n} argument to \code{evsi()}, and
+  the binomially-distributed outcome is named \code{X1}.
+
+\code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two
+parameters: the probability of the outcome in arm 1 and 2 respectively.  The
+sample size is the same in each arm, specifed in the \code{n} argument to
+\code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2}
+respectively.
+
+\code{"normal_known"} A study of a normally-distributed outcome, with a
+known standard deviation, on one sample of individuals.  Likewise the sample
+size is specified in the \code{n} argument to \code{evsi()}.  The standard
+deviation defaults to 1, and can be changed by specifying \code{sd} as a
+component of the \code{aux_pars} argument, e.g. 
+\code{evsi(..., aux_pars=list(sd=2))}.
 
 Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 
@@ -87,13 +108,17 @@ The \code{pars} argument is also required for the methods which involve an inter
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
+\item{aux_pars}{A list of additional fixed arguments to supply to the function to generate the data, 
+whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the 
+fixed standard deviation in the \code{"normal_known"} model.}
+
 \item{method}{Character string indicating the calculation method.
 
-All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistics of the predicted data (Strong et al 201?).   Defaults to \code{"gam"}.
+All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistic of the predicted data (Strong et al 201?).   Defaults to \code{"gam"}.
 
 \code{"is"} for importance sampling (Menzies 2016)
 
-\code{"mm"} for moment matching (Heath et al 2018)
+\code{"mm"} for moment matching (Heath et al 2018) (TODO not implemented yet) 
 
 Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}. 
 
@@ -130,7 +155,8 @@ of slow calculations.}
 \item{...}{Other arguments required by specific methods}
 }
 \description{
-Calculate the expected value of sample information from a decision-analytic model
+Calculate the expected value of sample information from a decision-analytic
+model
 }
 \references{
 Strong, M., Oakley, J. E., Brennan, A., & Breeze, P. (2015). Estimating the expected value of sample information using the probabilistic sensitivity analysis sample: a fast, nonparametric regression-based method. Medical Decision Making, 35(5), 570-583.

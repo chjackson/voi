@@ -50,6 +50,20 @@ test_that("EVSI with built-in study designs", {
     expect_equal(
         evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c("pi1", "pi2"), verbose=FALSE), 
         2.285424, tol=0.01)
+    set.seed(1)
+    e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c("pi1"), verbose=FALSE) 
+    e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=10000, pars=c("pi1"), verbose=FALSE) 
+    expect_gt(e2, e1)
+    set.seed(1)
+    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=100, pars=c("pi1"), verbose=FALSE) 
+    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, pars=c("pi1"), verbose=FALSE) 
+    expect_gt(e2, e1)
+    set.seed(1)
+    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=2), pars=c("pi1"), verbose=FALSE) 
+    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=0.1), pars=c("pi1"), verbose=FALSE) 
+    ep <- evppi(chemo_nb, chemo_pars, pars=c("pi1"), verbose=FALSE)$evppi
+    expect_gt(e2, e1)
+    expect_gt(ep, e2)
 })
 
 test_that("EVSI with built-in study designs: IS method", {

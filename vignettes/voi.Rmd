@@ -366,10 +366,10 @@ The sample size is included as an argument `n` to the data generation function. 
 The `evsi` function can then be used to compute the EVSI for a series of different sample sizes from this design.  Note how the EVSI converges to the EVPPI as the sample size increases. 
 
 ```{r}
-datagen_normal <- function(inputs, n=100, sigma=1){
+datagen_normal <- function(inputs, n=100, sd=1){
   data.frame(xbar = rnorm(n = nrow(inputs),
                           mean = inputs[,"p1"],
-                          sd = sigma / sqrt(n)))
+                          sd = sd / sqrt(n)))
 }
 
 set.seed(1)
@@ -388,6 +388,8 @@ The function `datagen_normal` is also included in the `voi` package as a built-i
 evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1")
 evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1")
 ```
+
+The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling \code{evsi} with an \code{aux_pars} argument, e.g. \code{evsi(..., aux_pars=list(sd=2), ...)}.
 
 Note that the results will be slightly different every time the `evsi` function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with `set_seed` before each invocation).
 

@@ -105,7 +105,20 @@ of slow calculations.}
 
   For \code{method="gam"}:
   
-\code{gam_formula}: a character string giving the right hand side of the formula supplied to the \code{gam()} function. By default, this is a tensor product of all the parameters of interest, e.g. if \code{pars = c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho, bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument \code{k=4} is supplied to \code{te()}, specifying a four-dimensional basis, which is currently the default in the SAVI package (\url{http://savi.shef.ac.uk/SAVI/}).
+\code{gam_formula}: a character string giving the right hand side of the
+formula supplied to the \code{gam()} function. By default, this is a tensor
+product of all the parameters of interest, e.g. if \code{pars =
+c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho,
+bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression
+basis, which more computationally efficient than the default "thin plate"
+basis.  If there are four or more parameters of interest, then the
+additional argument \code{k=4} is supplied to \code{te()}, specifying a
+four-dimensional basis, which is currently the default in the SAVI package
+(\url{http://savi.shef.ac.uk/SAVI/}).
+
+If there are spaces in the variable names in \code{inputs}, then these should
+be converted to underscores before forming an explicit \code{gam_formula}.
+
 
 For \code{method="gp"}:
 

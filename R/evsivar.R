@@ -21,6 +21,7 @@ evsivar <- function(outputs,
                  datagen_fn=NULL,
                  pars=NULL,
                  n=100,
+                 aux_pars=NULL, 
                  method=NULL, # TODO speficy gam here or npreg? 
                  likelihood=NULL,
                  analysis_model=NULL,
@@ -45,19 +46,15 @@ evsivar <- function(outputs,
     datagen_fn <- form_datagen_fn(study, datagen_fn, inputs)
     if (method %in% npreg_methods) { 
         evsivar_npreg(outputs=outputs, inputs=inputs, 
-                      datagen_fn=datagen_fn, pars=pars, n=n, 
+                      datagen_fn=datagen_fn, pars=pars, n=n,
+                      aux_pars = aux_pars, 
                       method=method, verbose=verbose, ...)
     } 
     else stop("Other methods not implemented yet")
 }
 
-evsivar_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, verbose, ...){
-    Tdata <- generate_data(inputs, datagen_fn, n, pars)
+evsivar_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, verbose, aux_pars=NULL, ...){
+    Tdata <- generate_data(inputs, datagen_fn, n, pars, aux_pars)
     evppivar_npreg(outputs=outputs, inputs=Tdata, pars=names(Tdata), 
                    method=method, verbose=verbose, ...)
-}
-
-generate_data <- function(inputs, datagen_fn, n=150, pars){
-    check_datagen_fn(datagen_fn, inputs, pars)
-    datagen_fn(inputs=inputs, n=n, pars=pars)
 }

@@ -1,14 +1,35 @@
-##' Calculate the expected value of sample information from a decision-analytic model
+##' Calculate the expected value of sample information from a decision-analytic
+##' model
 ##'
-##' Calculate the expected value of sample information from a decision-analytic model
+##' Calculate the expected value of sample information from a decision-analytic
+##' model
 ##'
 ##' @inheritParams evppi
 ##'
-##' @param study Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of \code{inputs} that correspond to the parameters governing the study data should be identified in \code{poi}.  
+##' @param study Name of one of the built-in study types supported by this
+##'   package for EVSI calculation.  If this is supplied, then the columns of
+##'   \code{inputs} that correspond to the parameters governing the study data
+##'   should be identified in \code{poi}.
 ##'
-##' Currently supported studies are
+##'   Currently supported studies are
 ##'
-##' \code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two parameters: the probability of the outcome in arm 1 and 2 respectively.  The sample size is the same in each arm, specifed in the \code{n} argument to \code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2} respectively. 
+##'   \code{"binary"} A study with a binary outcome observed on one sample of
+##'   individuals.   Requires one parameter: the probability of the outcome.
+##'   The sample size is specifed in the \code{n} argument to \code{evsi()}, and
+##'   the binomially-distributed outcome is named \code{X1}.
+##'
+##' \code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two
+##' parameters: the probability of the outcome in arm 1 and 2 respectively.  The
+##' sample size is the same in each arm, specifed in the \code{n} argument to
+##' \code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2}
+##' respectively.
+##'
+##' \code{"normal_known"} A study of a normally-distributed outcome, with a
+##' known standard deviation, on one sample of individuals.  Likewise the sample
+##' size is specified in the \code{n} argument to \code{evsi()}.  The standard
+##' deviation defaults to 1, and can be changed by specifying \code{sd} as a
+##' component of the \code{aux_pars} argument, e.g. 
+##' \code{evsi(..., aux_pars=list(sd=2))}.
 ##' 
 ##' Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.  
 ##'
@@ -35,13 +56,17 @@
 ##'
 ##' @param n Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument. 
 ##'
+##' @param aux_pars A list of additional fixed arguments to supply to the function to generate the data, 
+##' whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the 
+##' fixed standard deviation in the \code{"normal_known"} model.  
+##' 
 ##' @param method Character string indicating the calculation method.
 ##'
-##' All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistics of the predicted data (Strong et al 201?).   Defaults to \code{"gam"}.
+##' All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistic of the predicted data (Strong et al 201?).   Defaults to \code{"gam"}.
 ##'
 ##' \code{"is"} for importance sampling (Menzies 2016)
 ##'
-##' \code{"mm"} for moment matching (Heath et al 2018)
+##' \code{"mm"} for moment matching (Heath et al 2018) (TODO not implemented yet) 
 ##'
 ##' Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}. 
 ##' 
@@ -91,7 +116,8 @@ evsi <- function(outputs,
                  datagen_fn=NULL,
                  pars=NULL,
                  n=100,
-                 method=NULL, # TODO speficy gam here or npreg? 
+                 aux_pars=NULL, 
+                 method=NULL,
                  likelihood=NULL,
                  analysis_model=NULL,
                  analysis_options=NULL,
@@ -111,21 +137,24 @@ evsi <- function(outputs,
     outputs <- subset_outputs(outputs, nsim)
     inputs <- inputs[1:nsim,,drop=FALSE]
 
-    datagen_fn <- form_datagen_fn(study, datagen_fn, inputs)
+    datagen_fn <- form_datagen_fn(study, datagen_fn, inputs, aux_pars)
     ## Could use any nonparametric regression method to regress on a summary statistic, in identical way to EVPPI estimation.
     
     if (method %in% npreg_methods) { 
         evsi_npreg(outputs=outputs, inputs=inputs, 
                    datagen_fn=datagen_fn, pars=pars, n=n, 
-                   method=method, verbose=verbose, ...)
+                   method=method, verbose=verbose,
+                   aux_pars = aux_pars, ...)
     } else if (method=="is") {
         likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, pars)
         evsi_is(outputs=outputs, inputs=inputs, 
-                pars=pars, datagen_fn=datagen_fn, n=n, likelihood=likelihood,
+                pars=pars, datagen_fn=datagen_fn, n=n,
+                aux_pars=aux_pars, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
     } else if (method=="mm") {
         evsi_mm(outputs=outputs, inputs=inputs, 
-                pars=pars, datagen_fn=datagen_fn, n=n, Q=Q, 
+                pars=pars, datagen_fn=datagen_fn, n=n, Q=Q,
+                aux_pars = aux_pars, 
                 analysis_model=analysis_model,
                 analysis_options=analysis_options,
                 decision_model=decision_model, 
@@ -135,22 +164,24 @@ evsi <- function(outputs,
     else stop("Other methods not implemented yet")
 }
 
-evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, ...){
-    Tdata <- generate_data(inputs, datagen_fn, n, pars)
+evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, aux_pars=NULL, ...){
+    Tdata <- generate_data(inputs, datagen_fn, n, pars, aux_pars)
     evppi_npreg(outputs=outputs, inputs=Tdata, 
                 pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
 }
 
-generate_data <- function(inputs, datagen_fn, n=150, pars){
+generate_data <- function(inputs, datagen_fn, n=150, pars, aux_pars=NULL){
     check_datagen_fn(datagen_fn, inputs, pars)
-    datagen_fn(inputs=inputs, n=n, pars=pars)
+    args <- list(inputs=inputs, n=n, pars=pars)
+    args <- c(args, aux_pars)
+    do.call(datagen_fn, args)
 }
 
 default_evsi_method <- function(){
-    "gam" # TODO think about this 
+    "gam"
 }
 
-form_datagen_fn <- function(study, datagen_fn, inputs){
+form_datagen_fn <- function(study, datagen_fn, inputs, aux_pars=NULL){
     if (!is.null(study)){
         if (!is.character(study) || (!(study %in% studies_builtin)))
             stop("``study` should be a character string matching one of the supported study designs")
@@ -159,12 +190,12 @@ form_datagen_fn <- function(study, datagen_fn, inputs){
         if (is.null(datagen_fn)) stop("`datagen_fn` should be supplied if `study` is not supplied")
         if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
         formals(datagen_fn) <- c(formals(datagen_fn), list(pars=NULL))
-        check_datagen_fn(datagen_fn, inputs)
+        check_datagen_fn(datagen_fn, inputs, aux_pars)
     }
     datagen_fn
 }
 
-check_datagen_fn <- function(datagen_fn, inputs, pars=NULL){
+check_datagen_fn <- function(datagen_fn, inputs, pars=NULL, aux_pars=NULL){
     ## If there's more than one argument, check that those args have
     ## defaults (e.g. sample sizes). Give error for now if not, but
     ## consider relaxing if this becomes a problem
