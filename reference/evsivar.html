@@ -122,6 +122,7 @@
   datagen_fn <span class='op'>=</span> <span class='cn'>NULL</span>,
   pars <span class='op'>=</span> <span class='cn'>NULL</span>,
   n <span class='op'>=</span> <span class='fl'>100</span>,
+  aux_pars <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='cn'>NULL</span>,
   likelihood <span class='op'>=</span> <span class='cn'>NULL</span>,
   analysis_model <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -152,9 +153,26 @@ give the model output evaluated at the corresponding parameters.</p></td>
     </tr>
     <tr>
       <th>study</th>
-      <td><p>Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of <code>inputs</code> that correspond to the parameters governing the study data should be identified in <code>poi</code>.</p>
+      <td><p>Name of one of the built-in study types supported by this
+  package for EVSI calculation.  If this is supplied, then the columns of
+  <code>inputs</code> that correspond to the parameters governing the study data
+  should be identified in <code>poi</code>.</p>
 <p>Currently supported studies are</p>
-<p><code>"trial_binary"</code> Two-arm trial with a binary outcome.   Requires two parameters: the probability of the outcome in arm 1 and 2 respectively.  The sample size is the same in each arm, specifed in the <code>n</code> argument to <code><a href='evsi.html'>evsi()</a></code>, and the binomial outcomes are named <code>X1</code> and <code>X2</code> respectively.</p>
+<p><code>"binary"</code> A study with a binary outcome observed on one sample of
+  individuals.   Requires one parameter: the probability of the outcome.
+  The sample size is specifed in the <code>n</code> argument to <code><a href='evsi.html'>evsi()</a></code>, and
+  the binomially-distributed outcome is named <code>X1</code>.</p>
+<p><code>"trial_binary"</code> Two-arm trial with a binary outcome.   Requires two
+parameters: the probability of the outcome in arm 1 and 2 respectively.  The
+sample size is the same in each arm, specifed in the <code>n</code> argument to
+<code><a href='evsi.html'>evsi()</a></code>, and the binomial outcomes are named <code>X1</code> and <code>X2</code>
+respectively.</p>
+<p><code>"normal_known"</code> A study of a normally-distributed outcome, with a
+known standard deviation, on one sample of individuals.  Likewise the sample
+size is specified in the <code>n</code> argument to <code><a href='evsi.html'>evsi()</a></code>.  The standard
+deviation defaults to 1, and can be changed by specifying <code>sd</code> as a
+component of the <code>aux_pars</code> argument, e.g. 
+<code><a href='evsi.html'>evsi(..., aux_pars=list(sd=2))</a></code>.</p>
 <p>Either <code>study</code> or <code>datagen_fn</code> should be supplied to <code><a href='evsi.html'>evsi()</a></code>.</p></td>
     </tr>
     <tr>
@@ -176,6 +194,12 @@ give the model output evaluated at the corresponding parameters.</p></td>
     <tr>
       <th>n</th>
       <td><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.</p></td>
+    </tr>
+    <tr>
+      <th>aux_pars</th>
+      <td><p>A list of additional fixed arguments to supply to the function to generate the data, 
+whether that is a built-in or user-defined function, e.g. <code><a href='evsi.html'>evsi(..., aux_pars = list(sd=2))</a></code> to change the 
+fixed standard deviation in the <code>"normal_known"</code> model.</p></td>
     </tr>
     <tr>
       <th>method</th>

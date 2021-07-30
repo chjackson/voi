@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate the expected value of sample information from a decision-analytic model — evsi • voi</title>
+<title>Calculate the expected value of sample information from a decision-analytic
+model — evsi • voi</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Calculate the expected value of sample information from a decision-analytic model — evsi" />
-<meta property="og:description" content="Calculate the expected value of sample information from a decision-analytic model" />
+<meta property="og:title" content="Calculate the expected value of sample information from a decision-analytic
+model — evsi" />
+<meta property="og:description" content="Calculate the expected value of sample information from a decision-analytic
+model" />
 
 
 
@@ -106,13 +109,15 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate the expected value of sample information from a decision-analytic model</h1>
+    <h1>Calculate the expected value of sample information from a decision-analytic
+model</h1>
     
     <div class="hidden name"><code>evsi.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculate the expected value of sample information from a decision-analytic model</p>
+    <p>Calculate the expected value of sample information from a decision-analytic
+model</p>
     </div>
 
     <pre class="usage"><span class='fu'>evsi</span><span class='op'>(</span>
@@ -122,6 +127,7 @@
   datagen_fn <span class='op'>=</span> <span class='cn'>NULL</span>,
   pars <span class='op'>=</span> <span class='cn'>NULL</span>,
   n <span class='op'>=</span> <span class='fl'>100</span>,
+  aux_pars <span class='op'>=</span> <span class='cn'>NULL</span>,
   method <span class='op'>=</span> <span class='cn'>NULL</span>,
   likelihood <span class='op'>=</span> <span class='cn'>NULL</span>,
   analysis_model <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -169,9 +175,26 @@ give the model output evaluated at the corresponding parameters.</p></td>
     </tr>
     <tr>
       <th>study</th>
-      <td><p>Name of one of the built-in study types supported by this package for EVSI calculation.  If this is supplied, then the columns of <code>inputs</code> that correspond to the parameters governing the study data should be identified in <code>poi</code>.</p>
+      <td><p>Name of one of the built-in study types supported by this
+  package for EVSI calculation.  If this is supplied, then the columns of
+  <code>inputs</code> that correspond to the parameters governing the study data
+  should be identified in <code>poi</code>.</p>
 <p>Currently supported studies are</p>
-<p><code>"trial_binary"</code> Two-arm trial with a binary outcome.   Requires two parameters: the probability of the outcome in arm 1 and 2 respectively.  The sample size is the same in each arm, specifed in the <code>n</code> argument to <code>evsi()</code>, and the binomial outcomes are named <code>X1</code> and <code>X2</code> respectively.</p>
+<p><code>"binary"</code> A study with a binary outcome observed on one sample of
+  individuals.   Requires one parameter: the probability of the outcome.
+  The sample size is specifed in the <code>n</code> argument to <code>evsi()</code>, and
+  the binomially-distributed outcome is named <code>X1</code>.</p>
+<p><code>"trial_binary"</code> Two-arm trial with a binary outcome.   Requires two
+parameters: the probability of the outcome in arm 1 and 2 respectively.  The
+sample size is the same in each arm, specifed in the <code>n</code> argument to
+<code>evsi()</code>, and the binomial outcomes are named <code>X1</code> and <code>X2</code>
+respectively.</p>
+<p><code>"normal_known"</code> A study of a normally-distributed outcome, with a
+known standard deviation, on one sample of individuals.  Likewise the sample
+size is specified in the <code>n</code> argument to <code>evsi()</code>.  The standard
+deviation defaults to 1, and can be changed by specifying <code>sd</code> as a
+component of the <code>aux_pars</code> argument, e.g. 
+<code>evsi(..., aux_pars=list(sd=2))</code>.</p>
 <p>Either <code>study</code> or <code>datagen_fn</code> should be supplied to <code>evsi()</code>.</p></td>
     </tr>
     <tr>
@@ -195,11 +218,17 @@ give the model output evaluated at the corresponding parameters.</p></td>
       <td><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.</p></td>
     </tr>
     <tr>
+      <th>aux_pars</th>
+      <td><p>A list of additional fixed arguments to supply to the function to generate the data, 
+whether that is a built-in or user-defined function, e.g. <code>evsi(..., aux_pars = list(sd=2))</code> to change the 
+fixed standard deviation in the <code>"normal_known"</code> model.</p></td>
+    </tr>
+    <tr>
       <th>method</th>
       <td><p>Character string indicating the calculation method.</p>
-<p>All the nonparametric regression methods supported for <code><a href='evppi.html'>evppi</a></code>, that is <code>"gam","gp","earth","inla"</code>, can also be used for EVSI calculation by regressing on a summary statistics of the predicted data (Strong et al 201?).   Defaults to <code>"gam"</code>.</p>
+<p>All the nonparametric regression methods supported for <code><a href='evppi.html'>evppi</a></code>, that is <code>"gam","gp","earth","inla"</code>, can also be used for EVSI calculation by regressing on a summary statistic of the predicted data (Strong et al 201?).   Defaults to <code>"gam"</code>.</p>
 <p><code>"is"</code> for importance sampling (Menzies 2016)</p>
-<p><code>"mm"</code> for moment matching (Heath et al 2018)</p>
+<p><code>"mm"</code> for moment matching (Heath et al 2018) (TODO not implemented yet)</p>
 <p>Note that the  <code>"is"</code> and <code>"mm"</code> (and Jalal) methods are used in conjunction with nonparametric regression, thus the <code>gam_formula</code> argument can be supplied to <code>evsi</code> to specify this regression - see <code><a href='evppi.html'>evppi</a></code>.</p>
 <p>The Heath et al. and Jalal et al. methods are under development.</p></td>
     </tr>

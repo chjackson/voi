@@ -219,7 +219,19 @@ of slow calculations.</p></td>
       <th>...</th>
       <td><p>Other arguments to control specific methods.</p>
 <p>For <code>method="gam"</code>:</p>  
-<p><code>gam_formula</code>: a character string giving the right hand side of the formula supplied to the <code>gam()</code> function. By default, this is a tensor product of all the parameters of interest, e.g. if <code>pars = c("pi","rho")</code>, then <code>gam_formula</code> defaults to <code><a href='https://rdrr.io/r/base/t.html'>t(pi, rho, bs="cr")</a></code>.  The option <code>bs="cr"</code> indicates a cubic spline regression basis, which more computationally efficient than the default "thin plate" basis.  If there are four or more parameters of interest, then the additional argument <code>k=4</code> is supplied to <code>te()</code>, specifying a four-dimensional basis, which is currently the default in the SAVI package (<a href='http://savi.shef.ac.uk/SAVI/'>http://savi.shef.ac.uk/SAVI/</a>).</p>
+<p><code>gam_formula</code>: a character string giving the right hand side of the
+formula supplied to the <code>gam()</code> function. By default, this is a tensor
+product of all the parameters of interest, e.g. if <code>pars =
+c("pi","rho")</code>, then <code>gam_formula</code> defaults to <code><a href='https://rdrr.io/r/base/t.html'>t(pi, rho,
+bs="cr")</a></code>.  The option <code>bs="cr"</code> indicates a cubic spline regression
+basis, which more computationally efficient than the default "thin plate"
+basis.  If there are four or more parameters of interest, then the
+additional argument <code>k=4</code> is supplied to <code>te()</code>, specifying a
+four-dimensional basis, which is currently the default in the SAVI package
+(<a href='http://savi.shef.ac.uk/SAVI/'>http://savi.shef.ac.uk/SAVI/</a>).</p>
+<p>If there are spaces in the variable names in <code>inputs</code>, then these should
+be converted to underscores before forming an explicit <code>gam_formula</code>.</p>
+
 <p>For <code>method="gp"</code>:</p>
 <p><code>gp_hyper_n</code>: number of samples to use to estimate the hyperparameters
 in the Gaussian process regression method.  By default, this is the minimum
