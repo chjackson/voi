@@ -103,3 +103,11 @@ test_that("Spaces in variable names", {
                  evppi(chemo_nb, cp, pars="pi 1")$evppi)
     
 })
+
+test_that("Variable names matching R built in objects", {
+    cp <- chemo_pars
+    names(cp)[names(cp)=="pi1"] <- "pi"
+    expect_error(evppi(chemo_nb, cp, pars="pi"), "R internal constant")
+    names(cp)[names(cp)=="pi"] <- "letters"
+    expect_error(evppi(chemo_nb, cp, pars="letters"), "R internal constant")
+})

@@ -437,5 +437,14 @@ check_pars <- function(pars, inputs){
 
 clean_pars <- function(pars) {
     parsc <- gsub(" ", "_", pars)
+    r_specials <- c("letters","month.abb","month.name","pi")
+    for (i in seq_along(r_specials)){
+        inds <- parsc == r_specials[i]
+        if (any(inds)){
+            for (j in which(inds)){
+                stop(sprintf("Parameter name `%s` is also the name of a R internal constant. This should be changed to another name to allow the `gam` method for VoI calculation to be used", parsc[j]))
+            }
+        }
+    }
     parsc
 }
