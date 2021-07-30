@@ -390,7 +390,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">1000</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.08162026</code></pre>
-<p>The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling  with an  argument, e.g. .</p>
+<p>The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling  with an  argument, e.g. <code><a href="../reference/evsi.html">evsi(..., aux_pars=list(sd=2), ...)</a></code>.</p>
 <p>Note that the results will be slightly different every time the <code>evsi</code> function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with <code>set_seed</code> before each invocation).</p>
 <p>Other built-in study designs include</p>
 <p><code>"binary"</code>: A single sample of observations of a binary outcome. Requires one parameter to be specified in <code>pars</code>, that is, the probability of the outcome.</p>
