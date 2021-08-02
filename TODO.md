@@ -43,6 +43,9 @@ EVPPI
 
 * Any other plots for communication?
 
+* List parameter input for estimation VOI 
+
+* Multiple sample sizes as a vector for EVSI, or warn if the user does this currently.
 
 
 

@@ -17,14 +17,15 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Value of Information methods are used in models for making decisions.   They describe the expected value of getting more information of various kinds.   
+Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds, in scientific problems based on combining one or more sources of data. 
 
 The theory of the methods and details on how to use them in practice are described in several papers and books (some will be linked in this document).   
 
-While some details may not be fully explained in the current draft of this document, the `voi` package is intended to accompany a book which is under preparation.  When the book is finished, it will provide all background information that users of the package will need to know. 
+While some details may not be fully explained in the current draft of this document, the `voi` package is intended to accompany a book which is under preparation.  When the book is finished, it will provide all background information that users of the package will need to know.  As the book is developed, useful features may be added to the package. 
 
-This document gives a simple overview of how the package is used.  A simple example model is used, but the same methods work for more complex models. 
+This document gives a simple overview of how the package is used.  A simple example model is used, but the same methods work in more complex models.
 
+The example model is a model used for _decision making_, which has been the most common application of VoI, e.g. in health economic evaluations.   A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making. 
 
 
 ## Simple example model 
@@ -389,9 +390,9 @@ evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1")
 evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1")
 ```
 
-The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling \code{evsi} with an \code{aux_pars} argument, e.g. `evsi(..., aux_pars=list(sd=2), ...)`.
+The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling `evsi` with an `aux_pars` argument, e.g. `evsi(..., aux_pars=list(sd=2), ...)`.
 
-Note that the results will be slightly different every time the `evsi` function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with `set_seed` before each invocation).
+Note that the results will be slightly different every time the `evsi` function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with the R function `set_seed` before each invocation).
 
 Other built-in study designs include 
 
@@ -430,9 +431,136 @@ Again, this study model is available as a built-in study design, so instead of w
 evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
 ```
 
-
 ### Further work
 
 Other EVSI calculation methods (including [Heath et al](https://doi.org/10.1177/0272989X19837983)) are planned to be implemented. 
 
-As the book is developed, any useful features required will be added to the package. 
+
+
+## Value of Information in models for estimation
+
+Suppose that the aim of the analysis is to get a precise estimate of a quantity, rather than to make an explicit decision between policies.   VoI methodology can still be used to determine which uncertain parameters the estimate is most sensitive to (EVPPI) or the improvements in precision expected from new data (EVSI).   The expected value of information is the expected _reduction in variance_ of the quantity of interest given the further information. 
+
+We illustrate with an example.   Suppose we want to estimate the prevalence of an infection.  There are two sources of information.  We have survey data which we think is biased, so that the true infection rate is higher than the rate of infection observed in the survey.   We then have an expert judgement about the extent of bias in the data, and uncertainty associated with this. 
+
+Firstly, suppose the survey observed 100 people and 5 of them were infected.  Using a vague Beta(0,0) prior (flat on the logit scale), the posterior distribution of the survey infection rate $p_1$ is a Beta(5,95).    We draw a random sample from this. 
+
+```{r}
+p1 <- rbeta(10000, 5, 95)
+```
+
+Secondly, we guess that the true risk of being infected is twice the risk in the survey population, but we are uncertain about this relative risk.   We might approximate our belief by placing a normal prior distribution on the log odds ratio $\beta$, with a mean designed to reflect the doubled relative risk, and a variance that is high but concentrates the relative risk on positive values.   Hence the true infection probability $p_2$ is a function of the two parameters $p_1$ and $\beta$: 
+ 
+$$p_2 = expit(logit(p_1) + \beta)$$.
+
+We draw random samples from the current belief distributions of $\beta$ and $p_2$, and then graphically 
+compare the distributions of the infection probability $p_1$ in the survey data (black) and the true infection probability $p_2$ (red).
+
+```{r,fig.width=7,fig.height=5}
+beta <- rnorm(10000, 0.8, 0.4)
+p2 <- plogis(qlogis(p1) + beta)
+plot(density(p1), lwd=2, xlim=c(0,1), main="")
+lines(density(p2), col="red", lwd=2)
+legend("topright", col=c("black","red"), lwd=c(2,2), 
+       legend=c("Surveyed infection probability", "True infection probability"))
+```
+
+The model _output_ quantity is $p_2$, and the model _inputs_ are $p_1$ and $\beta$.  We now want to determine the expected value of further information.  This is measured in terms of expected _reductions in variance_ of $p_2$.  This has a decision-theoretic interpretation, with "loss" being measured by squared error of a parameter estimate compared to the true parameter value.   See [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932).
+
+### EVPI and EVPPI for estimation 
+
+The EVPI is trivially $var(p_2)$, the variance under current information, which we can compute from the sample as 
+```{r}
+var(p2)
+```
+
+A more interesting quantity is the EVPPI for a parameter.  It describes the expected reduction in variance given perfect knowledge of a particular parameter.  In this example, we compute the EVPPI for $p_1$ and $\beta$, respectively, defined as 
+
+$$EVPPI[p_1] = var(p_2) - E(var(p_2| p_1)$$
+$$EVPPI[\beta] = var(p_2) - E(var(p_2 | \beta)$$
+
+These can be computed using nonparametric regression, as described in [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932).  This is implemented in the function `evppivar` in the `voi` package. 
+
+```{r}
+inputs <- data.frame(p1, beta)
+(evppi_beta <- evppivar(p2, inputs, par="beta"))
+(evppi_p1 <- evppivar(p2, inputs, par="p1"))
+# evppivar(p2, inputs, pars=list("p1", "beta")) # ideally this would work, but isn't currently implemented!
+```
+
+Hence a slightly greater improvement in variance is expected from knowing the true risk in the biased sample, compared to knowing the relative odds of infection. 
+
+These EVPPI values are easier to interpret if they are converted to the scale of a _standard deviation_.  If we subtract the EVPPI from the original variance of $p_2$ we get, for example $E(var(p_2) | p_1)$.  The square root of this is an estimate of what the standard deviation of $p_2$ would be if we learnt $p_1$ (note that is not exactly the _expected_ SD remaining, since we cannot swap the order of the square root and expectation operators). 
+
+```{r}
+sqrt(var(p2)) # or sd(p2)
+sqrt(var(p2) - evppi_beta)
+sqrt(var(p2) - evppi_p1)
+```
+
+Hence we would reduce the SD of $p_1$ to around 2/3 of its original value by learning $p_1$ or $\beta$.
+
+
+### How regression-based EVPPI estimation works
+
+EVPPI is estimated here by _nonparametric regression_ of the output on the input.  This idea came from [Strong et al.](https://dx.doi.org/10.1177%2F0272989X15575286) in the context of models with decisions. [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) showed how it applied in a wider class of problems, including models for estimation. 
+
+To estimate the expected reduction in variance in $p_2$, given knowledge of $p_1$, the `evppivar` function fits a regression model with `p2` as the outcome, and `p1` as the single predictor.  A generalized additive model based on splines is fitted using the `gam` function from the `mgcv` package.  
+
+```{r,fig.width=7,fig.height=5}
+plot(x=p1, y=p2, pch=".")
+mod <- mgcv::gam(p2 ~ te(p1, bs="cr"))
+p1fit <- fitted(mod)
+lines(sort(p1), p1fit[order(p1)], col="blue")
+```
+
+Taking the variance of the _residuals_ from this regression (observed minus fitted values) produces an estimate of $E(var(p_2 | p_1 = x))$, intuitively, the expected variance given knowledge of $p_1$, which, when subtracted from the variance of $p_2$, gives the EVPPI.  
+
+```{r}
+p1res <- p2 - p1fit
+var(p2) - var(p1res)
+```
+
+This agrees (up to Monte Carlo error) with the value produced by `evppivar`, which is obtained by a closely-related method, as the variance of the fitted values from this regression.   This is equal to the total variance minus the variance of the residuals, through the "law of total variance":
+
+$$var(Y) - E_{X}\left[var_{Y| X}(Y |X)\right] = var_{X} \left[E_{Y|X}(Y|X)\right]$$
+
+```{r}
+var(p1fit)
+```
+
+
+
+### EVSI for estimation 
+
+Now suppose we planned to collect additional survey data on the prevalence of infection. 
+
+First suppose that we can collect more data on the biased population that was used to estimate $p_1$.   The EVSI can be computed to show the expected value of surveying $n$ individuals, for different sample sizes $n$. 
+
+This is achieved using the function `evsivar` in the `voi` package, as follows.   
+
+ - As in `evppivar`, samples from the prior distributions of the parameters are supplied in the data frame `inputs`. 
+
+ - `study="binary"` indicates that the proposed study consists of a binary outcome observed from `n` individuals.  
+ - `pars="p1"` indicates which input parameter is informed by the study, in other words, which parameter is assumed to generate the study data.   
+
+```{r}
+evsivar(p2, inputs, study = "binary", pars="p1", n=100)
+evsivar(p2, inputs, study = "binary", pars="p1", n=1000)
+evsivar(p2, inputs, study = "binary", pars="p1", n=10000)
+```
+
+As the proposed sample sizes increase, the expected value of sample information informing $p_1$ converges to the EVPPI, the expected value of perfect information about $p_1$. 
+
+Alternatively, suppose we were able to collect information about the _unbiased_ population, whose infection prevalence is $p_2$.  That is, suppose we surveyed $n$ individuals, each with a binary infection outcome generated with probability $p_2$.  In this case, we can compute the EVSI by using `evsivar` with the model `inputs` defined to equal the model outputs, as follows: 
+
+```{r}
+inputs_p2 = data.frame(p2 = p2)
+evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=100)
+evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=1000)
+evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=10000)
+```
+
+The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size.   As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest $p_2$.  
+
+In a future version of `voi` it would be nice to allow the user to calculate EVSI for a vector of alternative sample sizes `n` in a single call to `evsi` or `evsivar`. 
