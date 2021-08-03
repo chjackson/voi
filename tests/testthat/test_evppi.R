@@ -13,27 +13,34 @@ test_that("single-parameter EVPPI",{
 })
 
 test_that("single-parameter EVPPI, alternative GAM basis",{
-    evppi(chemo_nb, chemo_pars, pars="pi1", gam_formula="s(pi1, bs='tp')")
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", gam_formula="s(pi1, bs='tp')")$evppi,
+                 3.758335, tol=1e-04)
 })
 
-
 test_that("single-parameter EVPPI, GP",{
-    evppi(chemo_nb, chemo_pars, pars="pi1", method="gp", nsim=100)
-    evppi(chemo_nb, chemo_pars, pars="pi1", method="gp", nsim=100, gp_hyper_n=100)
+    expect_equal(
+        evppi(chemo_nb, chemo_pars, pars="pi1", method="gp", nsim=100)$evppi,
+        5.469, tol=1e-03)
+    expect_equal(evppi(chemo_nb, chemo_pars, pars="pi1", method="gp", nsim=100, gp_hyper_n=100)$evppi,
+                 5.469, tol=1e-03)
 })
 
 test_that("single-parameter EVPPI, earth",{
-    evppi(chemo_nb, chemo_pars, pars="pi1", method="earth")
+    expect_equal(
+        evppi(chemo_nb, chemo_pars, pars="pi1", method="earth")$evppi, 
+        3.925656, tol=1e-03)
 })
 
 test_that("multi-parameter EVPPI, gam",{
     pars <- c("pi1","rho")
-    evppi(chemo_nb, chemo_pars, pars=pars, method="gam") # 17
+    expect_equal(evppi(chemo_nb, chemo_pars, pars=pars, method="gam")$evppi,
+                 17.19743, tol=1e-03)
 })
 
 test_that("multi-parameter EVPPI, earth",{
     pars <- c("pi1","rho")
-    evppi(chemo_nb, chemo_pars, pars=pars, method="earth") # 17
+    expect_equal(evppi(chemo_nb, chemo_pars, pars=pars, method="earth")$evppi,
+                 16.15921, tol=1e-03)
 })
 
 if (0) { 
@@ -47,12 +54,14 @@ test_that("EVPPI with INLA",{
 
 test_that("4-parameter EVPPI",{
     pars <- c("pi1","rho","gamma.hosp","gamma.dead")
-    evppi(chemo_nb, chemo_pars, pars=pars, method="gam") # 17
+    expect_equal(evppi(chemo_nb, chemo_pars, pars=pars, method="gam")$evppi,
+                 17.14812, tol=1e-03)
 })
 
 test_that("multi-parameter EVPPI, s() instead of t() formula",{
     pars <- c("pi1","rho")
-    evppi(chemo_nb, chemo_pars, pars=pars, method="gam", gam_formula="s(pi1) + s(rho)") # 17
+    expect_equal(evppi(chemo_nb, chemo_pars, pars=pars, method="gam", gam_formula="s(pi1) + s(rho)")$evppi,
+                 16.11115, tol=1e-03)
 })
 
 

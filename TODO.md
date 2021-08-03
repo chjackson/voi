@@ -18,11 +18,6 @@
 ## TODO
 
 
-Doc for extra args in built in datagen fn eg sigma in normal_known.  Is it even handled? 
-
-It's not in help(evsi)  neither is binary
-
-
 EVPPI
 
 * Different regression methods and options for effects and costs
@@ -45,8 +40,7 @@ EVPPI
 
 * List parameter input for estimation VOI 
 
-* Multiple sample sizes as a vector for EVSI, or warn if the user does this currently.
-
+* wtp or k 
 
 
 EVSI
@@ -70,7 +64,6 @@ EVSI
 GENERAL
 
 * Interface to heemod package.  Any other packages to interface with?
-
 
 
 

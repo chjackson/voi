@@ -53,5 +53,9 @@ evppi_so <- function(outputs, inputs, pars, ...){
         partial.info <- mean(apply(mean.k, 1, max))
         res[i] <- partial.info - max(apply(U[,i,], 2, mean))
     }
+    res <- data.frame(evppi=res)
+    if (inherits(outputs, "cea"))
+        res <- cbind(k=outputs$k, res)
     res
 }
+

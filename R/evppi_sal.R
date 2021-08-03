@@ -106,5 +106,8 @@ evppi_sal <- function(outputs, inputs, pars, ...){
             res[k] <- 0
         }
     }
+    res <- data.frame(evppi=res)
+    if (inherits(outputs, "cea"))
+        res <- cbind(k=outputs$k, res)
     res
 }

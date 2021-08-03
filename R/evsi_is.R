@@ -2,32 +2,40 @@
 ## Importance sampling method for calculating EVSI (Menzies)
 
 evsi_is <- function(outputs, inputs, pars, datagen_fn, n=100, aux_pars=aux_pars, likelihood, npreg_method="gam", verbose, ...){
-    if (inherits(outputs, "nb")){
-        evsi_is_nb(nb=outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n, aux_pars=aux_pars, 
-                   likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
+    nn <- length(n)
+    res <- vector(nn, mode="list")
+    for (i in seq_along(n)){
+        res[[i]] <- data.frame(
+            n = n[i], 
+            evsi = evsi_is_singlen(outputs, inputs, pars, datagen_fn=datagen_fn, n=100, aux_pars=aux_pars,
+                                    likelihood=likelihood, npreg_method=npreg_method, verbose=verbose,
+                                    ...)
+        )
+        if (inherits(outputs, "cea")) res[[i]] <- cbind(k = outputs$k, res[[i]])
     }
-    else if (inherits(outputs, "cea")){
-        evsi_is_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                    inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n, aux_pars=aux_pars, 
-                    likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
-    }
+    do.call("rbind", res)
 }
 
-evsi_is_nb <- function(nb, inputs, pars, datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){
-    nbfit <- prepost_evsi_is(nb, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+evsi_is_singlen <- function(outputs, inputs, pars, datagen_fn, n=100, aux_pars=aux_pars, likelihood, npreg_method="gam", verbose, ...){
+    UseMethod("evsi_is", outputs)    
+}
+    
+evsi_is.nb <- function(outputs, inputs, pars, datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){
+    nbfit <- prepost_evsi_is(outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                              aux_pars=aux_pars, 
                              likelihood=likelihood, npreg_method=npreg_method,
                              verbose=verbose, ...)
     calc_evppi(nbfit)
 }
 
-evsi_is_cea <- function(costs, effects, wtp, inputs, pars, datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){ 
+evsi_is.cea <- function(outputs, inputs, pars, datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){ 
+    wtp <- outputs$k 
     nwtp <- length(wtp)
     res <- numeric(nwtp)
-    cfit <- prepost_evsi_is(costs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+    cfit <- prepost_evsi_is(outputs$c, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                              aux_pars=aux_pars, 
                             likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
-    efit <- prepost_evsi_is(effects, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+    efit <- prepost_evsi_is(outputs$e, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
                              aux_pars=aux_pars, 
                             likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
     for (i in 1:nwtp){

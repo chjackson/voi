@@ -230,36 +230,21 @@ evppi <- function(outputs,
     } else if (method=="sal") {
         rese <- evppi_sal(outputs, inputs, pars, ...)
     } else stop("Other methods not implemented yet")
-    if (inherits(outputs, "cea"))
-        res <- data.frame(k=outputs$k, evppi=rese) 
-    else res <- data.frame(evppi=rese)
-    if (se) {
-        res$se <- attr(rese,"se")
-    }
     res <- cbind(pars = paste(pars, collapse=","), 
-                 res)
+                 rese)
     res
 }
 
 evppi_list <- function(outputs, inputs, pars, method, se, B, nsim, verbose, ...)
 {
     npars <- length(pars)
-    nouts <- if (inherits(outputs, "cea")) length(outputs$k) else 1
-    res <- data.frame(pars=character(npars*nouts)) 
-    if (inherits(outputs, "cea")) res$k <- rep(outputs$k, each=npars)
-    res$evppi <- numeric(npars*nouts)
-    res$pars <- character(npars*nouts)
-    if (se) res$se <- numeric(npars*nouts)
-    indmat <- matrix(seq_len(npars*nouts), nrow=npars, ncol=nouts)
+    eres <- vector(npars, mode="list") 
     for (i in seq_len(npars)){
-        eres <- evppi(outputs=outputs, inputs=inputs, pars=pars[[i]], 
-              method=method, se=se, B=B, nsim=nsim, verbose=verbose,
-              ...)
-        res$evppi[indmat[i,]] <- eres$evppi
-        res$pars[indmat[i,]] <- eres$pars
-        if (se) res$se[indmat[i,]] <- eres$se
+        eres[[i]] <- evppi(outputs=outputs, inputs=inputs, pars=pars[[i]], 
+                           method=method, se=se, B=B, nsim=nsim, verbose=verbose,
+                           ...)
     }
-    res
+    do.call("rbind", eres)
 }
 
 ## could do fancier S3 stuff with implementing subset operator, but too much
@@ -292,7 +277,7 @@ evppi_npreg.nb <- function(outputs, inputs, pars, method, se, B, verbose, ...){
     if (verbose) message("Fitting nonparametric regression") 
     fit <- fitted_npreg(outputs, inputs=inputs, pars=pars, method=method, se=se, B=B, 
                         verbose=verbose, ...)
-    res <- calc_evppi(fit)
+    res <- data.frame(evppi = calc_evppi(fit))
     if (se){
         if (verbose) message("Calculating replicate EVPPIs from simulation")
         evppi_rep <- numeric(B)
@@ -300,7 +285,7 @@ evppi_npreg.nb <- function(outputs, inputs, pars, method, se, B, verbose, ...){
             ## This bit could be faster.  Is there a vectorised way?  Naive apply doesn't help
             evppi_rep[i] <- calc_evppi(attr(fit, "rep")[i,,])   
         }
-        attr(res, "se") <-  sd(evppi_rep)
+        res$se <-  sd(evppi_rep)
     }
     res
 }
@@ -326,7 +311,8 @@ evppi_npreg.cea <- function(outputs, inputs, pars, method, se, B, verbose, ...){
         }
         res[i] <- calc_evppi(inbfit)
     }
-    if (se) attr(res, "se") <- resse
+    res <- data.frame(k=wtp, evppi=res)
+    if (se) res$se <- resse
     res
 }
 

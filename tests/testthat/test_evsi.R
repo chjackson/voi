@@ -18,7 +18,7 @@ test_that("EVSI GAM method", {
     ## method depends on simulating data, so make tests reproducible
     set.seed(1)
     expect_equal(evsi(chemo_nb, chemo_pars, datagen_fn=chemo_datagen_fn,
-                      gam_formula=gamf, nsim=1000),
+                      gam_formula=gamf, nsim=1000)$evsi,
                  18.18446, tol=0.01)
 })
 
@@ -41,26 +41,26 @@ test_that("EVSI importance sampling method", {
     set.seed(1)
     expect_equal(
         evsi(chemo_nb, chemo_pars, method="is", pars=pars, nsim=1000, 
-             datagen_fn=chemo_datagen_fn, likelihood=lik_chemo, gam_formula=gamf, verbose=FALSE),
+             datagen_fn=chemo_datagen_fn, likelihood=lik_chemo, gam_formula=gamf, verbose=FALSE)$evsi,
         9.252767, tol=0.01)
 })
 
 test_that("EVSI with built-in study designs", {
     set.seed(1)
     expect_equal(
-        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c("pi1", "pi2"), verbose=FALSE), 
+        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c("pi1", "pi2"), verbose=FALSE)$evsi, 
         2.285424, tol=0.01)
     set.seed(1)
-    e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c("pi1"), verbose=FALSE) 
-    e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=10000, pars=c("pi1"), verbose=FALSE) 
+    e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c("pi1"), verbose=FALSE)$evsi
+    e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=10000, pars=c("pi1"), verbose=FALSE)$evsi
     expect_gt(e2, e1)
     set.seed(1)
-    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=100, pars=c("pi1"), verbose=FALSE) 
-    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, pars=c("pi1"), verbose=FALSE) 
+    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=100, pars=c("pi1"), verbose=FALSE)$evsi
+    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, pars=c("pi1"), verbose=FALSE)$evsi
     expect_gt(e2, e1)
     set.seed(1)
-    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=2), pars=c("pi1"), verbose=FALSE) 
-    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=0.1), pars=c("pi1"), verbose=FALSE) 
+    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=2), pars=c("pi1"), verbose=FALSE)$evsi 
+    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=0.1), pars=c("pi1"), verbose=FALSE)$evsi
     ep <- evppi(chemo_nb, chemo_pars, pars=c("pi1"), verbose=FALSE)$evppi
     expect_gt(e2, e1)
     expect_gt(ep, e2)
@@ -69,7 +69,29 @@ test_that("EVSI with built-in study designs", {
 test_that("EVSI with built-in study designs: IS method", {
     set.seed(1)
     expect_equal(
-        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c("pi1", "pi2"), method="is", nsim=1000, verbose=FALSE)
+        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c("pi1", "pi2"), 
+             method="is", nsim=1000, verbose=FALSE)$evsi
       , 
         2.789803, tol=0.01)
+})
+
+test_that("EVSI with multiple sample sizes", { 
+  set.seed(1)
+  e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c("pi1"), verbose=FALSE)
+  e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=1000, pars=c("pi1"), verbose=FALSE) 
+  set.seed(1)
+  e3 <- evsi(chemo_nb, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), verbose=FALSE) 
+  expect_equal(e1$evsi, e3$evsi[1])
+  expect_equal(e2$evsi, e3$evsi[2])
+  set.seed(1)
+  e4 <- evsi(chemo_cea, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), verbose=FALSE) 
+  expect_equal(e4$evsi[e4$k==30000 & e4$n==100], e1$evsi, tol=1e-03)
+  set.seed(1)
+  e1 <- evsi(chemo_cea, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), 
+             verbose=FALSE, method="is", nsim=1000) 
+  expect_equal(e1$evsi[3], 0.269594863723396, tol=1e-04)
+  set.seed(1)
+  e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), 
+             verbose=FALSE, method="is", nsim=1000) 
+  expect_equal(e2$evsi[1], 0.4290582, tol=1e-04)
 })

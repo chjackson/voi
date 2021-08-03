@@ -374,9 +374,7 @@ datagen_normal <- function(inputs, n=100, sd=1){
 }
 
 set.seed(1)
-evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=10)
-evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=100)
-evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=1000)
+evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
 ```
 
 
@@ -386,8 +384,8 @@ evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=1000)
 The function `datagen_normal` is also included in the `voi` package as a built-in study design.  To invoke the `evsi` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.   
 
 ```{r}
-evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1")
-evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1")
+evsi(outputs_nb, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
+evsi(outputs_cea, inputs, study = "normal_known", n=c(100,1000), pars = "p1")
 ```
 
 The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling `evsi` with an `aux_pars` argument, e.g. `evsi(..., aux_pars=list(sd=2), ...)`.
@@ -430,6 +428,7 @@ Again, this study model is available as a built-in study design, so instead of w
 ```{r}
 evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is", nsim=1000)
 ```
+
 
 ### Further work
 
@@ -498,12 +497,12 @@ sqrt(var(p2) - evppi_beta)
 sqrt(var(p2) - evppi_p1)
 ```
 
-Hence we would reduce the SD of $p_1$ to around 2/3 of its original value by learning $p_1$ or $\beta$.
+Hence we would expect to reduce the SD of $p_1$ to around 2/3 of its original value by learning $p_1$ or $\beta$.
 
 
 ### How regression-based EVPPI estimation works
 
-EVPPI is estimated here by _nonparametric regression_ of the output on the input.  This idea came from [Strong et al.](https://dx.doi.org/10.1177%2F0272989X15575286) in the context of models with decisions. [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) showed how it applied in a wider class of problems, including models for estimation. 
+EVPPI is estimated here by _nonparametric regression_ of the output on the input.   Recall that the method of [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910) was used in `evppi` for models with decisions.  [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) showed how this method applied in a wider class of problems, including models for estimation. 
 
 To estimate the expected reduction in variance in $p_2$, given knowledge of $p_1$, the `evppivar` function fits a regression model with `p2` as the outcome, and `p1` as the single predictor.  A generalized additive model based on splines is fitted using the `gam` function from the `mgcv` package.  
 
@@ -545,9 +544,7 @@ This is achieved using the function `evsivar` in the `voi` package, as follows.
  - `pars="p1"` indicates which input parameter is informed by the study, in other words, which parameter is assumed to generate the study data.   
 
 ```{r}
-evsivar(p2, inputs, study = "binary", pars="p1", n=100)
-evsivar(p2, inputs, study = "binary", pars="p1", n=1000)
-evsivar(p2, inputs, study = "binary", pars="p1", n=10000)
+evsivar(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
 ```
 
 As the proposed sample sizes increase, the expected value of sample information informing $p_1$ converges to the EVPPI, the expected value of perfect information about $p_1$. 
@@ -556,11 +553,7 @@ Alternatively, suppose we were able to collect information about the _unbiased_ 
 
 ```{r}
 inputs_p2 = data.frame(p2 = p2)
-evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=100)
-evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=1000)
-evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=10000)
+evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000))
 ```
 
 The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size.   As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest $p_2$.  
-
-In a future version of `voi` it would be nice to allow the user to calculate EVSI for a vector of alternative sample sizes `n` in a single call to `evsi` or `evsivar`. 

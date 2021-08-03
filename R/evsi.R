@@ -129,6 +129,7 @@ evsi <- function(outputs,
                  ...)
 {
     check_inputs(inputs)
+    check_ss(n)
     outputs <- check_outputs(outputs, inputs)
     if (is.null(method))
         method <- default_evsi_method()
@@ -165,9 +166,17 @@ evsi <- function(outputs,
 }
 
 evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, aux_pars=NULL, ...){
-    Tdata <- generate_data(inputs, datagen_fn, n, pars, aux_pars)
-    evppi_npreg(outputs=outputs, inputs=Tdata, 
-                pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
+    nn <- length(n)
+    res <- vector(nn, mode="list")
+    for (i in seq_along(n)){
+        Tdata <- generate_data(inputs, datagen_fn, n[i], pars, aux_pars)
+        evsi <- evppi_npreg(outputs=outputs, inputs=Tdata, 
+                           pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
+        names(evsi)[names(evsi)=="evppi"] <- "evsi"
+        res[[i]] <- cbind(n = n[i], evsi)
+        rownames(res[[i]]) <- NULL
+    }
+    do.call("rbind", res)
 }
 
 generate_data <- function(inputs, datagen_fn, n=150, pars, aux_pars=NULL){
@@ -216,4 +225,11 @@ check_datagen_fn <- function(datagen_fn, inputs, pars=NULL, aux_pars=NULL){
     if (nrow(ret) != nrow(inputs)){
         stop(sprintf("`datagen_fn` returns a data frame with %s rows. There should be %s rows, the same number of rows as `inputs`", nrow(ret), nrow(inputs)))
     }
+}
+
+check_ss <- function(n){
+    if (!is.numeric(n))
+        stop("sample size `n` should be a numeric vector")
+    if (any(n < 0))
+        stop("sample sizes `n` should all be positive integers")
 }

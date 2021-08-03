@@ -51,5 +51,5 @@ check_outputs_vector <- function(outputs, inputs){
 evppivar_npreg <- function(outputs, inputs, pars, method, verbose, ...){
     fitted <- fitted_npreg_fn(method)(y=outputs, inputs=inputs, pars=pars, 
                                       verbose=verbose, ...)
-    var(fitted)
+    data.frame(evppi = var(fitted))
 } 
