@@ -38,7 +38,7 @@ EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 \code{outputs} are used.}
 }
 \value{
-The expected value of perfect information, either a single value, or a vector of values for different willingness-to-pay.
+The expected value of perfect information, either as a single value, or a data frame indicating the value for each willingness-to-pay.
 }
 \description{
 Calculate the expected value of perfect information from a decision model using standard Monte Carlo simulation

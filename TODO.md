@@ -38,8 +38,6 @@ EVPPI
 
 * Any other plots for communication?
 
-* List parameter input for estimation VOI 
-
 * wtp or k 
 
 

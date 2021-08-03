@@ -484,7 +484,6 @@ These can be computed using nonparametric regression, as described in [Jackson e
 inputs <- data.frame(p1, beta)
 (evppi_beta <- evppivar(p2, inputs, par="beta"))
 (evppi_p1 <- evppivar(p2, inputs, par="p1"))
-# evppivar(p2, inputs, pars=list("p1", "beta")) # ideally this would work, but isn't currently implemented!
 ```
 
 Hence a slightly greater improvement in variance is expected from knowing the true risk in the biased sample, compared to knowing the relative odds of infection. 
@@ -493,8 +492,8 @@ These EVPPI values are easier to interpret if they are converted to the scale of
 
 ```{r}
 sqrt(var(p2)) # or sd(p2)
-sqrt(var(p2) - evppi_beta)
-sqrt(var(p2) - evppi_p1)
+sqrt(var(p2) - evppi_beta$evppi)
+sqrt(var(p2) - evppi_p1$evppi)
 ```
 
 Hence we would expect to reduce the SD of $p_1$ to around 2/3 of its original value by learning $p_1$ or $\beta$.

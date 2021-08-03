@@ -17,15 +17,19 @@
 ##' 
 ##' @export
 evppivar <- function(outputs,
-                  inputs,
-                  pars=NULL,
-                  method=NULL,
-                  nsim=NULL,
-                  verbose=TRUE,
-                  ...)
+                     inputs,
+                     pars=NULL,
+                     method=NULL,
+                     nsim=NULL,
+                     verbose=TRUE,
+                     ...)
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     check_outputs_vector(outputs, inputs)
+    if (is.list(pars)) {
+        return(evppivar_list(outputs=outputs, inputs=inputs, pars=pars, 
+                             method=method, nsim=nsim, verbose=verbose, ...))
+    }
     pars <- check_pars(pars, inputs)
     opts <- list(...)
     if (is.null(method))
@@ -36,9 +40,24 @@ evppivar <- function(outputs,
     inputs <- inputs[1:nsim,,drop=FALSE]
     
     if (method %in% npreg_methods) {
-        evppivar_npreg(outputs=outputs, inputs=inputs, 
+        rese <- evppivar_npreg(outputs=outputs, inputs=inputs, 
                     pars=pars, method=method, verbose=verbose, ...)
     } else stop("Other methods not implemented yet")
+    res <- cbind(pars = paste(pars, collapse=","), 
+                 rese)
+    res
+}
+
+evppivar_list <- function(outputs, inputs, pars, method, nsim, verbose, ...)
+{
+    npars <- length(pars)
+    eres <- vector(npars, mode="list") 
+    for (i in seq_len(npars)){
+        eres[[i]] <- evppivar(outputs=outputs, inputs=inputs, pars=pars[[i]], 
+                              method=method, nsim=nsim, verbose=verbose,
+                              ...)
+    }
+    do.call("rbind", eres)
 }
 
 check_outputs_vector <- function(outputs, inputs){
