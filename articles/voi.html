@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">voi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
       </span>
     </div>
 
@@ -66,7 +66,7 @@
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
                         <h4 class="author">Christopher Jackson</h4>
             
-            <h4 class="date">2021-08-03</h4>
+            <h4 class="date">2021-09-03</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -76,10 +76,11 @@
     
     
 <p>Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds, in scientific problems based on combining one or more sources of data.</p>
-<p>The theory of the methods and details on how to use them in practice are described in several papers and books (some will be linked in this document).</p>
-<p>While some details may not be fully explained in the current draft of this document, the <code>voi</code> package is intended to accompany a book which is under preparation. When the book is finished, it will provide all background information that users of the package will need to know. As the book is developed, useful features may be added to the package.</p>
-<p>This document gives a simple overview of how the package is used. A simple example model is used, but the same methods work in more complex models.</p>
-<p>The example model is a model used for <em>decision making</em>, which has been the most common application of VoI, e.g. in health economic evaluations. A later section describes the use of VoI methods for a model that is used for <em>estimation</em> of uncertain quantities, rather than for explicit decision-making.</p>
+<p>The following two papers give a thorough recent review of the theory of the methods, and details of how they are applied and interpreted, from the perspective of healthcare decision-making.</p>
+<p><a href="https://doi.org/10.1016/j.jval.2020.01.001">Value of Information Analysis for Research Decisions—An Introduction: Report 1 of the ISPOR Value of Information Analysis Emerging Good Practices Task Force</a></p>
+<p><a href="https://doi.org/10.1016/j.jval.2020.01.004">Value of information analytical methods: report 2 of the ISPOR value of information analysis emerging good practices task force</a></p>
+<p>This document gives a simple overview of how the <code>voi</code> package is used to calculate measures of Value of Information. A simple example model is used, but the same methods work in more complex models.</p>
+<p>The example model is a model used for <em>decision making</em>, which has been the most common application of VoI, e.g. in health economic evaluations. A later section describes the use of VoI methods for a model that is used for <em>estimation</em> of uncertain quantities, rather than for explicit decision-making - for more information about the theory behind this, see <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a>.</p>
 <div id="simple-example-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simple-example-model" class="anchor"></a>Simple example model</h2>

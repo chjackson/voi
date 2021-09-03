@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">voi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
       </span>
     </div>
 
@@ -134,20 +134,20 @@
       <th>outputs</th>
       <td><p>This could take one of two forms</p>
 <p>"net benefit" form: a matrix or data frame of samples from the uncertainty
-  distribution of the expected net benefit.  The number of rows should equal
-  the number of samples, and the number of columns should equal the number
-  of decision options.</p>
+distribution of the expected net benefit.  The number of rows should equal
+the number of samples, and the number of columns should equal the number
+of decision options.</p>
 <p>"cost-effectiveness analysis" form: a list with the following named
-  components:</p>
+components:</p>
 <p><code>"c"</code>: a matrix or data frame of samples from the distribution of
-  costs.  There should be one column for each decision option.</p>
+costs.  There should be one column for each decision option.</p>
 <p><code>"e"</code>: a matrix or data frame of samples from the distribution of
-  effects, likewise.</p>
+effects, likewise.</p>
 <p><code>"k"</code>: a vector of willingness-to-pay values.</p>
 <p>Objects of class <code>"bcea"</code>, as created by the <span class="pkg">BCEA</span> package, are in
 this "cost-effectiveness analysis" format, therefore they may be supplied as
 the <code>outputs</code> argument.</p>
-<p>If <code>outputs</code> is a matrix or data frame it is assumed to be of "net
+<p>If <code>outputs</code> is a matrix or data frame, it is assumed to be of "net
 benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 effectiveness analysis" form.</p></td>
     </tr>
@@ -163,26 +163,26 @@ give the model output evaluated at the corresponding parameters.</p></td>
     <tr>
       <th>pars</th>
       <td><p>A character vector giving the parameters of interest, for which
-  a single EVPPI calculation is required.  If the vector has multiple
-  element, then the joint expected value of perfect information on all these
-  parameters together is calculated.</p>
+a single EVPPI calculation is required.  If the vector has multiple
+elements, then the joint expected value of perfect information on all these
+parameters together is calculated.</p>
 <p>Alternatively, <code>pars</code> may be a list.  Multiple EVPPI calculations are
-  then performed, one for each component of <code>pars</code> defined in the above
-  vector form.</p>
+then performed, one for each component of <code>pars</code> defined in the above
+vector form.</p>
 <p><code>pars</code> must be specified if <code>inputs</code> is a matrix or data frame.
-  This should then correspond to particular columns of <code>inputs</code>.    If
-  <code>inputs</code> is a vector, this is assumed to define the single parameter
-  of interest, then <code>pars</code> is not required.</p></td>
+This should then correspond to particular columns of <code>inputs</code>.    If
+<code>inputs</code> is a vector, this is assumed to define the single parameter
+of interest, and then <code>pars</code> is not required.</p></td>
     </tr>
     <tr>
       <th>method</th>
       <td><p>Character string indicating the calculation method.   The default
-  methods are based on nonparametric regression:</p>
-<p><code>"gam"</code> for a generalized additive model implemented in the gam()
-function from the mgcv() package.  This is the default method for
+methods are based on nonparametric regression:</p>
+<p><code>"gam"</code> for a generalized additive model implemented in the <code>gam</code>
+function from the <span class="pkg">mgcv</span> package.  This is the default method for
 calculating the EVPPI of 4 or fewer parameters.</p>
 <p><code>"gp"</code> for a Gaussian process regression, as described by Strong et al.
-(2014) and implemented in the SAVI package
+(2014) and implemented in the <span class="pkg">SAVI</span> package
 (<a href='http://savi.shef.ac.uk/SAVI/'>http://savi.shef.ac.uk/SAVI/</a>).</p>
 <p><code>"inla"</code> for an INLA/SPDE Gaussian process regression method, from
 Heath et al. (2016).   This is the default method for calculating the EVPPI
@@ -191,13 +191,13 @@ of more than 4 parameters.</p>
 <span class="pkg">earth</span> package (Milborrow, 2019).</p>
 <p><code>"so"</code> for the method of Strong and Oakley (2013).  Only supported
 for single parameter EVPPI.</p>
-<p><code>"sal"</code> for the method of Sadatsafavi et al. (2013).  Only supported 
+<p><code>"sal"</code> for the method of Sadatsafavi et al. (2013).  Only supported
 for single parameter EVPPI.</p></td>
     </tr>
     <tr>
       <th>se</th>
-      <td><p>If possible, calculate a standard error for the EVPPI.  Currently
-only supported for <code>method="gam"</code>.</p></td>
+      <td><p>If this is <code>TRUE</code>, calculate a standard error for the EVPPI
+if possible.  Currently only supported for <code>method="gam"</code>.</p></td>
     </tr>
     <tr>
       <th>B</th>
@@ -212,75 +212,83 @@ EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> a
     <tr>
       <th>verbose</th>
       <td><p>If <code>TRUE</code>, then messages are printed describing each step of
-  the calculation, if the method supplies these.  Useful to see the progress
+the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>Other arguments to control specific methods.</p>
-<p>For <code>method="gam"</code>:</p>  
-<p><code>gam_formula</code>: a character string giving the right hand side of the
+<p>For <code>method="gam"</code>:</p><ul>
+<li><p><code>gam_formula</code>: a character string giving the right hand side of the
 formula supplied to the <code>gam()</code> function. By default, this is a tensor
 product of all the parameters of interest, e.g. if <code>pars =
 c("pi","rho")</code>, then <code>gam_formula</code> defaults to <code><a href='https://rdrr.io/r/base/t.html'>t(pi, rho,
 bs="cr")</a></code>.  The option <code>bs="cr"</code> indicates a cubic spline regression
-basis, which more computationally efficient than the default "thin plate"
+basis, which is more computationally efficient than the default "thin plate"
 basis.  If there are four or more parameters of interest, then the
 additional argument <code>k=4</code> is supplied to <code>te()</code>, specifying a
 four-dimensional basis, which is currently the default in the SAVI package
-(<a href='http://savi.shef.ac.uk/SAVI/'>http://savi.shef.ac.uk/SAVI/</a>).</p>
+(<a href='http://savi.shef.ac.uk/SAVI/'>http://savi.shef.ac.uk/SAVI/</a>).</p></li>
+</ul>
+
 <p>If there are spaces in the variable names in <code>inputs</code>, then these should
 be converted to underscores before forming an explicit <code>gam_formula</code>.</p>
-
-<p>For <code>method="gp"</code>:</p>
-<p><code>gp_hyper_n</code>: number of samples to use to estimate the hyperparameters
+<p>For <code>method="gp"</code>:</p><ul>
+<li><p><code>gp_hyper_n</code>: number of samples to use to estimate the hyperparameters
 in the Gaussian process regression method.  By default, this is the minimum
 of the following three quantities: 30 times the number of parameters of
 interest, 250, and the number of simulations being used for calculating
-EVPPI.</p>
-<p><code>maxSample</code> Maximum sample size to employ for <code>method="gp"</code>.  Only
+EVPPI.</p></li>
+<li><p><code>maxSample</code>: Maximum sample size to employ for <code>method="gp"</code>.  Only
 increase this from the default 5000 if your computer has sufficent memory to
-invert square matrices with this dimension.</p>
+invert square matrices with this dimension.</p></li>
+</ul>
+
 <p>For <code>method="inla"</code>, as described in detail in Baio, Berardi and Heath
-(2017):</p>
-<p><code>int.ord</code> (integer) maximum order of interaction terms to include in
+(2017):</p><ul>
+<li><p><code>int.ord</code> (integer) maximum order of interaction terms to include in
 the regression predictor, e.g. if <code>int.ord=k</code> then all k-way
-interactions are used.  Currently this applies to both effects and costs.</p>
-<p><code>cutoff</code> (default 0.3) controls the
-density of the points inside the mesh in the spatial part of the mode. 
+interactions are used.  Currently this applies to both effects and costs.</p></li>
+<li><p><code>cutoff</code> (default 0.3) controls the
+density of the points inside the mesh in the spatial part of the mode.
 Acceptable values are typically in
 the interval (0.1,0.5), with lower values implying more points (and thus
-better approximation and greatercomputational time).</p>
-<p><code>convex.inner</code> (default = -0.4) and <code>convex.outer</code> (default = -0.7)
+better approximation and greatercomputational time).</p></li>
+<li><p><code>convex.inner</code> (default = -0.4) and <code>convex.outer</code> (default = -0.7)
 control the boundaries for the mesh. These should be negative values and can
 be decreased (say to -0.7 and -1, respectively) to increase the distance
 between the points and the outer boundary, which also increases precision and
-computational time.</p>
-<p><code>robust</code>. if <code>TRUE</code> then INLA will use a t prior distribution for
-the coefficients of the linear predictor, rather than the default normal.</p>
-<p><code>h.value</code> (default=0.00005) controls the accuracy of the INLA
+computational time.</p></li>
+<li><p><code>robust</code>. if <code>TRUE</code> then INLA will use a t prior distribution for
+the coefficients of the linear predictor, rather than the default normal.</p></li>
+<li><p><code>h.value</code> (default=0.00005) controls the accuracy of the INLA
 grid-search for the estimation of the hyperparameters. Lower values imply a
 more refined search (and hence better accuracy), at the expense of
-computational speed.</p>
-<p><code>plot_inla_mesh</code> (default <code>FALSE</code>) Produce a plot of the mesh.</p>
-<p><code>max.edge</code>  Largest allowed triangle edge length when constructing the
-mesh, passed to <code>inla.mesh.2d</code>.</p>
-<p>For <code>method="so"</code>:</p>
-<p><code>n.blocks</code> Number of blocks to split the sample into. Required.</p>
-<p>For <code>method="sal"</code>:</p>
-<p><code>n.seps</code> Number of separators (default 1).</p></td>
+computational speed.</p></li>
+<li><p><code>plot_inla_mesh</code> (default <code>FALSE</code>) Produce a plot of the mesh.</p></li>
+<li><p><code>max.edge</code>  Largest allowed triangle edge length when constructing the
+mesh, passed to <code>inla.mesh.2d</code>.</p></li>
+</ul>
+
+<p>For <code>method="so"</code>:</p><ul>
+<li><p><code>n.blocks</code> Number of blocks to split the sample into. Required.</p></li>
+</ul>
+
+<p>For <code>method="sal"</code>:</p><ul>
+<li><p><code>n.seps</code> Number of separators (default 1).</p></li>
+</ul></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data frame with a column <code>pars</code> indicating the parameter(s)
-  and a column <code>evppi</code> giving the corresponding EVPPI.</p>
+and a column <code>evppi</code> giving the corresponding EVPPI.</p>
 <p>If <code>outputs</code> is of "cost-effectiveness analysis" form so that there is
-  one EVPPI per willingness-to-pay value, then a column <code>k</code> identifies the 
-  willingness-to-pay.</p>  
-<p>If standard errors are requested, then the standard errors are returned in 
-  the column <code>se</code>.</p>
+one EVPPI per willingness-to-pay value, then a column <code>k</code> identifies the
+willingness-to-pay.</p>
+<p>If standard errors are requested, then the standard errors are returned in
+the column <code>se</code>.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Strong, M., Oakley, J. E., &amp; Brennan, A. (2014). Estimating multiparameter

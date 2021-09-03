@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Methods to calculate the Expected Value of Information — voi-package" />
-<meta property="og:description" content="evppi calculates the expected value of partial perfect information.  Currently this implements a selection of nonparametric regression methods." />
+<meta property="og:description" content="evppi calculates the expected value of partial perfect information from a decision-analytic model.  Currently this implements a selection of nonparametric regression methods." />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">voi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@
     </div>
 
     <div class="ref-description">
-    <p><code><a href='evppi.html'>evppi</a></code> calculates the expected value of partial perfect information.  Currently this implements a selection of nonparametric regression methods.</p>
+    <p><code><a href='evppi.html'>evppi</a></code> calculates the expected value of partial perfect information from a decision-analytic model.  Currently this implements a selection of nonparametric regression methods.</p>
     </div>
 
 
@@ -120,6 +120,9 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code><a href='evsi.html'>evsi</a></code> calculates the expected value of sample information.   Currently this implements the same set of nonparametric regression methods as in <code><a href='evppi.html'>evppi</a></code>, and a method based on importance sampling.</p>
+<p><code><a href='evppi.html'>evppi</a></code> and <code><a href='evsi.html'>evsi</a></code> both require a sample of inputs and outputs from a Monte Carlo probabilistic analysis of a decision-analytic model.</p>
+<p>Analogous functions <code><a href='evppivar.html'>evppivar</a></code> and <code><a href='evsivar.html'>evsivar</a></code> calculate the EVPPI and EVSI for models used for estimation rather than decision-making.   The value of information is measured by expected reductions in variance of an uncertain model output of interest.</p>
+<p>The package overview vignette gives worked examples of the use of all of these functions.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Heath, A., Manolopoulou, I., &amp; Baio, G. (2017). A review of methods for analysis of the expected value of information. Medical Decision Making, 37(7), 747-758.</p>
