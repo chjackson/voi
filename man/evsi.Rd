@@ -28,27 +28,27 @@ evsi(
 \arguments{
 \item{outputs}{This could take one of two forms
 
-  "net benefit" form: a matrix or data frame of samples from the uncertainty
-  distribution of the expected net benefit.  The number of rows should equal
-  the number of samples, and the number of columns should equal the number
-  of decision options.
+"net benefit" form: a matrix or data frame of samples from the uncertainty
+distribution of the expected net benefit.  The number of rows should equal
+the number of samples, and the number of columns should equal the number
+of decision options.
 
-  "cost-effectiveness analysis" form: a list with the following named
-  components:
+"cost-effectiveness analysis" form: a list with the following named
+components:
 
-  \code{"c"}: a matrix or data frame of samples from the distribution of
-  costs.  There should be one column for each decision option.
+\code{"c"}: a matrix or data frame of samples from the distribution of
+costs.  There should be one column for each decision option.
 
-  \code{"e"}: a matrix or data frame of samples from the distribution of
-  effects, likewise.
+\code{"e"}: a matrix or data frame of samples from the distribution of
+effects, likewise.
 
-  \code{"k"}: a vector of willingness-to-pay values.
+\code{"k"}: a vector of willingness-to-pay values.
 
 Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in
 this "cost-effectiveness analysis" format, therefore they may be supplied as
 the \code{outputs} argument.
 
-If \code{outputs} is a matrix or data frame it is assumed to be of "net
+If \code{outputs} is a matrix or data frame, it is assumed to be of "net
 benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 effectiveness analysis" form.}
 
@@ -60,16 +60,16 @@ in \code{outputs}, and each row of the samples in \code{outputs} should
 give the model output evaluated at the corresponding parameters.}
 
 \item{study}{Name of one of the built-in study types supported by this
-  package for EVSI calculation.  If this is supplied, then the columns of
-  \code{inputs} that correspond to the parameters governing the study data
-  should be identified in \code{poi}.
+package for EVSI calculation.  If this is supplied, then the columns of
+\code{inputs} that correspond to the parameters governing the study data
+should be identified in \code{poi}.
 
-  Currently supported studies are
+Currently supported studies are
 
-  \code{"binary"} A study with a binary outcome observed on one sample of
-  individuals.   Requires one parameter: the probability of the outcome.
-  The sample size is specifed in the \code{n} argument to \code{evsi()}, and
-  the binomially-distributed outcome is named \code{X1}.
+\code{"binary"} A study with a binary outcome observed on one sample of
+individuals.   Requires one parameter: the probability of the outcome.
+The sample size is specifed in the \code{n} argument to \code{evsi()}, and
+the binomially-distributed outcome is named \code{X1}.
 
 \code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two
 parameters: the probability of the outcome in arm 1 and 2 respectively.  The
@@ -81,22 +81,19 @@ respectively.
 known standard deviation, on one sample of individuals.  Likewise the sample
 size is specified in the \code{n} argument to \code{evsi()}.  The standard
 deviation defaults to 1, and can be changed by specifying \code{sd} as a
-component of the \code{aux_pars} argument, e.g. 
+component of the \code{aux_pars} argument, e.g.
 \code{evsi(..., aux_pars=list(sd=2))}.
 
 Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 
 \item{datagen_fn}{If the proposed study is not one of the built-in types supported, it can be specified in this argument as an R function to sample predicted data from the study.  This function should have the following specification:
-
-1. the function's first argument should be a data frame of parameter simulations, with one row per simulation and one column per parameter.  The parameters in this data frame must all be found in \code{inputs}.
-
-2. the function should return a data frame.
-
-3. the returned data frame should have number of rows equal to the number of parameter simulations in \code{inputs}.
-
-4. if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
-
-5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
+\enumerate{
+\item the function's first argument should be a data frame of parameter simulations, with one row per simulation and one column per parameter.  The parameters in this data frame must all be found in \code{inputs}.
+\item the function should return a data frame.
+\item the returned data frame should have number of rows equal to the number of parameter simulations in \code{inputs}.
+\item if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
+\item the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
+}
 
 Examples of this are currently in the \code{tests/tests_slow} package directory.}
 
@@ -108,8 +105,8 @@ The \code{pars} argument is also required for the methods which involve an inter
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
-\item{aux_pars}{A list of additional fixed arguments to supply to the function to generate the data, 
-whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the 
+\item{aux_pars}{A list of additional fixed arguments to supply to the function to generate the data,
+whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the
 fixed standard deviation in the \code{"normal_known"} model.}
 
 \item{method}{Character string indicating the calculation method.
@@ -118,21 +115,21 @@ All the nonparametric regression methods supported for \code{\link{evppi}}, that
 
 \code{"is"} for importance sampling (Menzies 2016)
 
-\code{"mm"} for moment matching (Heath et al 2018) (TODO not implemented yet) 
+\code{"mm"} for moment matching (Heath et al 2018) (TODO not implemented yet)
 
-Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}. 
+Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}.
 
 The Heath et al. and Jalal et al. methods are under development.}
 
 \item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
-
-1. a data frame of predicted data. Columns are defined by the number of outcomes in the data, and names matching the data frame returned by \code{datagen_fn}. 
-
-2. a data frame of parameter values, whose names should all correspond to variables in \code{inputs}.
+\enumerate{
+\item a data frame of predicted data. Columns are defined by the number of outcomes in the data, and names matching the data frame returned by \code{datagen_fn}.
+\item a data frame of parameter values, whose names should all correspond to variables in \code{inputs}.
+}
 
 The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.
 
-Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} in the package directory. 
+Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} in the package directory.
 
 Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.}
 
@@ -149,7 +146,7 @@ Note the definition of the likelihood should agree with the definition of \code{
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 
 \item{verbose}{If \code{TRUE}, then messages are printed describing each step of
-  the calculation, if the method supplies these.  Useful to see the progress
+the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.}
 
 \item{...}{Other arguments required by specific methods}

@@ -8,7 +8,7 @@ note check_outputs adds a class}
 check_model_fn(model_fn, par_fn, mfargs, verbose = FALSE)
 }
 \value{
-A modified copy of `model_fn` with a \code{class} attribute indicating whether it is
+A modified copy of \code{model_fn} with a \code{class} attribute indicating whether it is
 in net benefit \code{"nb"} or cost-effectiveness \code{"cea"} format, and an attribute \code{"nopt"} giving the
 number of decision options.
 }

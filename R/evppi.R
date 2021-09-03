@@ -24,7 +24,7 @@
 ##' this "cost-effectiveness analysis" format, therefore they may be supplied as
 ##' the \code{outputs} argument.
 ##'
-##' If \code{outputs} is a matrix or data frame it is assumed to be of "net
+##' If \code{outputs} is a matrix or data frame, it is assumed to be of "net
 ##' benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 ##' effectiveness analysis" form.
 ##'
@@ -37,7 +37,7 @@
 ##'
 ##' @param pars A character vector giving the parameters of interest, for which
 ##'   a single EVPPI calculation is required.  If the vector has multiple
-##'   element, then the joint expected value of perfect information on all these
+##'   elements, then the joint expected value of perfect information on all these
 ##'   parameters together is calculated.
 ##'
 ##'   Alternatively, \code{pars} may be a list.  Multiple EVPPI calculations are
@@ -47,17 +47,17 @@
 ##'   \code{pars} must be specified if \code{inputs} is a matrix or data frame.
 ##'   This should then correspond to particular columns of \code{inputs}.    If
 ##'   \code{inputs} is a vector, this is assumed to define the single parameter
-##'   of interest, then \code{pars} is not required.
+##'   of interest, and then \code{pars} is not required.
 ##'
 ##' @param method Character string indicating the calculation method.   The default
 ##'   methods are based on nonparametric regression:
 ##'
-##' \code{"gam"} for a generalized additive model implemented in the gam()
-##' function from the mgcv() package.  This is the default method for
+##' \code{"gam"} for a generalized additive model implemented in the \code{\link{gam}}
+##' function from the \pkg{mgcv} package.  This is the default method for
 ##' calculating the EVPPI of 4 or fewer parameters.
 ##'
 ##' \code{"gp"} for a Gaussian process regression, as described by Strong et al.
-##' (2014) and implemented in the SAVI package
+##' (2014) and implemented in the \pkg{SAVI} package
 ##' (\url{http://savi.shef.ac.uk/SAVI/}).
 ##'
 ##' \code{"inla"} for an INLA/SPDE Gaussian process regression method, from
@@ -73,8 +73,8 @@
 ##' \code{"sal"} for the method of Sadatsafavi et al. (2013).  Only supported 
 ##' for single parameter EVPPI.
 ##' 
-##' @param se If possible, calculate a standard error for the EVPPI.  Currently
-##'   only supported for \code{method="gam"}.
+##' @param se If this is \code{TRUE}, calculate a standard error for the EVPPI
+##'  if possible.  Currently only supported for \code{method="gam"}.
 ##'
 ##' @param B Number of parameter replicates for calculating the standard error.
 ##'   
@@ -84,18 +84,18 @@
 ##'
 ##' @param verbose If \code{TRUE}, then messages are printed describing each step of
 ##'   the calculation, if the method supplies these.  Useful to see the progress
-##' of slow calculations.  
+##'   of slow calculations.  
 ##'
 ##' @param ... Other arguments to control specific methods.
 ##'
 ##'   For \code{method="gam"}:
 ##'   
-##' \code{gam_formula}: a character string giving the right hand side of the
+##' * \code{gam_formula}: a character string giving the right hand side of the
 ##' formula supplied to the \code{gam()} function. By default, this is a tensor
 ##' product of all the parameters of interest, e.g. if \code{pars =
 ##' c("pi","rho")}, then \code{gam_formula} defaults to \code{t(pi, rho,
 ##' bs="cr")}.  The option \code{bs="cr"} indicates a cubic spline regression
-##' basis, which more computationally efficient than the default "thin plate"
+##' basis, which is more computationally efficient than the default "thin plate"
 ##' basis.  If there are four or more parameters of interest, then the
 ##' additional argument \code{k=4} is supplied to \code{te()}, specifying a
 ##' four-dimensional basis, which is currently the default in the SAVI package
@@ -107,55 +107,55 @@
 ##'
 ##' For \code{method="gp"}:
 ##'
-##' \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters
+##' * \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters
 ##' in the Gaussian process regression method.  By default, this is the minimum
 ##' of the following three quantities: 30 times the number of parameters of
 ##' interest, 250, and the number of simulations being used for calculating
 ##' EVPPI.
 ##'
-##' \code{maxSample} Maximum sample size to employ for \code{method="gp"}.  Only
+##' * \code{maxSample}: Maximum sample size to employ for \code{method="gp"}.  Only
 ##' increase this from the default 5000 if your computer has sufficent memory to
 ##' invert square matrices with this dimension.
 ##'
 ##' For \code{method="inla"}, as described in detail in Baio, Berardi and Heath
 ##' (2017):
 ##'
-##' \code{int.ord} (integer) maximum order of interaction terms to include in
+##' * \code{int.ord} (integer) maximum order of interaction terms to include in
 ##' the regression predictor, e.g. if \code{int.ord=k} then all k-way
 ##' interactions are used.  Currently this applies to both effects and costs.
 ##' 
-#'  \code{cutoff} (default 0.3) controls the
+#' * \code{cutoff} (default 0.3) controls the
 #' density of the points inside the mesh in the spatial part of the mode. 
 #' Acceptable values are typically in
 #' the interval (0.1,0.5), with lower values implying more points (and thus
 #' better approximation and greatercomputational time).
 #'
-#' \code{convex.inner} (default = -0.4) and \code{convex.outer} (default = -0.7)
+#' * \code{convex.inner} (default = -0.4) and \code{convex.outer} (default = -0.7)
 #' control the boundaries for the mesh. These should be negative values and can
 #' be decreased (say to -0.7 and -1, respectively) to increase the distance
 #' between the points and the outer boundary, which also increases precision and
 #' computational time.
 #'
-#' \code{robust}. if \code{TRUE} then INLA will use a t prior distribution for
+#' * \code{robust}. if \code{TRUE} then INLA will use a t prior distribution for
 #' the coefficients of the linear predictor, rather than the default normal.
 #'
-#' \code{h.value} (default=0.00005) controls the accuracy of the INLA
+#' * \code{h.value} (default=0.00005) controls the accuracy of the INLA
 #' grid-search for the estimation of the hyperparameters. Lower values imply a
 #' more refined search (and hence better accuracy), at the expense of
 #' computational speed.
 #'
-#' \code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh.
+#' * \code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh.
 #'
-#' \code{max.edge}  Largest allowed triangle edge length when constructing the
+#' * \code{max.edge}  Largest allowed triangle edge length when constructing the
 #' mesh, passed to \code{\link[INLA]{inla.mesh.2d}}.
 #'
 ##' For \code{method="so"}:
 ##'
-##' \code{n.blocks} Number of blocks to split the sample into. Required.
+##' * \code{n.blocks} Number of blocks to split the sample into. Required.
 ##'
 ##' For \code{method="sal"}:
 ##'
-##' \code{n.seps} Number of separators (default 1). 
+##' * \code{n.seps} Number of separators (default 1). 
 #'
 #' @return A data frame with a column \code{pars} indicating the parameter(s)
 #'   and a column \code{evppi} giving the corresponding EVPPI. 

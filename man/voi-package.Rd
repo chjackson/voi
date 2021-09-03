@@ -5,10 +5,16 @@
 \alias{voi-package}
 \title{Methods to calculate the Expected Value of Information}
 \description{
-\code{\link{evppi}} calculates the expected value of partial perfect information.  Currently this implements a selection of nonparametric regression methods.
+\code{\link{evppi}} calculates the expected value of partial perfect information from a decision-analytic model.  Currently this implements a selection of nonparametric regression methods.
 }
 \details{
 \code{\link{evsi}} calculates the expected value of sample information.   Currently this implements the same set of nonparametric regression methods as in \code{\link{evppi}}, and a method based on importance sampling.
+
+\code{\link{evppi}} and \code{\link{evsi}} both require a sample of inputs and outputs from a Monte Carlo probabilistic analysis of a decision-analytic model.
+
+Analogous functions \code{\link{evppivar}} and \code{\link{evsivar}} calculate the EVPPI and EVSI for models used for estimation rather than decision-making.   The value of information is measured by expected reductions in variance of an uncertain model output of interest.
+
+The package overview vignette gives worked examples of the use of all of these functions.
 }
 \references{
 Heath, A., Manolopoulou, I., & Baio, G. (2017). A review of methods for analysis of the expected value of information. Medical Decision Making, 37(7), 747-758.

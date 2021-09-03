@@ -1,6 +1,6 @@
 ##' Convert either "net benefit" or "cost-effectiveness" forms for
-##' 'outputs' to a 3D array [ number of simulations x number of
-##' willingness to pay values x number of decision options ] with one
+##' 'outputs' to a 3D array  (number of simulations, x number of
+##' willingness-to-pay values, x number of decision options) with one
 ##' WTP value when `outputs` is in "net benefit" form.
 ##' 
 ##' @keywords internal

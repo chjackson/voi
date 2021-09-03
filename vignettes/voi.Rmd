@@ -19,14 +19,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds, in scientific problems based on combining one or more sources of data. 
 
-The theory of the methods and details on how to use them in practice are described in several papers and books (some will be linked in this document).   
+The following two papers give a thorough recent review of the theory of the methods, and details of how they are applied and interpreted,  from the perspective of healthcare decision-making.
 
-While some details may not be fully explained in the current draft of this document, the `voi` package is intended to accompany a book which is under preparation.  When the book is finished, it will provide all background information that users of the package will need to know.  As the book is developed, useful features may be added to the package. 
+[Value of Information Analysis for Research Decisions—An Introduction: Report 1 of the ISPOR Value of Information Analysis Emerging Good Practices Task Force](https://doi.org/10.1016/j.jval.2020.01.001)
 
-This document gives a simple overview of how the package is used.  A simple example model is used, but the same methods work in more complex models.
+[Value of information analytical methods: report 2 of the ISPOR value of information analysis emerging good practices task force](https://doi.org/10.1016/j.jval.2020.01.004)
 
-The example model is a model used for _decision making_, which has been the most common application of VoI, e.g. in health economic evaluations.   A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making. 
+This document gives a simple overview of how the `voi` package is used to calculate measures of Value of Information.  A simple example model is used, but the same methods work in more complex models.
 
+The example model is a model used for _decision making_, which has been the most common application of VoI, e.g. in health economic evaluations.   A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making - for more information about the theory behind this, see [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932).
 
 ## Simple example model 
 

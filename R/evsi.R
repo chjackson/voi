@@ -153,14 +153,15 @@ evsi <- function(outputs,
                 aux_pars=aux_pars, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
     } else if (method=="mm") {
-        evsi_mm(outputs=outputs, inputs=inputs, 
-                pars=pars, datagen_fn=datagen_fn, n=n, Q=Q,
-                aux_pars = aux_pars, 
-                analysis_model=analysis_model,
-                analysis_options=analysis_options,
-                decision_model=decision_model, 
-                npreg_method=npreg_method,
-                verbose=verbose, ...)
+        stop("Moment matching method currently not implemented")
+#        evsi_mm(outputs=outputs, inputs=inputs, 
+#                pars=pars, datagen_fn=datagen_fn, n=n, Q=Q,
+#                aux_pars = aux_pars, 
+#                analysis_model=analysis_model,
+#                analysis_options=analysis_options,
+#                decision_model=decision_model, 
+#                npreg_method=npreg_method,
+#                verbose=verbose, ...)
     }
     else stop("Other methods not implemented yet")
 }
