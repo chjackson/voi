@@ -38,7 +38,7 @@ EVPPI
 
 * Any other plots for communication?
 
-* wtp or k 
+* Use "wtp" or "k"?
 
 
 EVSI

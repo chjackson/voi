@@ -67,7 +67,7 @@ outputs_nb <- data.frame(t1 = 0,
 
 * `"e"`: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected effects of the treatment. 
 
-* `"k"`: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net benefit is $e \times k - c$.    [ TODO accept the name wtp too ] 
+* `"k"`: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net benefit is $e \times k - c$.   
 
 In this simple example, the parameter $p_1$ gives the effects, and $p_2$ the costs of treatment 2, and the 
 net benefit $y = p_1 - p_2$ defined in `outputs_nb` corresponds to a willingness-to-pay of $k=1$.  The cost-effectiveness format allows us to compare VoI between different willingness-to-pay values, e.g. 1, 2 and 3 say here. 
@@ -152,7 +152,7 @@ This is the exact value of the EVPI in this example, which differs slightly from
 
 The _expected value of partial perfect information_ (EVPPI) for a parameter $\phi$ in a decision-analytic model is the expected value of learning the exact value of that parameter, while the other parameters remain uncertain.  $\phi$ can comprise a single scalar parameter, or multiple parameters.  If $\phi$ refers to multiple parameters then the EVPPI describes the expected value of learning _all_ of these parameters, often referred to as the _multiparameter_ EVPPI.  
 
-The EVPPI is defined as the expected net benefit given perfect knowledge of $\phi$, minus the expected net benefit given current information.    [ algebraic def ] 
+The EVPPI is defined as the expected net benefit given perfect knowledge of $\phi$, minus the expected net benefit given current information.
 
 The function `evppi` can be used to compute this. 
 
