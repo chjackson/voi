@@ -110,7 +110,7 @@
 <ul>
 <li><p><code>"c"</code>: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected costs of the treatment.</p></li>
 <li><p><code>"e"</code>: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected effects of the treatment.</p></li>
-<li><p><code>"k"</code>: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net benefit is <span class="math inline">\(e \times k - c\)</span>. [ TODO accept the name wtp too ]</p></li>
+<li><p><code>"k"</code>: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net benefit is <span class="math inline">\(e \times k - c\)</span>.</p></li>
 </ul>
 <p>In this simple example, the parameter <span class="math inline">\(p_1\)</span> gives the effects, and <span class="math inline">\(p_2\)</span> the costs of treatment 2, and the net benefit <span class="math inline">\(y = p_1 - p_2\)</span> defined in <code>outputs_nb</code> corresponds to a willingness-to-pay of <span class="math inline">\(k=1\)</span>. The cost-effectiveness format allows us to compare VoI between different willingness-to-pay values, e.g. 1, 2 and 3 say here.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -187,7 +187,7 @@
 <h2 class="hasAnchor">
 <a href="#expected-value-of-partial-perfect-information" class="anchor"></a>Expected value of partial perfect information</h2>
 <p>The <em>expected value of partial perfect information</em> (EVPPI) for a parameter <span class="math inline">\(\phi\)</span> in a decision-analytic model is the expected value of learning the exact value of that parameter, while the other parameters remain uncertain. <span class="math inline">\(\phi\)</span> can comprise a single scalar parameter, or multiple parameters. If <span class="math inline">\(\phi\)</span> refers to multiple parameters then the EVPPI describes the expected value of learning <em>all</em> of these parameters, often referred to as the <em>multiparameter</em> EVPPI.</p>
-<p>The EVPPI is defined as the expected net benefit given perfect knowledge of <span class="math inline">\(\phi\)</span>, minus the expected net benefit given current information. [ algebraic def ]</p>
+<p>The EVPPI is defined as the expected net benefit given perfect knowledge of <span class="math inline">\(\phi\)</span>, minus the expected net benefit given current information.</p>
 <p>The function <code>evppi</code> can be used to compute this.</p>
 <p>There are a variety of alternative computational methods implemented in this function. The default methods are based on nonparametric regression, and come from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a>. If there are four or fewer parameters, then a generalized additive model is used. With five or more, then Gaussian process regression is used.</p>
 <div id="invoking-the-evppi-function-" class="section level3">
