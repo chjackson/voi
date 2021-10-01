@@ -1,10 +1,8 @@
 ## voi: a generic package to calculate the expected value of information
 
-* Under development!
+* A common interface for several methods to calculate the
 
-* Intended to give a common interface for any method that calculates the
-
-  - Expected Value of Partial Perfect Information or the 
+  - Expected Value of (Partial) Perfect Information and the 
 
   - Expected Value of Sample Information 
 
