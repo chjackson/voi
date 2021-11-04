@@ -22,7 +22,8 @@ fitted_inla <- function(y, inputs, pars,
                         plot_inla_mesh = FALSE,
                         h.value = 5e-05,
                         robust = FALSE,
-                        int.ord = 1){
+                        int.ord = 1,
+                        pfc_struc="AIC"){
 #    stop("INLA EVPPI method currently unavailable, as the `ldr` package has been removed from CRAN")
     check_packages()
     family <- if (robust) "T" else "gaussian"
@@ -35,7 +36,7 @@ fitted_inla <- function(y, inputs, pars,
     if (verbose) {
         message("Finding projections")
     }
-    projections <- make.proj(parameter = pars, inputs = inputs, x = y)
+    projections <- make.proj(parameter = pars, inputs = inputs, x = y, pfc_struc = pfc_struc)
     data <- projections$data
     if (verbose) {
         message("Determining Mesh")
@@ -57,7 +58,7 @@ fitted_inla <- function(y, inputs, pars,
 
 
 ###INLA Fitting
-make.proj <- function(parameter, inputs, x) {
+make.proj <- function(parameter, inputs, x, pfc_struc="AIC") {
     tic <- proc.time()
     scale<-8/(range(x)[2]-range(x)[1])
     scale.x <- scale*x -mean(scale*x)
@@ -65,7 +66,9 @@ make.proj <- function(parameter, inputs, x) {
     fit1<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="iso")
     fit2<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="aniso")
     fit3<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="unstr")
-    struc<-c("iso","aniso","unstr")[which(c(fit1$aic,fit2$aic,fit3$aic)==min(fit1$aic,fit2$aic,fit3$aic))]
+    if (pfc_struc=="AIC")
+        struc <- c("iso","aniso","unstr")[which(c(fit1$aic,fit2$aic,fit3$aic)==min(fit1$aic,fit2$aic,fit3$aic))]
+    else struc <- pfc_struc
     AIC.deg<-array()
     for(i in 2:7){
         bx<-ldr::bf(scale.x,case="poly",i)

@@ -73,11 +73,11 @@ calculating the EVPPI of 4 or fewer parameters.
 
 \code{"gp"} for a Gaussian process regression, as described by Strong et al.
 (2014) and implemented in the \pkg{SAVI} package
-(\url{http://savi.shef.ac.uk/SAVI/}).
+(\url{http://savi.shef.ac.uk/SAVI/}).  This is the default method for calculating the EVPPI
+of more than 4 parameters.
 
 \code{"inla"} for an INLA/SPDE Gaussian process regression method, from
-Heath et al. (2016).   This is the default method for calculating the EVPPI
-of more than 4 parameters.
+Heath et al. (2016).   .
 
 \code{"earth"} for a multivariate adaptive regression spline with the
 \pkg{earth} package (Milborrow, 2019).
@@ -157,6 +157,10 @@ computational speed.
 \item \code{plot_inla_mesh} (default \code{FALSE}) Produce a plot of the mesh.
 \item \code{max.edge}  Largest allowed triangle edge length when constructing the
 mesh, passed to \code{\link[INLA]{inla.mesh.2d}}.
+\item \code{pfc_struc} Variance structure to pass to \code{pfc} in the \pkg{ldr}
+package for principal fitted components. The default \code{"AIC"} selects the
+one that fits best given two basis terms.  Change this to, e.g. \code{"iso"},
+\code{"aniso"} or \code{"unstr"} if an "Error in eigen..." is obtained.
 }
 
 For \code{method="so"}:

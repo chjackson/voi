@@ -17,7 +17,9 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds, in scientific problems based on combining one or more sources of data. 
+Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds.
+
+They are used in mathematical and statistical models, where parameters of the models represent quantities that are uncertain, and uncertainty is described by probability distributions.
 
 The following two papers give a thorough recent review of the theory of the methods, and details of how they are applied and interpreted,  from the perspective of healthcare decision-making.
 
@@ -27,7 +29,9 @@ The following two papers give a thorough recent review of the theory of the meth
 
 This document gives a simple overview of how the `voi` package is used to calculate measures of Value of Information.  A simple example model is used, but the same methods work in more complex models.
 
-The example model is a model used for _decision making_, which has been the most common application of VoI, e.g. in health economic evaluations.   A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making - for more information about the theory behind this, see [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932).
+The example model is a model used for _decision making_, which has been the most common application of VoI, e.g. in health economic evaluations.
+
+A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making.  For more information about the theory behind this, see [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932).
 
 ## Simple example model 
 
@@ -213,10 +217,14 @@ install.packages('splancs')
 devtools::install_version("ldr", version = "1.3.3", repos = "http://cran.uk.r-project.org")
 ```
 
-It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters.   FIXME why doesn't it work in this example? 
+It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters.  
+
+In this toy example it is overkill, since the two-parameter EVPPI is simply the EVPI, and the default method needs an esoteric tweak (\code{pfc_struc="iso"}) to work.
+
+However it has been found to be more efficient than the Gaussian process method in many other situations. See [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) for more details about implementing and tuning this method. 
 
 ```{r,eval=FALSE}
-evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla")
+evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla", pfc_struc="iso")
 ```
 
 
