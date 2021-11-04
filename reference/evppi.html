@@ -183,10 +183,10 @@ function from the <span class="pkg">mgcv</span> package.  This is the default me
 calculating the EVPPI of 4 or fewer parameters.</p>
 <p><code>"gp"</code> for a Gaussian process regression, as described by Strong et al.
 (2014) and implemented in the <span class="pkg">SAVI</span> package
-(<a href='http://savi.shef.ac.uk/SAVI/'>http://savi.shef.ac.uk/SAVI/</a>).</p>
-<p><code>"inla"</code> for an INLA/SPDE Gaussian process regression method, from
-Heath et al. (2016).   This is the default method for calculating the EVPPI
+(<a href='http://savi.shef.ac.uk/SAVI/'>http://savi.shef.ac.uk/SAVI/</a>).  This is the default method for calculating the EVPPI
 of more than 4 parameters.</p>
+<p><code>"inla"</code> for an INLA/SPDE Gaussian process regression method, from
+Heath et al. (2016).   .</p>
 <p><code>"earth"</code> for a multivariate adaptive regression spline with the
 <span class="pkg">earth</span> package (Milborrow, 2019).</p>
 <p><code>"so"</code> for the method of Strong and Oakley (2013).  Only supported
@@ -222,8 +222,8 @@ of slow calculations.</p></td>
 <li><p><code>gam_formula</code>: a character string giving the right hand side of the
 formula supplied to the <code>gam()</code> function. By default, this is a tensor
 product of all the parameters of interest, e.g. if <code>pars =
-c("pi","rho")</code>, then <code>gam_formula</code> defaults to <code><a href='https://rdrr.io/r/base/t.html'>t(pi, rho,
-bs="cr")</a></code>.  The option <code>bs="cr"</code> indicates a cubic spline regression
+c("pi","rho")</code>, then <code>gam_formula</code> defaults to <code>t(pi, rho,
+bs="cr")</code>.  The option <code>bs="cr"</code> indicates a cubic spline regression
 basis, which is more computationally efficient than the default "thin plate"
 basis.  If there are four or more parameters of interest, then the
 additional argument <code>k=4</code> is supplied to <code>te()</code>, specifying a
@@ -268,6 +268,10 @@ computational speed.</p></li>
 <li><p><code>plot_inla_mesh</code> (default <code>FALSE</code>) Produce a plot of the mesh.</p></li>
 <li><p><code>max.edge</code>  Largest allowed triangle edge length when constructing the
 mesh, passed to <code>inla.mesh.2d</code>.</p></li>
+<li><p><code>pfc_struc</code> Variance structure to pass to <code>pfc</code> in the <span class="pkg">ldr</span>
+package for principal fitted components. The default <code>"AIC"</code> selects the
+one that fits best given two basis terms.  Change this to, e.g. <code>"iso"</code>,
+<code>"aniso"</code> or <code>"unstr"</code> if an "Error in eigen..." is obtained.</p></li>
 </ul>
 
 <p>For <code>method="so"</code>:</p><ul>

@@ -66,7 +66,7 @@
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
                         <h4 class="author">Christopher Jackson</h4>
             
-            <h4 class="date">2021-10-01</h4>
+            <h4 class="date">2021-11-04</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -75,12 +75,14 @@
 
     
     
-<p>Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds, in scientific problems based on combining one or more sources of data.</p>
+<p>Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds.</p>
+<p>They are used in mathematical and statistical models, where parameters of the models represent quantities that are uncertain, and uncertainty is described by probability distributions.</p>
 <p>The following two papers give a thorough recent review of the theory of the methods, and details of how they are applied and interpreted, from the perspective of healthcare decision-making.</p>
 <p><a href="https://doi.org/10.1016/j.jval.2020.01.001">Value of Information Analysis for Research Decisions—An Introduction: Report 1 of the ISPOR Value of Information Analysis Emerging Good Practices Task Force</a></p>
 <p><a href="https://doi.org/10.1016/j.jval.2020.01.004">Value of information analytical methods: report 2 of the ISPOR value of information analysis emerging good practices task force</a></p>
 <p>This document gives a simple overview of how the <code>voi</code> package is used to calculate measures of Value of Information. A simple example model is used, but the same methods work in more complex models.</p>
-<p>The example model is a model used for <em>decision making</em>, which has been the most common application of VoI, e.g. in health economic evaluations. A later section describes the use of VoI methods for a model that is used for <em>estimation</em> of uncertain quantities, rather than for explicit decision-making - for more information about the theory behind this, see <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a>.</p>
+<p>The example model is a model used for <em>decision making</em>, which has been the most common application of VoI, e.g. in health economic evaluations.</p>
+<p>A later section describes the use of VoI methods for a model that is used for <em>estimation</em> of uncertain quantities, rather than for explicit decision-making. For more information about the theory behind this, see <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a>.</p>
 <div id="simple-example-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simple-example-model" class="anchor"></a>Simple example model</h2>
@@ -140,7 +142,7 @@
 <span class="va">nb_perfect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">decision_perfect</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">0</span>, <span class="va">outputs_nb</span><span class="op">$</span><span class="va">t2</span><span class="op">)</span>
 <span class="op">(</span><span class="va">evpi1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">nb_perfect</span><span class="op">)</span> <span class="op">-</span> <span class="va">nb_current</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.4778316</code></pre>
-<p>In practice we would not usually know the exact expectation (under the current uncertainty distribution) of the net benefit for any treatment, so we must compute it as the mean of the random sample. In this case, <code><a href="https://rdrr.io/r/base/colSums.html">colMeans(outputs_nb)</a></code> would give a vector of the expected net benefit for each treatment. The maximum of these is the net benefit of the decision we take under current information, which in this case is 1.0018431. This would become closer to the exact value of 1, the more random samples are drawn.</p>
+<p>In practice we would not usually know the exact expectation (under the current uncertainty distribution) of the net benefit for any treatment, so we must compute it as the mean of the random sample. In this case, <code>colMeans(outputs_nb)</code> would give a vector of the expected net benefit for each treatment. The maximum of these is the net benefit of the decision we take under current information, which in this case is 1.0018431. This would become closer to the exact value of 1, the more random samples are drawn.</p>
 <p>An alternative view of EVPI is in terms of <em>opportunity loss</em>, which is the net benefit of the better decision we should have made (if we had known the truth), minus the net benefit of the decision we did make. The opportunity loss can be computed at each sample as follows. The EVPI is the mean of the opportunity loss.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">opp_loss</span> <span class="op">&lt;-</span> <span class="va">nb_perfect</span> <span class="op">-</span> <span class="va">nb_current</span>
@@ -255,9 +257,11 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'INLA'</span>, repos<span class="op">=</span><span class="st">'https://inla.r-inla-download.org/R/stable'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'splancs'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_version</span><span class="op">(</span><span class="st">"ldr"</span>, version <span class="op">=</span> <span class="st">"1.3.3"</span>, repos <span class="op">=</span> <span class="st">"http://cran.uk.r-project.org"</span><span class="op">)</span></code></pre></div>
-<p>It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters. FIXME why doesn’t it work in this example?</p>
+<p>It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters.</p>
+<p>In this toy example it is overkill, since the two-parameter EVPPI is simply the EVPI, and the default method needs an esoteric tweak () to work.</p>
+<p>However it has been found to be more efficient than the Gaussian process method in many other situations. See <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983">Heath et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf">Baio et al.</a> for more details about implementing and tuning this method.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"inla"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"inla"</span>, pfc_struc<span class="op">=</span><span class="st">"iso"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="tuning-the-generalized-additive-model-method" class="section level4">
 <h4 class="hasAnchor">
@@ -400,7 +404,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 ## 4 1000 1 0.08216435
 ## 5 1000 2 0.17052103
 ## 6 1000 3 0.25887874</code></pre>
-<p>The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling <code>evsi</code> with an <code>aux_pars</code> argument, e.g. <code><a href="../reference/evsi.html">evsi(..., aux_pars=list(sd=2), ...)</a></code>.</p>
+<p>The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling <code>evsi</code> with an <code>aux_pars</code> argument, e.g. <code>evsi(..., aux_pars=list(sd=2), ...)</code>.</p>
 <p>Note that the results will be slightly different every time the <code>evsi</code> function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with the R function <code>set_seed</code> before each invocation).</p>
 <p>Other built-in study designs include</p>
 <p><code>"binary"</code>: A single sample of observations of a binary outcome. Requires one parameter to be specified in <code>pars</code>, that is, the probability of the outcome.</p>
@@ -409,7 +413,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <div id="importance-sampling-method" class="section level3">
 <h3 class="hasAnchor">
 <a href="#importance-sampling-method" class="anchor"></a>Importance sampling method</h3>
-<p>An alternative method comes from <a href="https://doi.org/10.1177/0272989X15583495">Menzies (2015)</a> and is based on importance sampling. This can be invoked as <code><a href="../reference/evsi.html">evsi(..., method="is")</a></code>.</p>
+<p>An alternative method comes from <a href="https://doi.org/10.1177/0272989X15583495">Menzies (2015)</a> and is based on importance sampling. This can be invoked as <code>evsi(..., method="is")</code>.</p>
 <p>As well as a data generation function in the above format, this also requires the user to supply a <em>likelihood function</em> for the study data.</p>
 <p>This is illustrated here for the simple normal example. The likelihood function acts on one row of the data frame <span class="math inline">\(Y\)</span> which is produced by the data generation function, and returns a data frame with number of rows matching the rows of <code>inputs</code>. Each row of the returned data frame gives the sampling density for that row of <span class="math inline">\(Y\)</span> given the corresponding parameter values in <code>inputs</code>. The corresponding EVSI calculation then involves building a large matrix of likelihoods for combinations of simulated datasets and simulated parameters.</p>
 <p>Any user-supplied likelihood function should consistently define the same model for the data as the data generation function (the package does not check this!), and any names of parameters and outputs should match the names defined in <code>inputs</code> and the data generation function.</p>
