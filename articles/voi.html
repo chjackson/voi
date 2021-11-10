@@ -66,7 +66,7 @@
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
                         <h4 class="author">Christopher Jackson</h4>
             
-            <h4 class="date">2021-11-04</h4>
+            <h4 class="date">2021-11-10</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -360,7 +360,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <li><p>use one of the built-in study designs, and specify which of the model parameters are informed by this study.</p></li>
 </ol>
 <p>To illustrate how to use <code>evsi</code>, suppose we want to collect a sample of <span class="math inline">\(n\)</span> normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness <span class="math inline">\(p_1\)</span>. Under current information, <span class="math inline">\(p_1\)</span> is distributed as <span class="math inline">\(N(1,1)\)</span>. After collecting the sample, we would expect this distribution to become more precise, hence reduce the likelihood of making a wrong decision. The EVSI measures the expected improvement in net benefit from this sample.</p>
-<p>Denote the study data as <span class="math inline">\(x_1,\ldots,x_n\)</span>, and suppose that they are distributed as <span class="math inline">\(x_i \sim N(p_1, \sigma)\)</span>. Hence the <em>mean</em> of the sample <span class="math inline">\(\bar{x} = \sum_{i=1^n} x_i\)</span> is a <em>summary statistic</em> containing the information provided by the data about <span class="math inline">\(p_1\)</span>.</p>
+<p>Denote the study data as <span class="math inline">\(x_1,\ldots,x_n\)</span>, and suppose that they are distributed as <span class="math inline">\(x_i \sim N(p_1, \sigma)\)</span>. Hence the <em>mean</em> of the sample <span class="math inline">\(\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i\)</span> is a <em>summary statistic</em> containing the information provided by the data about <span class="math inline">\(p_1\)</span>.</p>
 <p>Suppose for simplicity that the sampling variance <span class="math inline">\(\sigma\)</span> of the data is known to equal 1. The sample mean is then distributed as <span class="math inline">\(\bar{x} \sim N(p_1, \sigma / \sqrt{n})\)</span>.</p>
 <p>To calculate the EVSI using this method, we generate a sample from the <em>predictive distribution</em> of this summary statistic under current information. This is achieved by generating a value of <span class="math inline">\(p_1\)</span> from its current <span class="math inline">\(N(1,1)\)</span> distribution, followed by a value of <span class="math inline">\(\bar{x}\)</span> from <span class="math inline">\(N(p_1, \sigma / \sqrt{n})\)</span>.</p>
 <div id="function-to-generate-study-data" class="section level3">
