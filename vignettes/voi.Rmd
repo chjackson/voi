@@ -353,7 +353,7 @@ The function `evsi` can be used to calculate this.   The default method is based
 
 To illustrate how to use `evsi`, suppose we want to collect a sample of $n$ normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness $p_1$.  Under current information, $p_1$ is distributed as $N(1,1)$.  After collecting the sample, we would expect this distribution to become more precise, hence reduce the likelihood of making a wrong decision.   The EVSI measures the expected improvement in net benefit from this sample. 
 
-Denote the study data as $x_1,\ldots,x_n$, and suppose that they are distributed as $x_i \sim N(p_1, \sigma)$.   Hence the _mean_ of the sample $\bar{x} = \sum_{i=1^n} x_i$ is a _summary statistic_ containing the information 
+Denote the study data as $x_1,\ldots,x_n$, and suppose that they are distributed as $x_i \sim N(p_1, \sigma)$.   Hence the _mean_ of the sample $\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$ is a _summary statistic_ containing the information 
 provided by the data about $p_1$. 
 
 Suppose for simplicity that the sampling variance $\sigma$ of the data is known to equal 1.  The sample mean is then distributed as $\bar{x} \sim N(p_1, \sigma / \sqrt{n})$.   
