@@ -356,9 +356,9 @@ To illustrate how to use `evsi`, suppose we want to collect a sample of $n$ norm
 Denote the study data as $x_1,\ldots,x_n$, and suppose that they are distributed as $x_i \sim N(p_1, \sigma)$.   Hence the _mean_ of the sample $\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$ is a _summary statistic_ containing the information 
 provided by the data about $p_1$. 
 
-Suppose for simplicity that the sampling variance $\sigma$ of the data is known to equal 1.  The sample mean is then distributed as $\bar{x} \sim N(p_1, \sigma / \sqrt{n})$.   
+The sample mean is distributed as $\bar{x} \sim N(p_1, \sigma / \sqrt{n})$.   Suppose for simplicity that the sampling variance $\sigma$ of the data is known to equal 1.
 
-To calculate the EVSI using this method, we generate a sample  from the _predictive distribution_ of this summary statistic under current information.  This is achieved by generating a value of $p_1$ from its current $N(1,1)$ distribution, followed by a value of $\bar{x}$ from $N(p_1, \sigma / \sqrt{n})$.
+To calculate the EVSI using this method, we generate a sample from the _predictive distribution_ of this summary statistic under current information.  This is achieved by generating a value of $p_1$ from its current $N(1,1)$ distribution, followed by a value of $\bar{x}$ from $N(p_1, \sigma / \sqrt{n})$.
 
 
 ### Function to generate study data
