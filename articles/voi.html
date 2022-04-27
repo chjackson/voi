@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">voi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/voi.html">Get started</a>
 </li>
@@ -64,9 +60,9 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
-                        <h4 class="author">Christopher Jackson</h4>
+                        <h4 data-toc-skip class="author">Christopher Jackson</h4>
             
-            <h4 class="date">2021-11-10</h4>
+            <h4 data-toc-skip class="date">2022-04-27</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -78,59 +74,59 @@
 <p>Value of Information methods are a decision-theoretic framework for estimating the expected value of getting more information of particular kinds.</p>
 <p>They are used in mathematical and statistical models, where parameters of the models represent quantities that are uncertain, and uncertainty is described by probability distributions.</p>
 <p>The following two papers give a thorough recent review of the theory of the methods, and details of how they are applied and interpreted, from the perspective of healthcare decision-making.</p>
-<p><a href="https://doi.org/10.1016/j.jval.2020.01.001">Value of Information Analysis for Research Decisions—An Introduction: Report 1 of the ISPOR Value of Information Analysis Emerging Good Practices Task Force</a></p>
-<p><a href="https://doi.org/10.1016/j.jval.2020.01.004">Value of information analytical methods: report 2 of the ISPOR value of information analysis emerging good practices task force</a></p>
+<p><a href="https://doi.org/10.1016/j.jval.2020.01.001" class="external-link">Value of Information Analysis for Research Decisions—An Introduction: Report 1 of the ISPOR Value of Information Analysis Emerging Good Practices Task Force</a></p>
+<p><a href="https://doi.org/10.1016/j.jval.2020.01.004" class="external-link">Value of information analytical methods: report 2 of the ISPOR value of information analysis emerging good practices task force</a></p>
 <p>This document gives a simple overview of how the <code>voi</code> package is used to calculate measures of Value of Information. A simple example model is used, but the same methods work in more complex models.</p>
 <p>The example model is a model used for <em>decision making</em>, which has been the most common application of VoI, e.g. in health economic evaluations.</p>
-<p>A later section describes the use of VoI methods for a model that is used for <em>estimation</em> of uncertain quantities, rather than for explicit decision-making. For more information about the theory behind this, see <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a>.</p>
-<div id="simple-example-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#simple-example-model" class="anchor"></a>Simple example model</h2>
+<p>A later section describes the use of VoI methods for a model that is used for <em>estimation</em> of uncertain quantities, rather than for explicit decision-making. For more information about the theory behind this, see <a href="https://doi.org/10.1080/01621459.2018.1562932" class="external-link">Jackson et al. 2019</a> and <a href="https://www.degruyter.com/document/doi/10.1515/em-2021-0012/html" class="external-link">Jackson et al. 2021</a>.</p>
+<div class="section level2">
+<h2 id="simple-example-model">Simple example model<a class="anchor" aria-label="anchor" href="#simple-example-model"></a>
+</h2>
 <p>Suppose we are making a decision between two treatments. Treatment 1 has no costs or effects. Treatment 2 has a <em>net benefit</em> which describes its average costs and effects for a population. We choose Treatment 2 if its <em>incremental net benefit</em>, relative to treatment 1, is positive. The incremental net benefit in this simple case is identical to the net benefit of treatment 2, since the net benefit of treatment 1 is zero.</p>
 <p>Suppose that the net benefit is simply defined as the difference between two uncertain <em>parameters</em>, <span class="math inline">\(y(p_1,p_2) = p_1 - p_2\)</span>, where <span class="math inline">\(p_1\)</span> gives the effects, and <span class="math inline">\(p_2\)</span> gives the costs. Our current uncertainty can be described by normal distributions <span class="math inline">\(p_1 \sim N(1,1)\)</span> and <span class="math inline">\(p_2 \sim N(0,2)\)</span>.</p>
 <p>To make a decision under parameter uncertainty, one option is preferred to another if the <em>expectation</em> of its net benefit, with respect to the uncertainty, is greater. In this case, we choose treatment 2, because the net benefit is distributed as <span class="math inline">\(N(1, \sqrt{1^2+2^2}) = N(1, \sqrt{5})\)</span> which has an expectation of 1, whereas treatment 1 has a known net benefit of zero.</p>
 <p>Most of the functions in the <code>voi</code> package work with a <em>random sample</em> of model inputs and outputs, generated from “uncertainty analysis”, also known as “probabilistic sensitivity analysis”. For the example model, these are simple to generate, as follows.</p>
-<div id="specifying-model-inputs" class="section level3">
-<h3 class="hasAnchor">
-<a href="#specifying-model-inputs" class="anchor"></a>Specifying model inputs</h3>
+<div class="section level3">
+<h3 id="specifying-model-inputs">Specifying model inputs<a class="anchor" aria-label="anchor" href="#specifying-model-inputs"></a>
+</h3>
 <p>The inputs should be a data frame with one column per parameter and one row per random sample.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> 
 <span class="va">nsam</span> <span class="op">&lt;-</span> <span class="fl">10000</span>
-<span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">nsam</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, 
-                     p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">nsam</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">nsam</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, 
+                     p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">nsam</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="specifying-model-outputs" class="section level3">
-<h3 class="hasAnchor">
-<a href="#specifying-model-outputs" class="anchor"></a>Specifying model outputs</h3>
+<div class="section level3">
+<h3 id="specifying-model-outputs">Specifying model outputs<a class="anchor" aria-label="anchor" href="#specifying-model-outputs"></a>
+</h3>
 <p>The outputs can be supplied in either of two forms.</p>
 <p><strong>Net benefit</strong> form. A data frame with one column per treatment, and one row per random sample, giving the net benefit of each treatment. In this example, the net benefit of treatment 1 is zero.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">outputs_nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>t1 <span class="op">=</span> <span class="fl">0</span>, 
+<code class="sourceCode R"><span class="va">outputs_nb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>t1 <span class="op">=</span> <span class="fl">0</span>, 
                          t2 <span class="op">=</span> <span class="va">inputs</span><span class="op">$</span><span class="va">p1</span> <span class="op">-</span> <span class="va">inputs</span><span class="op">$</span><span class="va">p2</span><span class="op">)</span></code></pre></div>
 <p><strong>Cost-effectiveness analysis</strong> form. This should be a list that includes the following three named elements (in any order)</p>
 <ul>
 <li><p><code>"c"</code>: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected costs of the treatment.</p></li>
 <li><p><code>"e"</code>: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected effects of the treatment.</p></li>
-<li><p><code>"k"</code>: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net benefit is <span class="math inline">\(e \times k - c\)</span>.</p></li>
+<li><p><code>"k"</code>: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net (monetary) benefit is <span class="math inline">\(e \times k - c\)</span>.</p></li>
 </ul>
 <p>In this simple example, the parameter <span class="math inline">\(p_1\)</span> gives the effects, and <span class="math inline">\(p_2\)</span> the costs of treatment 2, and the net benefit <span class="math inline">\(y = p_1 - p_2\)</span> defined in <code>outputs_nb</code> corresponds to a willingness-to-pay of <span class="math inline">\(k=1\)</span>. The cost-effectiveness format allows us to compare VoI between different willingness-to-pay values, e.g. 1, 2 and 3 say here.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">outputs_cea</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span> 
-  e <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>t1 <span class="op">=</span> <span class="fl">0</span>, t2 <span class="op">=</span> <span class="va">inputs</span><span class="op">$</span><span class="va">p1</span><span class="op">)</span>, 
-  c <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>t1 <span class="op">=</span> <span class="fl">0</span>, t2 <span class="op">=</span> <span class="va">inputs</span><span class="op">$</span><span class="va">p2</span><span class="op">)</span>, 
-  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">outputs_cea</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span> 
+  e <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>t1 <span class="op">=</span> <span class="fl">0</span>, t2 <span class="op">=</span> <span class="va">inputs</span><span class="op">$</span><span class="va">p1</span><span class="op">)</span>, 
+  c <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>t1 <span class="op">=</span> <span class="fl">0</span>, t2 <span class="op">=</span> <span class="va">inputs</span><span class="op">$</span><span class="va">p2</span><span class="op">)</span>, 
+  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<p>Note that objects returned by the <code>bcea</code> function in the <a href="https://CRAN.R-project.org/package=BCEA">BCEA</a> package satisfy this “cost-effectiveness analysis” format.</p>
+<p>Note that objects returned by the <code>bcea</code> function in the <a href="https://CRAN.R-project.org/package=BCEA" class="external-link">BCEA</a> package satisfy this “cost-effectiveness analysis” format.</p>
 </div>
 </div>
-<div id="expected-value-of-perfect-information" class="section level2">
-<h2 class="hasAnchor">
-<a href="#expected-value-of-perfect-information" class="anchor"></a>Expected value of perfect information</h2>
+<div class="section level2">
+<h2 id="expected-value-of-perfect-information">Expected value of perfect information<a class="anchor" aria-label="anchor" href="#expected-value-of-perfect-information"></a>
+</h2>
 <p>The <em>expected value of perfect information</em> is the expected net benefit given perfect information minus the expected net benefit given current information.</p>
-<div id="computation-using-random-sampling" class="section level4">
-<h4 class="hasAnchor">
-<a href="#computation-using-random-sampling" class="anchor"></a>Computation using random sampling</h4>
+<div class="section level4">
+<h4 id="computation-using-random-sampling">Computation using random sampling<a class="anchor" aria-label="anchor" href="#computation-using-random-sampling"></a>
+</h4>
 <ul>
 <li><p>Given current information, we decided on treatment 2. In the example we know that the expected net benefit under current information is 1, the mean of the distribution of treatment 2’s net benefit.</p></li>
 <li><p>Random sampling can be used to illustrate how to compute the expected net benefit given perfect information. Each sample of parameter values mimics a situation of decision-making given perfect information, where we know the parameters take these values. For each sample, we compare the corresponding treatment 2 net benefit to the threshold of zero, and prefer treatment 1 if the net benefit is negative, and treatment 2 if the net benefit is positive. The net benefit for each sample is the net benefit of the chosen treatment given the “known” sampled parameter values. The expected net benefit given perfect information is then computed as the average of this sample (<code>nb_perfect</code>).</p></li>
@@ -138,234 +134,233 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">decision_current</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="va">nb_current</span> <span class="op">&lt;-</span> <span class="fl">1</span>
-<span class="va">decision_perfect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">outputs_nb</span><span class="op">$</span><span class="va">t2</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>
-<span class="va">nb_perfect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">decision_perfect</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">0</span>, <span class="va">outputs_nb</span><span class="op">$</span><span class="va">t2</span><span class="op">)</span>
-<span class="op">(</span><span class="va">evpi1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">nb_perfect</span><span class="op">)</span> <span class="op">-</span> <span class="va">nb_current</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.4778316</code></pre>
+<span class="va">decision_perfect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">outputs_nb</span><span class="op">$</span><span class="va">t2</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>
+<span class="va">nb_perfect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">decision_perfect</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">0</span>, <span class="va">outputs_nb</span><span class="op">$</span><span class="va">t2</span><span class="op">)</span>
+<span class="op">(</span><span class="va">evpi1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">nb_perfect</span><span class="op">)</span> <span class="op">-</span> <span class="va">nb_current</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.4778316</span></code></pre>
 <p>In practice we would not usually know the exact expectation (under the current uncertainty distribution) of the net benefit for any treatment, so we must compute it as the mean of the random sample. In this case, <code>colMeans(outputs_nb)</code> would give a vector of the expected net benefit for each treatment. The maximum of these is the net benefit of the decision we take under current information, which in this case is 1.0018431. This would become closer to the exact value of 1, the more random samples are drawn.</p>
 <p>An alternative view of EVPI is in terms of <em>opportunity loss</em>, which is the net benefit of the better decision we should have made (if we had known the truth), minus the net benefit of the decision we did make. The opportunity loss can be computed at each sample as follows. The EVPI is the mean of the opportunity loss.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">opp_loss</span> <span class="op">&lt;-</span> <span class="va">nb_perfect</span> <span class="op">-</span> <span class="va">nb_current</span>
-<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">opp_loss</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.4778316</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">opp_loss</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.4778316</span></code></pre>
 </div>
-<div id="using-the-voi-package-to-calculate-evpi" class="section level4">
-<h4 class="hasAnchor">
-<a href="#using-the-voi-package-to-calculate-evpi" class="anchor"></a>Using the <code>voi</code> package to calculate EVPI</h4>
+<div class="section level4">
+<h4 id="using-the-voi-package-to-calculate-evpi">Using the <code>voi</code> package to calculate EVPI<a class="anchor" aria-label="anchor" href="#using-the-voi-package-to-calculate-evpi"></a>
+</h4>
 <p>The <code>voi</code> package contains a simple function <code>evpi</code> to compute the EVPI using the above procedure. The function automatically detects whether your outputs are in net benefit or cost-effectiveness format.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">voi</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">voi</span><span class="op">)</span>
 <span class="fu"><a href="../reference/evpi.html">evpi</a></span><span class="op">(</span><span class="va">outputs_nb</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.4759885</code></pre>
+<pre><code><span class="co">## [1] 0.4759885</span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evpi.html">evpi</a></span><span class="op">(</span><span class="va">outputs_cea</span><span class="op">)</span></code></pre></div>
-<pre><code>##   k      evpi
-## 1 1 0.4759885
-## 2 2 0.4028003
-## 3 3 0.4174207</code></pre>
+<pre><code><span class="co">##   k      evpi</span>
+<span class="co">## 1 1 0.4759885</span>
+<span class="co">## 2 2 0.4028003</span>
+<span class="co">## 3 3 0.4174207</span></code></pre>
 <p>Note the result is slightly different from <code>evpi1</code>, since it uses the sample-based estimate of 1.0018431 of the expected net benefit under current information, rather than the known expectation of 1.</p>
 </div>
-<div id="analytic-computation" class="section level4">
-<h4 class="hasAnchor">
-<a href="#analytic-computation" class="anchor"></a>Analytic computation</h4>
+<div class="section level4">
+<h4 id="analytic-computation">Analytic computation<a class="anchor" aria-label="anchor" href="#analytic-computation"></a>
+</h4>
 <p>In this simple example, the EVPI can also be calculated “by hand”, because the model just involves normal distributions. The probability that the decision under perfect information agrees with the decision under current information, in this case, is the probability that the true value of a <span class="math inline">\(N(1, \sqrt{5})\)</span> is actually positive.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">prob_correct</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">pnorm</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>The mean of <code>nb_perfect</code> can then be calculated as the expected net benefit given a correct decision, multiplied by the probability of a correct decision. The former is the mean of the values of <code>outputs_nb$t2</code> which are positive, which is the mean of a <span class="math inline">\(N(1,\sqrt{5})\)</span> truncated below at zero. The mean of the truncated normal distribution has a <a href="https://en.wikipedia.org/wiki/Truncated_normal_distribution">known analytic form</a>, represented in the following R function.</p>
+<code class="sourceCode R"><span class="va">prob_correct</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>The mean of <code>nb_perfect</code> can then be calculated as the expected net benefit given a correct decision, multiplied by the probability of a correct decision. The former is the mean of the values of <code>outputs_nb$t2</code> which are positive, which is the mean of a <span class="math inline">\(N(1,\sqrt{5})\)</span> truncated below at zero. The mean of the truncated normal distribution has a <a href="https://en.wikipedia.org/wiki/Truncated_normal_distribution" class="external-link">known analytic form</a>, represented in the following R function.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mean_truncnorm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mu</span>, <span class="va">sig</span>, <span class="va">lower</span><span class="op">=</span><span class="op">-</span><span class="cn">Inf</span>, <span class="va">upper</span><span class="op">=</span><span class="cn">Inf</span><span class="op">)</span><span class="op">{</span> 
   <span class="va">a</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">lower</span><span class="op">-</span><span class="va">mu</span><span class="op">)</span><span class="op">/</span><span class="va">sig</span>
   <span class="va">b</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">upper</span><span class="op">-</span><span class="va">mu</span><span class="op">)</span><span class="op">/</span><span class="va">sig</span>
-  <span class="va">mu</span> <span class="op">+</span> <span class="va">sig</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">pnorm</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">pnorm</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">mu</span> <span class="op">+</span> <span class="va">sig</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="va">enb_correct</span> <span class="op">&lt;-</span> <span class="fu">mean_truncnorm</span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>, lower<span class="op">=</span><span class="fl">0</span><span class="op">)</span> 
+<span class="va">enb_correct</span> <span class="op">&lt;-</span> <span class="fu">mean_truncnorm</span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>, lower<span class="op">=</span><span class="fl">0</span><span class="op">)</span> 
 <span class="va">mean_nb_perfect</span> <span class="op">&lt;-</span> <span class="va">enb_correct</span> <span class="op">*</span> <span class="va">prob_correct</span>
 <span class="op">(</span><span class="va">evpi_exact</span> <span class="op">&lt;-</span> <span class="va">mean_nb_perfect</span> <span class="op">-</span> <span class="va">nb_current</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.4798107</code></pre>
+<pre><code><span class="co">## [1] 0.4798107</span></code></pre>
 <p>This is the exact value of the EVPI in this example, which differs slightly from the estimate based on Monte Carlo simulation. Unfortunately most realistic decision-analytic models do not have such a nice form, and we must rely on Monte Carlo methods to calculate the expected value of information.</p>
 </div>
 </div>
-<div id="expected-value-of-partial-perfect-information" class="section level2">
-<h2 class="hasAnchor">
-<a href="#expected-value-of-partial-perfect-information" class="anchor"></a>Expected value of partial perfect information</h2>
+<div class="section level2">
+<h2 id="expected-value-of-partial-perfect-information">Expected value of partial perfect information<a class="anchor" aria-label="anchor" href="#expected-value-of-partial-perfect-information"></a>
+</h2>
 <p>The <em>expected value of partial perfect information</em> (EVPPI) for a parameter <span class="math inline">\(\phi\)</span> in a decision-analytic model is the expected value of learning the exact value of that parameter, while the other parameters remain uncertain. <span class="math inline">\(\phi\)</span> can comprise a single scalar parameter, or multiple parameters. If <span class="math inline">\(\phi\)</span> refers to multiple parameters then the EVPPI describes the expected value of learning <em>all</em> of these parameters, often referred to as the <em>multiparameter</em> EVPPI.</p>
 <p>The EVPPI is defined as the expected net benefit given perfect knowledge of <span class="math inline">\(\phi\)</span>, minus the expected net benefit given current information.</p>
 <p>The function <code>evppi</code> can be used to compute this.</p>
-<p>There are a variety of alternative computational methods implemented in this function. The default methods are based on nonparametric regression, and come from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a>. If there are four or fewer parameters, then a generalized additive model is used. With five or more, then Gaussian process regression is used.</p>
-<div id="invoking-the-evppi-function-" class="section level3">
-<h3 class="hasAnchor">
-<a href="#invoking-the-evppi-function-" class="anchor"></a>Invoking the <code>evppi</code> function.</h3>
+<p>There are a variety of alternative computational methods implemented in this function. The default methods are based on nonparametric regression, and come from <a href="https://doi.org/10.1177/0272989X13505910" class="external-link">Strong et al. (2013)</a>. If there are four or fewer parameters, then a generalized additive model is used. With five or more, then Gaussian process regression is used.</p>
+<div class="section level3">
+<h3 id="invoking-the-evppi-function-">Invoking the <code>evppi</code> function.<a class="anchor" aria-label="anchor" href="#invoking-the-evppi-function-"></a>
+</h3>
 <p>To call <code>evppi</code>, supply a sample of outputs and inputs (in the same form as defined above) in the first two arguments. The parameter or parameters of interest (whose EVPPI is desired) is supplied in the <code>"pars"</code> argument. This can be expressed in various ways.</p>
-<p><strong>(a) As a vector</strong>. The joint EVPPI is computed for all parameters in this vector. If the vector has more than one element, then the function returns the expected value of perfect information on all of these parameters simultaneously (described as the “multiparameter” EVPPI by <a href="https://doi.org/10.1177/0272989X13505910">Strong et al.</a>).</p>
+<p><strong>(a) As a vector</strong>. The joint EVPPI is computed for all parameters in this vector. If the vector has more than one element, then the function returns the expected value of perfect information on all of these parameters simultaneously (described as the “multiparameter” EVPPI by <a href="https://doi.org/10.1177/0272989X13505910" class="external-link">Strong et al.</a>).</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars      evppi
-## 1   p1 0.08210074</code></pre>
+<pre><code><span class="co">##   pars      evppi</span>
+<span class="co">## 1   p1 0.08210074</span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##    pars     evppi
-## 1 p1,p2 0.4759885</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##    pars     evppi</span>
+<span class="co">## 1 p1,p2 0.4759885</span></code></pre>
 <p><strong>(b) As a list</strong>. A separate EVPPI is computed for each element of the list. In the second example below, this is the EVPPI of <span class="math inline">\(p_1\)</span>, followed by the multiparameter EVPPI of <span class="math inline">\((p_1,p_2)\)</span>. Note that the multiparameter EVPPI is the theoretically same as the EVPI if, as in this case, the vector includes all of the parameters in the model (though note the difference from EVPI estimates above due to the different computational method).</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars      evppi
-## 1   p1 0.08210074
-## 2   p2 0.39029827</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##   pars      evppi</span>
+<span class="co">## 1   p1 0.08210074</span>
+<span class="co">## 2   p2 0.39029827</span></code></pre>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##    pars      evppi
-## 1    p1 0.08210074
-## 2 p1,p2 0.47598851</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##    pars      evppi</span>
+<span class="co">## 1    p1 0.08210074</span>
+<span class="co">## 2 p1,p2 0.47598851</span></code></pre>
 <p>The <code>evppi</code> function returns a data frame with columns indicating the parameter (or parameters), and the corresponding EVPPI. If the outputs are in cost-effectiveness analysis format, then a separate column is returned indicating the willingness-to-pay.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_cea</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##    pars k      evppi
-## 1    p1 1 0.08210074
-## 2    p1 2 0.17052564
-## 3    p1 3 0.25895085
-## 4 p1,p2 1 0.47598851
-## 5 p1,p2 2 0.40280031
-## 6 p1,p2 3 0.41742073</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_cea</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##    pars k      evppi</span>
+<span class="co">## 1    p1 1 0.08210074</span>
+<span class="co">## 2    p1 2 0.17052564</span>
+<span class="co">## 3    p1 3 0.25895085</span>
+<span class="co">## 4 p1,p2 1 0.47598851</span>
+<span class="co">## 5 p1,p2 2 0.40280031</span>
+<span class="co">## 6 p1,p2 3 0.41742073</span></code></pre>
 </div>
-<div id="changing-the-default-calculation-method" class="section level3">
-<h3 class="hasAnchor">
-<a href="#changing-the-default-calculation-method" class="anchor"></a>Changing the default calculation method</h3>
+<div class="section level3">
+<h3 id="changing-the-default-calculation-method">Changing the default calculation method<a class="anchor" aria-label="anchor" href="#changing-the-default-calculation-method"></a>
+</h3>
 <p>The method can be changed by supplying the <code>method</code> argument to <code>evppi</code>. Some methods have additional options to tune them. For a full list of these options, see <code><a href="../reference/evppi.html">help(evppi)</a></code>.</p>
-<div id="gaussian-process-regression" class="section level4">
-<h4 class="hasAnchor">
-<a href="#gaussian-process-regression" class="anchor"></a>Gaussian process regression</h4>
-<p>(from <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a>). The number of random samples to use in this computation can be changed using the <code>nsim</code> argument, which can be useful for this method as it can be prohibitive for large samples. Here the sample of 10000 is reduced to 1000.</p>
+<div class="section level4">
+<h4 id="gaussian-process-regression">Gaussian process regression<a class="anchor" aria-label="anchor" href="#gaussian-process-regression"></a>
+</h4>
+<p>(from <a href="https://doi.org/10.1177/0272989X13505910" class="external-link">Strong et al. (2013)</a>). The number of random samples to use in this computation can be changed using the <code>nsim</code> argument, which can be useful for this method as it can be prohibitive for large samples. Here the sample of 10000 is reduced to 1000.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"gp"</span>, nsim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars      evppi
-## 1   p1 0.08834038</code></pre>
+<pre><code><span class="co">##   pars      evppi</span>
+<span class="co">## 1   p1 0.08834038</span></code></pre>
 </div>
-<div id="multivariate-adaptive-regression-splines" class="section level4">
-<h4 class="hasAnchor">
-<a href="#multivariate-adaptive-regression-splines" class="anchor"></a>Multivariate adaptive regression splines</h4>
-<p>This is a variant of generalized additive models based on linear splines, which uses a package called <a href="https://CRAN.R-project.org/package=earth">earth</a>.</p>
+<div class="section level4">
+<h4 id="multivariate-adaptive-regression-splines">Multivariate adaptive regression splines<a class="anchor" aria-label="anchor" href="#multivariate-adaptive-regression-splines"></a>
+</h4>
+<p>This is a variant of generalized additive models based on linear splines, which uses a package called <a href="https://CRAN.R-project.org/package=earth" class="external-link">earth</a>.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"earth"</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars      evppi
-## 1   p1 0.08810086</code></pre>
+<pre><code><span class="co">##   pars      evppi</span>
+<span class="co">## 1   p1 0.08810086</span></code></pre>
 </div>
-<div id="inla-method" class="section level4">
-<h4 class="hasAnchor">
-<a href="#inla-method" class="anchor"></a>INLA method</h4>
-<p>(from <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983">Heath et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf">Baio et al.</a> ). This needs the following extra packages to be installed, using the following commands. (As of writing, the <code>ldr</code> package is not on CRAN due to lack of maintenance, but the archived version has been used without any noticeable problem.)</p>
+<div class="section level4">
+<h4 id="inla-method">INLA method<a class="anchor" aria-label="anchor" href="#inla-method"></a>
+</h4>
+<p>(from <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983" class="external-link">Heath et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf" class="external-link">Baio et al.</a> ). This needs the following extra packages to be installed, using the following commands. (As of writing, the <code>ldr</code> package is not on CRAN due to lack of maintenance, but the archived version has been used without any noticeable problem.)</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'INLA'</span>, repos<span class="op">=</span><span class="st">'https://inla.r-inla-download.org/R/stable'</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'splancs'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'INLA'</span>, repos<span class="op">=</span><span class="st">'https://inla.r-inla-download.org/R/stable'</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'splancs'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_version</span><span class="op">(</span><span class="st">"ldr"</span>, version <span class="op">=</span> <span class="st">"1.3.3"</span>, repos <span class="op">=</span> <span class="st">"http://cran.uk.r-project.org"</span><span class="op">)</span></code></pre></div>
 <p>It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters.</p>
 <p>In this toy example it is overkill, since the two-parameter EVPPI is simply the EVPI, and the default method needs an esoteric tweak () to work.</p>
-<p>However it has been found to be more efficient than the Gaussian process method in many other situations. See <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983">Heath et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf">Baio et al.</a> for more details about implementing and tuning this method.</p>
+<p>However it has been found to be more efficient than the Gaussian process method in many other situations. See <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983" class="external-link">Heath et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf" class="external-link">Baio et al.</a> for more details about implementing and tuning this method.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"inla"</span>, pfc_struc<span class="op">=</span><span class="st">"iso"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"inla"</span>, pfc_struc<span class="op">=</span><span class="st">"iso"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="tuning-the-generalized-additive-model-method" class="section level4">
-<h4 class="hasAnchor">
-<a href="#tuning-the-generalized-additive-model-method" class="anchor"></a>Tuning the generalized additive model method</h4>
+<div class="section level4">
+<h4 id="tuning-the-generalized-additive-model-method">Tuning the generalized additive model method<a class="anchor" aria-label="anchor" href="#tuning-the-generalized-additive-model-method"></a>
+</h4>
 <p>The generalized additive model formula can be changed with the <code>gam_formula</code> argument. This is supplied to the <code>gam</code> function from the <code>mgcv</code> package. The default formula uses a tensor product, and if there are more than four parameters, then a basis dimension of 4 terms per parameter is assumed.<br>
 A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficiently flexible to represent how the outputs depend on the inputs, but can also be estimated in practice, given the complexity of the GAM and the number of random samples available to fit it to.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"gam"</span>, gam_formula<span class="op">=</span><span class="st">"s(p1) + s(p2)"</span><span class="op">)</span></code></pre></div>
-<pre><code>##    pars     evppi
-## 1 p1,p2 0.4759885</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"gam"</span>, gam_formula<span class="op">=</span><span class="st">"s(p1) + s(p2)"</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##    pars     evppi</span>
+<span class="co">## 1 p1,p2 0.4759885</span></code></pre>
 <p>Note that if there are spaces in the variable names in <code>inputs</code> and <code>pars</code>, then for <code>gam_formula</code> the spaces should be converted to underscores, or else an <code>"unexpected symbol"</code> error will be returned from <code>gam</code>.</p>
 <p>A standard error for the EVPPI estimates from the GAM method, resulting from uncertainty about the parameters of the GAM approximation, can be obtained by calling <code>evppi</code> with <code>se=TRUE</code>. This uses <span class="math inline">\(B\)</span> samples from the distribution of the GAM parameters, thus the standard error can be estimated more accurately by increasing B.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, se<span class="op">=</span><span class="cn">TRUE</span>, B<span class="op">=</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars      evppi          se
-## 1   p1 0.08210074 0.007046717</code></pre>
+<pre><code><span class="co">##   pars      evppi          se</span>
+<span class="co">## 1   p1 0.08210074 0.007046717</span></code></pre>
 </div>
-<div id="single-parameter-methods" class="section level4">
-<h4 class="hasAnchor">
-<a href="#single-parameter-methods" class="anchor"></a>Single-parameter methods</h4>
+<div class="section level4">
+<h4 id="single-parameter-methods">Single-parameter methods<a class="anchor" aria-label="anchor" href="#single-parameter-methods"></a>
+</h4>
 <p>These are only applicable for computing the EVPPI for a single scalar parameter. They are supplied in the package for technical completeness, but for single-parameter EVPPI we have found it to be sufficiently reliable to use the default GAM method, which requires less tuning than these methods.</p>
-<p>The method of <a href="https://journals.sagepub.com/doi/full/10.1177/0272989X12465123">Strong and Oakley</a>:</p>
+<p>The method of <a href="https://journals.sagepub.com/doi/full/10.1177/0272989X12465123" class="external-link">Strong and Oakley</a>:</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, n.blocks<span class="op">=</span><span class="fl">20</span>, method<span class="op">=</span><span class="st">"so"</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars      evppi
-## 1   p1 0.07997543</code></pre>
-<p>The method of <a href="https://doi.org/10.1016/j.jval.2012.10.018">Sadatsafavi et al.</a>:</p>
+<pre><code><span class="co">##   pars      evppi</span>
+<span class="co">## 1   p1 0.07997543</span></code></pre>
+<p>The method of <a href="https://doi.org/10.1016/j.jval.2012.10.018" class="external-link">Sadatsafavi et al.</a>:</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"sal"</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars      evppi
-## 1   p1 0.08151919</code></pre>
+<pre><code><span class="co">##   pars      evppi</span>
+<span class="co">## 1   p1 0.08151919</span></code></pre>
 </div>
 </div>
-<div id="traditional-monte-carlo-nested-loop-method" class="section level3">
-<h3 class="hasAnchor">
-<a href="#traditional-monte-carlo-nested-loop-method" class="anchor"></a>Traditional Monte Carlo nested loop method</h3>
-<p>(see e.g. <a href="https://doi.org/10.1177/0272989x07302555">Brennan et al.</a>)</p>
+<div class="section level3">
+<h3 id="traditional-monte-carlo-nested-loop-method">Traditional Monte Carlo nested loop method<a class="anchor" aria-label="anchor" href="#traditional-monte-carlo-nested-loop-method"></a>
+</h3>
+<p>(see e.g. <a href="https://doi.org/10.1177/0272989x07302555" class="external-link">Brennan et al.</a>)</p>
 <p>This is generally too slow to provide reliable EVPPI estimates in realistic models, but is provided in this package for technical completeness.</p>
 <p>This method is available in the function <code>evppi_mc</code>. It requires the user to supply two functions; one to evaluate the decision-analytic model, and one to generate parameter values.</p>
-<div id="model-evaluation-function" class="section level4">
-<h4 class="hasAnchor">
-<a href="#model-evaluation-function" class="anchor"></a>Model evaluation function</h4>
+<div class="section level4">
+<h4 id="model-evaluation-function">Model evaluation function<a class="anchor" aria-label="anchor" href="#model-evaluation-function"></a>
+</h4>
 <p>This function evaluates the decision-analytic model for specific parameter values. This must have one argument for each parameter. The return value can be in either a “net benefit” form or a “costs and effects” form. The “net benefit” form is a vector giving the net benefit for each decision option.</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_fn_nb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">{</span> 
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p1</span> <span class="op">-</span> <span class="va">p2</span><span class="op">)</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p1</span> <span class="op">-</span> <span class="va">p2</span><span class="op">)</span> 
 <span class="op">}</span></code></pre></div>
 <p>The “costs and effects” form is a matrix with two rows, and one column for each decision option. The rows gives the effects and costs respectively for each decision option. If they have names <code>"e"</code> and <code>"c"</code> then these are assumed to identify the effects and costs. Otherwise the first row is assumed to contain the effects, and the second the costs.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_fn_cea</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">{</span> 
-  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span>e <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p1</span><span class="op">)</span>, 
-        c <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>e <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p1</span><span class="op">)</span>, 
+        c <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span> 
 <span class="op">}</span></code></pre></div>
 </div>
-<div id="parameter-simulation-function" class="section level4">
-<h4 class="hasAnchor">
-<a href="#parameter-simulation-function" class="anchor"></a>Parameter simulation function</h4>
+<div class="section level4">
+<h4 id="parameter-simulation-function">Parameter simulation function<a class="anchor" aria-label="anchor" href="#parameter-simulation-function"></a>
+</h4>
 <p>This function generates a random sample of <span class="math inline">\(n\)</span> values from the current (joint) uncertainty distribution of the model parameters. This returns a data frame with <span class="math inline">\(n\)</span> rows and one named column for each parameter.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">par_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,
-             p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,
+             p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 </div>
-<div id="invoking-evppi_mc" class="section level4">
-<h4 class="hasAnchor">
-<a href="#invoking-evppi_mc" class="anchor"></a>Invoking <code>evppi_mc</code>
+<div class="section level4">
+<h4 id="invoking-evppi_mc">Invoking <code>evppi_mc</code><a class="anchor" aria-label="anchor" href="#invoking-evppi_mc"></a>
 </h4>
 <p>These functions are then supplied as arguments to <code>evppi_mc</code>, along with the number of samples to draw in the inner and outer loops. 1000 inner samples and 100 outer samples give a reasonable EVPPI estimate in this example, but many more samples may be required for the result to converge to the EVPPI in more complex models.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evppi_mc.html">evppi_mc</a></span><span class="op">(</span><span class="va">model_fn_nb</span>, <span class="va">par_fn</span>, pars<span class="op">=</span><span class="st">"p1"</span>, ninner<span class="op">=</span><span class="fl">1000</span>, nouter<span class="op">=</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="accounting-for-parameter-correlation" class="section level4">
-<h4 class="hasAnchor">
-<a href="#accounting-for-parameter-correlation" class="anchor"></a>Accounting for parameter correlation</h4>
+<div class="section level4">
+<h4 id="accounting-for-parameter-correlation">Accounting for parameter correlation<a class="anchor" aria-label="anchor" href="#accounting-for-parameter-correlation"></a>
+</h4>
 <p>We may want the EVPPI for a parameter which is correlated with another parameter. To account for this correlation, <code>par_fn</code> requires an extra argument or arguments to enable a sample to be drawn from the appropriate conditional distribution. For example, the function below specifies a bivariate normal distribution for <span class="math inline">\((p_1,p_2)\)</span> where a correlation is induced by defining <span class="math inline">\(E(p_2|p_1) = p_1\)</span>. To draw a sample from the conditional distribution of <span class="math inline">\(p_2\)</span> given <span class="math inline">\(p_1=2\)</span>, for example, call <code>par_fn_corr(1, p1=2)$p2</code>.</p>
 <p>If the argument <code>p1</code> is not supplied, then the function should return a sample from the joint distribution marginalised over <span class="math inline">\(p_1\)</span>, as in this case where if we do not supply <code>p1</code> then a random <code>p1</code> is drawn followed by <code>p2|p1</code>.</p>
 <p>A function of this form should then be passed to <code>evppi_mc</code> if the parameters are correlated. This allows <code>evppi_mc</code> to draw from the appropriate distribution in the inner loop.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">par_fn_corr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">p1</span><span class="op">=</span><span class="cn">NULL</span><span class="op">)</span><span class="op">{</span>
-  <span class="va">p1_new</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="kw">else</span> <span class="va">p1</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="va">p1_new</span>,
-             p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">p1_new</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">p1_new</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="kw">else</span> <span class="va">p1</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="va">p1_new</span>,
+             p2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">p1_new</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu"><a href="../reference/evppi_mc.html">evppi_mc</a></span><span class="op">(</span><span class="va">model_fn_nb</span>, <span class="va">par_fn_corr</span>, pars<span class="op">=</span><span class="st">"p1"</span>, ninner<span class="op">=</span><span class="fl">1000</span>, nouter<span class="op">=</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 </div>
-<div id="expected-value-of-sample-information" class="section level2">
-<h2 class="hasAnchor">
-<a href="#expected-value-of-sample-information" class="anchor"></a>Expected value of sample information</h2>
+<div class="section level2">
+<h2 id="expected-value-of-sample-information">Expected value of sample information<a class="anchor" aria-label="anchor" href="#expected-value-of-sample-information"></a>
+</h2>
 <p>The <em>expected value of sample information</em> is the expected value of collecting a specific amount of data from a study designed to give information about some model parameter or parameters. It is defined as the expected net benefit given the study data, minus the expected net benefit with current information.</p>
-<p>The function <code>evsi</code> can be used to calculate this. The default method is based on nonparametric regression (from <a href="https://dx.doi.org/10.1177%2F0272989X15575286">Strong et al.</a>). This requires the user to either</p>
+<p>The function <code>evsi</code> can be used to calculate this. The default method is based on nonparametric regression (from <a href="https://dx.doi.org/10.1177%2F0272989X15575286" class="external-link">Strong et al.</a>). This requires the user to either</p>
 <ol style="list-style-type: lower-alpha">
 <li><p>supply an R function to generate and summarise the study data, or</p></li>
 <li><p>use one of the built-in study designs, and specify which of the model parameters are informed by this study.</p></li>
 </ol>
-<p>To illustrate how to use <code>evsi</code>, suppose we want to collect a sample of <span class="math inline">\(n\)</span> normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness <span class="math inline">\(p_1\)</span>. Under current information, <span class="math inline">\(p_1\)</span> is distributed as <span class="math inline">\(N(1,1)\)</span>. After collecting the sample, we would expect this distribution to become more precise, hence reduce the likelihood of making a wrong decision. The EVSI measures the expected improvement in net benefit from this sample.</p>
+<p>To illustrate how to use <code>evsi</code>, suppose we want to collect a sample of <span class="math inline">\(n\)</span> normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness <span class="math inline">\(p_1\)</span>. Under current information, <span class="math inline">\(p_1\)</span> is distributed as <span class="math inline">\(N(1,1)\)</span>. After collecting the sample, we would expect this distribution to become more precise, hence reduce the chance of making a wrong decision. The EVSI measures the expected improvement in net benefit from this sample.</p>
 <p>Denote the study data as <span class="math inline">\(x_1,\ldots,x_n\)</span>, and suppose that they are distributed as <span class="math inline">\(x_i \sim N(p_1, \sigma)\)</span>. Hence the <em>mean</em> of the sample <span class="math inline">\(\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i\)</span> is a <em>summary statistic</em> containing the information provided by the data about <span class="math inline">\(p_1\)</span>.</p>
 <p>The sample mean is distributed as <span class="math inline">\(\bar{x} \sim N(p_1, \sigma / \sqrt{n})\)</span>. Suppose for simplicity that the sampling variance <span class="math inline">\(\sigma\)</span> of the data is known to equal 1.</p>
 <p>To calculate the EVSI using this method, we generate a sample from the <em>predictive distribution</em> of this summary statistic under current information. This is achieved by generating a value of <span class="math inline">\(p_1\)</span> from its current <span class="math inline">\(N(1,1)\)</span> distribution, followed by a value of <span class="math inline">\(\bar{x}\)</span> from <span class="math inline">\(N(p_1, \sigma / \sqrt{n})\)</span>.</p>
-<div id="function-to-generate-study-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#function-to-generate-study-data" class="anchor"></a>Function to generate study data</h3>
+<div class="section level3">
+<h3 id="function-to-generate-study-data">Function to generate study data<a class="anchor" aria-label="anchor" href="#function-to-generate-study-data"></a>
+</h3>
 <p>The function should generate a sample from the predictive distribution of the summary statistic, given a sample <code>inputs</code> from the current uncertainty distribution of the parameters.</p>
 <p><code>inputs</code> has the same format as described above, a data frame with one row per sample and one column per parameter.</p>
 <p>The function must return a data frame with one row per sample, and one column per parameter that is informed by the study data. Each data frame cell contains a summary statistic for that parameter from a simulated study.</p>
@@ -374,46 +369,46 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <p>The <code>evsi</code> function can then be used to compute the EVSI for a series of different sample sizes from this design. Note how the EVSI converges to the EVPPI as the sample size increases.</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">datagen_normal</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">inputs</span>, <span class="va">n</span><span class="op">=</span><span class="fl">100</span>, <span class="va">sd</span><span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>xbar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span>,
+  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>xbar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">inputs</span><span class="op">)</span>,
                           mean <span class="op">=</span> <span class="va">inputs</span><span class="op">[</span>,<span class="st">"p1"</span><span class="op">]</span>,
-                          sd <span class="op">=</span> <span class="va">sd</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+                          sd <span class="op">=</span> <span class="va">sd</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, datagen_fn <span class="op">=</span> <span class="va">datagen_normal</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##      n       evsi
-## 1   10 0.07440250
-## 2  100 0.08106261
-## 3 1000 0.08189925</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, datagen_fn <span class="op">=</span> <span class="va">datagen_normal</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##      n       evsi</span>
+<span class="co">## 1   10 0.07440250</span>
+<span class="co">## 2  100 0.08106261</span>
+<span class="co">## 3 1000 0.08189925</span></code></pre>
 </div>
-<div id="built-in-study-designs" class="section level3">
-<h3 class="hasAnchor">
-<a href="#built-in-study-designs" class="anchor"></a>Built-in study designs</h3>
+<div class="section level3">
+<h3 id="built-in-study-designs">Built-in study designs<a class="anchor" aria-label="anchor" href="#built-in-study-designs"></a>
+</h3>
 <p>The function <code>datagen_normal</code> is also included in the <code>voi</code> package as a built-in study design. To invoke the <code>evsi</code> function for a built-in study design, we have to supply the name of the design (in this case <code>"normal_known"</code>) and the name of the parameter or parameters (corresponding to a column of “inputs”) which is estimated by the study data.</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
-<pre><code>##      n       evsi
-## 1  100 0.07998166
-## 2 1000 0.08197188</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##      n       evsi</span>
+<span class="co">## 1  100 0.07998166</span>
+<span class="co">## 2 1000 0.08197188</span></code></pre>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_cea</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
-<pre><code>##      n k       evsi
-## 1  100 1 0.07976014
-## 2  100 2 0.16666306
-## 3  100 3 0.25356597
-## 4 1000 1 0.08216435
-## 5 1000 2 0.17052103
-## 6 1000 3 0.25887874</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_cea</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span><span class="op">)</span>, pars <span class="op">=</span> <span class="st">"p1"</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##      n k       evsi</span>
+<span class="co">## 1  100 1 0.07976014</span>
+<span class="co">## 2  100 2 0.16666306</span>
+<span class="co">## 3  100 3 0.25356597</span>
+<span class="co">## 4 1000 1 0.08216435</span>
+<span class="co">## 5 1000 2 0.17052103</span>
+<span class="co">## 6 1000 3 0.25887874</span></code></pre>
 <p>The known standard deviation defaults to 1, but can be changed, e.g. to 2, by calling <code>evsi</code> with an <code>aux_pars</code> argument, e.g. <code>evsi(..., aux_pars=list(sd=2), ...)</code>.</p>
 <p>Note that the results will be slightly different every time the <code>evsi</code> function is invoked with the same arguments, due to Monte Carlo error from generating the data (unless the seed is set with the R function <code>set_seed</code> before each invocation).</p>
 <p>Other built-in study designs include</p>
 <p><code>"binary"</code>: A single sample of observations of a binary outcome. Requires one parameter to be specified in <code>pars</code>, that is, the probability of the outcome.</p>
 <p><code>"trial_binary"</code>: A two-arm trial with a binary outcome. Requires two parameters to be specified in <code>pars</code>: the probability of the outcome in arm 1 and 2 respectively. The sample size is the same in each arm, specifed in the <code>n</code> argument to <code>evsi</code>, and the binomial outcomes are returned in the first and second column respectively.</p>
 </div>
-<div id="importance-sampling-method" class="section level3">
-<h3 class="hasAnchor">
-<a href="#importance-sampling-method" class="anchor"></a>Importance sampling method</h3>
-<p>An alternative method comes from <a href="https://doi.org/10.1177/0272989X15583495">Menzies (2015)</a> and is based on importance sampling. This can be invoked as <code>evsi(..., method="is")</code>.</p>
+<div class="section level3">
+<h3 id="importance-sampling-method">Importance sampling method<a class="anchor" aria-label="anchor" href="#importance-sampling-method"></a>
+</h3>
+<p>An alternative method comes from <a href="https://doi.org/10.1177/0272989X15583495" class="external-link">Menzies (2015)</a> and is based on importance sampling. This can be invoked as <code>evsi(..., method="is")</code>.</p>
 <p>As well as a data generation function in the above format, this also requires the user to supply a <em>likelihood function</em> for the study data.</p>
 <p>This is illustrated here for the simple normal example. The likelihood function acts on one row of the data frame <span class="math inline">\(Y\)</span> which is produced by the data generation function, and returns a data frame with number of rows matching the rows of <code>inputs</code>. Each row of the returned data frame gives the sampling density for that row of <span class="math inline">\(Y\)</span> given the corresponding parameter values in <code>inputs</code>. The corresponding EVSI calculation then involves building a large matrix of likelihoods for combinations of simulated datasets and simulated parameters.</p>
 <p>Any user-supplied likelihood function should consistently define the same model for the data as the data generation function (the package does not check this!), and any names of parameters and outputs should match the names defined in <code>inputs</code> and the data generation function.</p>
@@ -421,102 +416,102 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">likelihood_normal</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Y</span>, <span class="va">inputs</span>, <span class="va">n</span><span class="op">=</span><span class="fl">100</span>, <span class="va">sig</span><span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">{</span>
   <span class="va">mu</span> <span class="op">&lt;-</span> <span class="va">inputs</span><span class="op">[</span>,<span class="st">"p1"</span><span class="op">]</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">[</span>,<span class="st">"xbar"</span><span class="op">]</span>, <span class="va">mu</span>, <span class="va">sig</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">[</span>,<span class="st">"xbar"</span><span class="op">]</span>, <span class="va">mu</span>, <span class="va">sig</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
 <span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, datagen_fn <span class="op">=</span> <span class="va">datagen_normal</span>, likelihood <span class="op">=</span> <span class="va">likelihood_normal</span>, 
      n<span class="op">=</span><span class="fl">100</span>, pars <span class="op">=</span> <span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"is"</span>, nsim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></code></pre></div>
-<pre><code>##     n      evsi
-## 1 100 0.0864487</code></pre>
+<pre><code><span class="co">##     n      evsi</span>
+<span class="co">## 1 100 0.0864487</span></code></pre>
 <p>Again, this study model is available as a built-in study design, so instead of writing a user-defined likelihood and data generation function, <code>evsi</code> can also be invoked with <code>study="normal_known", method="is"</code>.</p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">100</span>, pars <span class="op">=</span> <span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"is"</span>, nsim<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></code></pre></div>
-<pre><code>##     n       evsi
-## 1 100 0.08619358</code></pre>
+<pre><code><span class="co">##     n       evsi</span>
+<span class="co">## 1 100 0.08619358</span></code></pre>
 </div>
-<div id="further-work" class="section level3">
-<h3 class="hasAnchor">
-<a href="#further-work" class="anchor"></a>Further work</h3>
-<p>Other EVSI calculation methods (including <a href="https://doi.org/10.1177/0272989X19837983">Heath et al</a>) are planned to be implemented.</p>
+<div class="section level3">
+<h3 id="further-work">Further work<a class="anchor" aria-label="anchor" href="#further-work"></a>
+</h3>
+<p>Other EVSI calculation methods (including <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>) are planned to be implemented.</p>
 </div>
 </div>
-<div id="value-of-information-in-models-for-estimation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#value-of-information-in-models-for-estimation" class="anchor"></a>Value of Information in models for estimation</h2>
+<div class="section level2">
+<h2 id="value-of-information-in-models-for-estimation">Value of Information in models for estimation<a class="anchor" aria-label="anchor" href="#value-of-information-in-models-for-estimation"></a>
+</h2>
 <p>Suppose that the aim of the analysis is to get a precise estimate of a quantity, rather than to make an explicit decision between policies. VoI methodology can still be used to determine which uncertain parameters the estimate is most sensitive to (EVPPI) or the improvements in precision expected from new data (EVSI). The expected value of information is the expected <em>reduction in variance</em> of the quantity of interest given the further information.</p>
 <p>We illustrate with an example. Suppose we want to estimate the prevalence of an infection. There are two sources of information. We have survey data which we think is biased, so that the true infection rate is higher than the rate of infection observed in the survey. We then have an expert judgement about the extent of bias in the data, and uncertainty associated with this.</p>
 <p>Firstly, suppose the survey observed 100 people and 5 of them were infected. Using a vague Beta(0,0) prior (flat on the logit scale), the posterior distribution of the survey infection rate <span class="math inline">\(p_1\)</span> is a Beta(5,95). We draw a random sample from this.</p>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html">rbeta</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">5</span>, <span class="fl">95</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">5</span>, <span class="fl">95</span><span class="op">)</span></code></pre></div>
 <p>Secondly, we guess that the true risk of being infected is twice the risk in the survey population, but we are uncertain about this relative risk. We might approximate our belief by placing a normal prior distribution on the log odds ratio <span class="math inline">\(\beta\)</span>, with a mean designed to reflect the doubled relative risk, and a variance that is high but concentrates the relative risk on positive values. Hence the true infection probability <span class="math inline">\(p_2\)</span> is a function of the two parameters <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>:</p>
 <p><span class="math display">\[p_2 = expit(logit(p_1) + \beta)\]</span>.</p>
 <p>We draw random samples from the current belief distributions of <span class="math inline">\(\beta\)</span> and <span class="math inline">\(p_2\)</span>, and then graphically compare the distributions of the infection probability <span class="math inline">\(p_1\)</span> in the survey data (black) and the true infection probability <span class="math inline">\(p_2\)</span> (red).</p>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">0.8</span>, <span class="fl">0.4</span><span class="op">)</span>
-<span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">qlogis</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span> <span class="op">+</span> <span class="va">beta</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/density.html">density</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fl">2</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, main<span class="op">=</span><span class="st">""</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/density.html">density</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"black"</span>,<span class="st">"red"</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, 
-       legend<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Surveyed infection probability"</span>, <span class="st">"True infection probability"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">0.8</span>, <span class="fl">0.4</span><span class="op">)</span>
+<span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">qlogis</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span> <span class="op">+</span> <span class="va">beta</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/density.html" class="external-link">density</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fl">2</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, main<span class="op">=</span><span class="st">""</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/density.html" class="external-link">density</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"red"</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>,<span class="st">"red"</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>, 
+       legend<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Surveyed infection probability"</span>, <span class="st">"True infection probability"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="voi_files/figure-html/unnamed-chunk-30-1.png" width="672"></p>
-<p>The model <em>output</em> quantity is <span class="math inline">\(p_2\)</span>, and the model <em>inputs</em> are <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>. We now want to determine the expected value of further information. This is measured in terms of expected <em>reductions in variance</em> of <span class="math inline">\(p_2\)</span>. This has a decision-theoretic interpretation, with “loss” being measured by squared error of a parameter estimate compared to the true parameter value. See <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a>.</p>
-<div id="evpi-and-evppi-for-estimation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#evpi-and-evppi-for-estimation" class="anchor"></a>EVPI and EVPPI for estimation</h3>
+<p>The model <em>output</em> quantity is <span class="math inline">\(p_2\)</span>, and the model <em>inputs</em> are <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>. We now want to determine the expected value of further information. This is measured in terms of expected <em>reductions in variance</em> of <span class="math inline">\(p_2\)</span>. This has a decision-theoretic interpretation, with “loss” being measured by squared error of a parameter estimate compared to the true parameter value. See <a href="https://doi.org/10.1080/01621459.2018.1562932" class="external-link">Jackson et al. 2019</a>.</p>
+<div class="section level3">
+<h3 id="evpi-and-evppi-for-estimation">EVPI and EVPPI for estimation<a class="anchor" aria-label="anchor" href="#evpi-and-evppi-for-estimation"></a>
+</h3>
 <p>The EVPI is trivially <span class="math inline">\(var(p_2)\)</span>, the variance under current information, which we can compute from the sample as</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003526437</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.003526437</span></code></pre>
 <p>A more interesting quantity is the EVPPI for a parameter. It describes the expected reduction in variance given perfect knowledge of a particular parameter. In this example, we compute the EVPPI for <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>, respectively, defined as</p>
 <p><span class="math display">\[EVPPI[p_1] = var(p_2) - E(var(p_2| p_1)\]</span> <span class="math display">\[EVPPI[\beta] = var(p_2) - E(var(p_2 | \beta)\]</span></p>
-<p>These can be computed using nonparametric regression, as described in <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a>. This is implemented in the function <code>evppivar</code> in the <code>voi</code> package.</p>
+<p>These can be computed using nonparametric regression, as described in <a href="https://doi.org/10.1080/01621459.2018.1562932" class="external-link">Jackson et al. 2019</a>. This is implemented in the function <code>evppivar</code> in the <code>voi</code> package.</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">beta</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">beta</span><span class="op">)</span>
 <span class="op">(</span><span class="va">evppi_beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evppivar.html">evppivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, par<span class="op">=</span><span class="st">"beta"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars       evppi
-## 1 beta 0.001493227</code></pre>
+<pre><code><span class="co">##   pars       evppi</span>
+<span class="co">## 1 beta 0.001493227</span></code></pre>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">evppi_p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evppivar.html">evppivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, par<span class="op">=</span><span class="st">"p1"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##   pars       evppi
-## 1   p1 0.001874903</code></pre>
+<pre><code><span class="co">##   pars       evppi</span>
+<span class="co">## 1   p1 0.001874903</span></code></pre>
 <p>Hence a slightly greater improvement in variance is expected from knowing the true risk in the biased sample, compared to knowing the relative odds of infection.</p>
 <p>These EVPPI values are easier to interpret if they are converted to the scale of a <em>standard deviation</em>. If we subtract the EVPPI from the original variance of <span class="math inline">\(p_2\)</span> we get, for example <span class="math inline">\(E(var(p_2) | p_1)\)</span>. The square root of this is an estimate of what the standard deviation of <span class="math inline">\(p_2\)</span> would be if we learnt <span class="math inline">\(p_1\)</span> (note that is not exactly the <em>expected</em> SD remaining, since we cannot swap the order of the square root and expectation operators).</p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span><span class="op">)</span> <span class="co"># or sd(p2)</span></code></pre></div>
-<pre><code>## [1] 0.05938381</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span><span class="op">)</span> <span class="co"># or sd(p2)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.05938381</span></code></pre>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_beta</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.04509113</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_beta</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.04509113</span></code></pre>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_p1</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.04063908</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_p1</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.04063908</span></code></pre>
 <p>Hence we would expect to reduce the SD of <span class="math inline">\(p_1\)</span> to around 2/3 of its original value by learning <span class="math inline">\(p_1\)</span> or <span class="math inline">\(\beta\)</span>.</p>
 </div>
-<div id="how-regression-based-evppi-estimation-works" class="section level3">
-<h3 class="hasAnchor">
-<a href="#how-regression-based-evppi-estimation-works" class="anchor"></a>How regression-based EVPPI estimation works</h3>
-<p>EVPPI is estimated here by <em>nonparametric regression</em> of the output on the input. Recall that the method of <a href="https://doi.org/10.1177/0272989X13505910">Strong et al. (2013)</a> was used in <code>evppi</code> for models with decisions. <a href="https://doi.org/10.1080/01621459.2018.1562932">Jackson et al. 2019</a> showed how this method applied in a wider class of problems, including models for estimation.</p>
+<div class="section level3">
+<h3 id="how-regression-based-evppi-estimation-works">How regression-based EVPPI estimation works<a class="anchor" aria-label="anchor" href="#how-regression-based-evppi-estimation-works"></a>
+</h3>
+<p>EVPPI is estimated here by <em>nonparametric regression</em> of the output on the input. Recall that the method of <a href="https://doi.org/10.1177/0272989X13505910" class="external-link">Strong et al. (2013)</a> was used in <code>evppi</code> for models with decisions. <a href="https://doi.org/10.1080/01621459.2018.1562932" class="external-link">Jackson et al. 2019</a> showed how this method applied in a wider class of problems, including models for estimation.</p>
 <p>To estimate the expected reduction in variance in <span class="math inline">\(p_2\)</span>, given knowledge of <span class="math inline">\(p_1\)</span>, the <code>evppivar</code> function fits a regression model with <code>p2</code> as the outcome, and <code>p1</code> as the single predictor. A generalized additive model based on splines is fitted using the <code>gam</code> function from the <code>mgcv</code> package.</p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">p1</span>, y<span class="op">=</span><span class="va">p2</span>, pch<span class="op">=</span><span class="st">"."</span><span class="op">)</span>
-<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">p2</span> <span class="op">~</span> <span class="fu">te</span><span class="op">(</span><span class="va">p1</span>, bs<span class="op">=</span><span class="st">"cr"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p1fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span>, <span class="va">p1fit</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span><span class="op">]</span>, col<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">p1</span>, y<span class="op">=</span><span class="va">p2</span>, pch<span class="op">=</span><span class="st">"."</span><span class="op">)</span>
+<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></span><span class="op">(</span><span class="va">p2</span> <span class="op">~</span> <span class="fu">te</span><span class="op">(</span><span class="va">p1</span>, bs<span class="op">=</span><span class="st">"cr"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">p1fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span>, <span class="va">p1fit</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span><span class="op">]</span>, col<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span></code></pre></div>
 <p><img src="voi_files/figure-html/unnamed-chunk-34-1.png" width="672"></p>
 <p>Taking the variance of the <em>residuals</em> from this regression (observed minus fitted values) produces an estimate of <span class="math inline">\(E(var(p_2 | p_1 = x))\)</span>, intuitively, the expected variance given knowledge of <span class="math inline">\(p_1\)</span>, which, when subtracted from the variance of <span class="math inline">\(p_2\)</span>, gives the EVPPI.</p>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p1res</span> <span class="op">&lt;-</span> <span class="va">p2</span> <span class="op">-</span> <span class="va">p1fit</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p1res</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.001875811</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p1res</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.001875811</span></code></pre>
 <p>This agrees (up to Monte Carlo error) with the value produced by <code>evppivar</code>, which is obtained by a closely-related method, as the variance of the fitted values from this regression. This is equal to the total variance minus the variance of the residuals, through the “law of total variance”:</p>
 <p><span class="math display">\[var(Y) - E_{X}\left[var_{Y| X}(Y |X)\right] = var_{X} \left[E_{Y|X}(Y|X)\right]\]</span></p>
 <div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">p1fit</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.001874903</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p1fit</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.001874903</span></code></pre>
 </div>
-<div id="evsi-for-estimation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#evsi-for-estimation" class="anchor"></a>EVSI for estimation</h3>
+<div class="section level3">
+<h3 id="evsi-for-estimation">EVSI for estimation<a class="anchor" aria-label="anchor" href="#evsi-for-estimation"></a>
+</h3>
 <p>Now suppose we planned to collect additional survey data on the prevalence of infection.</p>
 <p>First suppose that we can collect more data on the biased population that was used to estimate <span class="math inline">\(p_1\)</span>. The EVSI can be computed to show the expected value of surveying <span class="math inline">\(n\)</span> individuals, for different sample sizes <span class="math inline">\(n\)</span>.</p>
 <p>This is achieved using the function <code>evsivar</code> in the <code>voi</code> package, as follows.</p>
@@ -526,20 +521,20 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <li><p><code>pars="p1"</code> indicates which input parameter is informed by the study, in other words, which parameter is assumed to generate the study data.</p></li>
 </ul>
 <div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p1"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span>,<span class="fl">10000</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##       n         evsi
-## 1   100 0.0009356974
-## 2  1000 0.0017090172
-## 3 10000 0.0018575709</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p1"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span>,<span class="fl">10000</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##       n         evsi</span>
+<span class="co">## 1   100 0.0009356974</span>
+<span class="co">## 2  1000 0.0017090172</span>
+<span class="co">## 3 10000 0.0018575709</span></code></pre>
 <p>As the proposed sample sizes increase, the expected value of sample information informing <span class="math inline">\(p_1\)</span> converges to the EVPPI, the expected value of perfect information about <span class="math inline">\(p_1\)</span>.</p>
-<p>Alternatively, suppose we were able to collect information about the <em>unbiased</em> population, whose infection prevalence is <span class="math inline">\(p_2\)</span>. That is, suppose we surveyed <span class="math inline">\(n\)</span> individuals, each with a binary infection outcome generated with probability <span class="math inline">\(p_2\)</span>. In this case, we can compute the EVSI by using <code>evsivar</code> with the model <code>inputs</code> defined to equal the model outputs, as follows:</p>
+<p>Alternatively, suppose we were able to collect information about the <em>unbiased</em> population, whose infection prevalence is <span class="math inline">\(p_2\)</span>. That is, suppose we surveyed <span class="math inline">\(n\)</span> individuals, each infected with probability <span class="math inline">\(p_2\)</span>. In this case, we can compute the EVSI by using <code>evsivar</code> with the model <code>inputs</code> defined to equal the model outputs, as follows:</p>
 <div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">inputs_p2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>p2 <span class="op">=</span> <span class="va">p2</span><span class="op">)</span>
-<span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, inputs<span class="op">=</span><span class="va">inputs_p2</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p2"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##       n        evsi
-## 1   100 0.002799406
-## 2  1000 0.003436617
-## 3 10000 0.003516989</code></pre>
+<code class="sourceCode R"><span class="va">inputs_p2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p2 <span class="op">=</span> <span class="va">p2</span><span class="op">)</span>
+<span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, inputs<span class="op">=</span><span class="va">inputs_p2</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p2"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##       n        evsi</span>
+<span class="co">## 1   100 0.002799406</span>
+<span class="co">## 2  1000 0.003436617</span>
+<span class="co">## 3 10000 0.003516989</span></code></pre>
 <p>The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size. As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest <span class="math inline">\(p_2\)</span>.</p>
 </div>
 </div>
@@ -556,11 +551,13 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 
 
       <footer><div class="copyright">
-  <p>Developed by Christopher Jackson, Anna Heath.</p>
+  <p></p>
+<p>Developed by Christopher Jackson, Anna Heath.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -568,6 +565,8 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 
   
 
+
+  
 
   </body>
 </html>
