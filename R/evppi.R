@@ -248,6 +248,7 @@ evppi_list <- function(outputs, inputs, pars, method, se, B, nsim, verbose, ...)
         eres[[i]] <- evppi(outputs=outputs, inputs=inputs, pars=pars[[i]], 
                            method=method, se=se, B=B, nsim=nsim, verbose=verbose,
                            ...)
+        if (!is.null(names(pars)[i])) eres[[i]]$pars <- names(pars)[i]
     }
     do.call("rbind", eres)
 }
