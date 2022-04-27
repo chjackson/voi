@@ -66,8 +66,11 @@ make.proj <- function(parameter, inputs, x, pfc_struc="AIC") {
     fit1<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="iso")
     fit2<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="aniso")
     fit3<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="unstr")
-    if (pfc_struc=="AIC")
-        struc <- c("iso","aniso","unstr")[which(c(fit1$aic,fit2$aic,fit3$aic)==min(fit1$aic,fit2$aic,fit3$aic))]
+    if (pfc_struc=="AIC"){
+        aics <- c(fit1$aic,fit2$aic,fit3$aic)
+        minaic <- which.min(aics)
+        struc <- c("iso","aniso","unstr")[minaic]
+    }
     else struc <- pfc_struc
     AIC.deg<-array()
     for(i in 2:7){

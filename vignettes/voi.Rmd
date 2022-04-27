@@ -31,7 +31,7 @@ This document gives a simple overview of how the `voi` package is used to calcul
 
 The example model is a model used for _decision making_, which has been the most common application of VoI, e.g. in health economic evaluations.
 
-A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making.  For more information about the theory behind this, see [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932).
+A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making.  For more information about the theory behind this, see [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) and [Jackson et al. 2021](https://www.degruyter.com/document/doi/10.1515/em-2021-0012/html).
 
 ## Simple example model 
 
@@ -71,7 +71,7 @@ outputs_nb <- data.frame(t1 = 0,
 
 * `"e"`: a data frame with one column per treatment and one row per random sample, containing sampled values for the expected effects of the treatment. 
 
-* `"k"`: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net benefit is $e \times k - c$.   
+* `"k"`: a vector of values giving alternative amounts that a decision-maker is willing to pay for one unit of effectiveness, so that the net (monetary) benefit is $e \times k - c$.
 
 In this simple example, the parameter $p_1$ gives the effects, and $p_2$ the costs of treatment 2, and the 
 net benefit $y = p_1 - p_2$ defined in `outputs_nb` corresponds to a willingness-to-pay of $k=1$.  The cost-effectiveness format allows us to compare VoI between different willingness-to-pay values, e.g. 1, 2 and 3 say here. 
@@ -351,7 +351,7 @@ The function `evsi` can be used to calculate this.   The default method is based
 
 (b) use one of the built-in study designs, and specify which of the model parameters are informed by this study. 
 
-To illustrate how to use `evsi`, suppose we want to collect a sample of $n$ normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness $p_1$.  Under current information, $p_1$ is distributed as $N(1,1)$.  After collecting the sample, we would expect this distribution to become more precise, hence reduce the likelihood of making a wrong decision.   The EVSI measures the expected improvement in net benefit from this sample. 
+To illustrate how to use `evsi`, suppose we want to collect a sample of $n$ normally-distributed observations in order to get a better estimate of the treatment 2 effectiveness $p_1$.  Under current information, $p_1$ is distributed as $N(1,1)$.  After collecting the sample, we would expect this distribution to become more precise, hence reduce the chance of making a wrong decision.   The EVSI measures the expected improvement in net benefit from this sample. 
 
 Denote the study data as $x_1,\ldots,x_n$, and suppose that they are distributed as $x_i \sim N(p_1, \sigma)$.   Hence the _mean_ of the sample $\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$ is a _summary statistic_ containing the information 
 provided by the data about $p_1$. 
@@ -557,7 +557,7 @@ evsivar(p2, inputs, study = "binary", pars="p1", n=c(100,1000,10000))
 
 As the proposed sample sizes increase, the expected value of sample information informing $p_1$ converges to the EVPPI, the expected value of perfect information about $p_1$. 
 
-Alternatively, suppose we were able to collect information about the _unbiased_ population, whose infection prevalence is $p_2$.  That is, suppose we surveyed $n$ individuals, each with a binary infection outcome generated with probability $p_2$.  In this case, we can compute the EVSI by using `evsivar` with the model `inputs` defined to equal the model outputs, as follows: 
+Alternatively, suppose we were able to collect information about the _unbiased_ population, whose infection prevalence is $p_2$.  That is, suppose we surveyed $n$ individuals, each infected with probability $p_2$.  In this case, we can compute the EVSI by using `evsivar` with the model `inputs` defined to equal the model outputs, as follows: 
 
 ```{r}
 inputs_p2 = data.frame(p2 = p2)
