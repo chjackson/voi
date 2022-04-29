@@ -126,6 +126,7 @@ evsi <- function(outputs,
                  npreg_method="gam",
                  nsim=NULL,
                  verbose=FALSE, 
+                 check=FALSE,
                  ...)
 {
     check_inputs(inputs)
@@ -142,13 +143,13 @@ evsi <- function(outputs,
     ## Could use any nonparametric regression method to regress on a summary statistic, in identical way to EVPPI estimation.
     
     if (method %in% npreg_methods) { 
-        evsi_npreg(outputs=outputs, inputs=inputs, 
+        res <- evsi_npreg(outputs=outputs, inputs=inputs, 
                    datagen_fn=datagen_fn, pars=pars, n=n, 
-                   method=method, verbose=verbose,
+                   method=method, verbose=verbose, check=check, 
                    aux_pars = aux_pars, ...)
     } else if (method=="is") {
         likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, pars)
-        evsi_is(outputs=outputs, inputs=inputs, 
+        res <- evsi_is(outputs=outputs, inputs=inputs, 
                 pars=pars, datagen_fn=datagen_fn, n=n,
                 aux_pars=aux_pars, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
@@ -164,20 +165,28 @@ evsi <- function(outputs,
 #                verbose=verbose, ...)
     }
     else stop("Other methods not implemented yet")
+    attr(res, "method") <- method
+    class(res) <- c("evsi", attr(res,"class"))
+    res
 }
 
-evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, aux_pars=NULL, ...){
+evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FALSE, B=500, verbose, check, aux_pars=NULL, ...){
     nn <- length(n)
     res <- vector(nn, mode="list")
     for (i in seq_along(n)){
         Tdata <- generate_data(inputs, datagen_fn, n[i], pars, aux_pars)
-        evsi <- evppi_npreg(outputs=outputs, inputs=Tdata, 
+        res[[i]] <- evppi_npreg(outputs=outputs, inputs=Tdata, 
                            pars=names(Tdata), method=method, se=se, B=B, verbose=verbose, ...)
-        names(evsi)[names(evsi)=="evppi"] <- "evsi"
-        res[[i]] <- cbind(n = n[i], evsi)
+        names(res[[i]])[names(res[[i]])=="evppi"] <- "evsi"
         rownames(res[[i]]) <- NULL
     }
-    do.call("rbind", res)
+    resall <- do.call("rbind", res)
+    resall <- cbind(n=n, resall)
+    if (check){
+      attr(resall, "models") <- lapply(res, function(x)attr(x, "models"))
+      names(attr(resall,"models")) <- as.character(resall$n)
+    }
+    resall
 }
 
 generate_data <- function(inputs, datagen_fn, n=150, pars, aux_pars=NULL){

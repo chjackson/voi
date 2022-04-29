@@ -49,8 +49,12 @@
 ##'   \code{inputs} is a vector, this is assumed to define the single parameter
 ##'   of interest, and then \code{pars} is not required.
 ##'
-##' @param method Character string indicating the calculation method.   The default
-##'   methods are based on nonparametric regression:
+##' @param method Character string indicating the calculation method.  If one
+##' string is supplied, this is used for all calculations.  A vector of different strings
+##' can be supplied if a different method is desired for different list components
+##' of \code{pars}. 
+##'
+##' The default methods are based on nonparametric regression:
 ##'
 ##' \code{"gam"} for a generalized additive model implemented in the \code{\link{gam}}
 ##' function from the \pkg{mgcv} package.  This is the default method for
@@ -84,7 +88,14 @@
 ##'
 ##' @param verbose If \code{TRUE}, then messages are printed describing each step of
 ##'   the calculation, if the method supplies these.  Useful to see the progress
-##'   of slow calculations.  
+##'   of slow calculations.
+##'
+##' @param check If \code{TRUE}, then extra information about the estimation
+##' is saved inside the object that this function returns.  This currently
+##' only applies to the regression-based methods \code{"gam"} and \code{"earth"}
+##' where the fitted regression model objects are saved.  This allows use
+##' of the \code{\link{check_regression}} function, which produces some
+##' diagnostic checks of the regression models.
 ##'
 ##' @param ... Other arguments to control specific methods.
 ##'
@@ -211,46 +222,50 @@ evppi <- function(outputs,
                   B=500,
                   nsim=NULL,
                   verbose=FALSE,
+                  check=FALSE,
                   ...)
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     outputs <- check_outputs(outputs, inputs)
-    if (is.list(pars))
-        return(evppi_list(outputs=outputs, inputs=inputs, pars=pars, 
-                          method=method, se=se, B=B, nsim=nsim, verbose=verbose, ...))
-    pars <- check_pars(pars, inputs)
-    opts <- list(...)
-    if (is.null(method))
-        method <- default_evppi_method(pars)
-    
+
+    if (!is.list(pars))
+        pars <- list(pars)
+    for (i in seq_along(pars)){
+        pars[[i]] <- check_pars(pars[[i]], inputs)
+        if (is.null(names(pars)) || identical(names(pars)[i], "") || is.na(names(pars)[i]))
+            names(pars)[i] <- paste(pars[[i]], collapse=",")
+    }
+    npars <- length(pars)
     if (is.null(nsim)) nsim <- nrow(inputs)
     outputs <- subset_outputs(outputs, nsim)
     inputs <- inputs[1:nsim,,drop=FALSE]
-    
-    if (method %in% npreg_methods) {
-        rese <- evppi_npreg(outputs=outputs, inputs=inputs, 
-                    pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
-    } else if (method=="so") {
-        rese <- evppi_so(outputs, inputs, pars, ...)
-    } else if (method=="sal") {
-        rese <- evppi_sal(outputs, inputs, pars, ...)
-    } else stop("Other methods not implemented yet")
-    res <- cbind(pars = paste(pars, collapse=","), 
-                 rese)
-    res
-}
 
-evppi_list <- function(outputs, inputs, pars, method, se, B, nsim, verbose, ...)
-{
-    npars <- length(pars)
+    if (is.null(method))
+        methods <- sapply(pars, default_evppi_method)
+    if (length(method) > 0) methods <- rep(method, length.out=npars)
     eres <- vector(npars, mode="list") 
     for (i in seq_len(npars)){
-        eres[[i]] <- evppi(outputs=outputs, inputs=inputs, pars=pars[[i]], 
-                           method=method, se=se, B=B, nsim=nsim, verbose=verbose,
-                           ...)
-        if (!is.null(names(pars)[i])) eres[[i]]$pars <- names(pars)[i]
+        if (methods[i] %in% npreg_methods) {
+            evppi_fn <- evppi_npreg
+        } else if (methods[i]=="so") {
+            evppi_fn <- evppi_so
+        } else if (methods[i]=="sal") {
+            evppi_fn <- evppi_sal
+        } else stop("Other methods not implemented yet")
+        eres[[i]] <- evppi_fn(outputs=outputs, inputs=inputs, pars=pars[[i]], 
+                              method=methods[i], se=se, B=B, verbose=verbose,
+                              ...)
     }
-    do.call("rbind", eres)
+    res <- do.call("rbind", eres)
+    res <- cbind(pars=names(pars), res)
+    if (check){
+        attr(res, "models") <- lapply(eres, function(x)attr(x, "models"))
+        names(attr(res, "models")) <- res$pars
+    }
+    attr(res, "methods") <- methods
+    attr(res, "outputs") <- class(outputs)[1]
+    class(res) <- c("evppi", attr(res,"class"))
+    res
 }
 
 ## could do fancier S3 stuff with implementing subset operator, but too much
@@ -271,97 +286,6 @@ subset_outputs.cea <- function(outputs, nsim){
     outputs$e <- outputs$e[1:nsim,,drop=FALSE]
     class(outputs) <- c("cea", attr(outputs, "class"))
     outputs
-}
-
-npreg_methods <- c("gam", "gp", "inla", "earth")
-
-evppi_npreg <- function(outputs, ...){
-    UseMethod("evppi_npreg", outputs)
-}
-
-evppi_npreg.nb <- function(outputs, inputs, pars, method, se, B, verbose, ...){
-    if (verbose) message("Fitting nonparametric regression") 
-    fit <- fitted_npreg(outputs, inputs=inputs, pars=pars, method=method, se=se, B=B, 
-                        verbose=verbose, ...)
-    res <- data.frame(evppi = calc_evppi(fit))
-    if (se){
-        if (verbose) message("Calculating replicate EVPPIs from simulation")
-        evppi_rep <- numeric(B)
-        for (i in 1:B){
-            ## This bit could be faster.  Is there a vectorised way?  Naive apply doesn't help
-            evppi_rep[i] <- calc_evppi(attr(fit, "rep")[i,,])   
-        }
-        res$se <-  sd(evppi_rep)
-    }
-    res
-}
-
-evppi_npreg.cea <- function(outputs, inputs, pars, method, se, B, verbose, ...){
-    wtp <- outputs$k
-    nwtp <- length(wtp)
-    res <- resse <- numeric(nwtp)
-    if (verbose) message("Fitting nonparametric regression for costs") 
-    cfit <- fitted_npreg(outputs$c, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
-    if (verbose) message("Fitting nonparametric regression for effects") 
-    efit <- fitted_npreg(outputs$e, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
-    for (i in 1:nwtp){
-        evppi_rep <- numeric(B)
-        inbfit <- efit*wtp[i] - cfit
-        if (se){
-            inbrep <- attr(efit, "rep")*wtp[i] - attr(cfit, "rep")
-            if (verbose) message("Calculating replicate EVPPIs from simulation")
-            for (j in 1:B){
-                evppi_rep[j] <- calc_evppi(inbrep[j,,])   
-            }
-            resse[i] <- sd(evppi_rep)
-        }
-        res[i] <- calc_evppi(inbfit)
-    }
-    res <- data.frame(k=wtp, evppi=res)
-    if (se) res$se <- resse
-    res
-}
-
-fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
-    nopt <- ncol(nb)
-    nsim <- nrow(nb)
-    ## Transforming to incremental net benefit allows us to do one fewer regression
-    ## Assume it doesn't matters which option is the baseline for this purpose
-    inb <- nb[, -1, drop=FALSE] - nb[,1]
-    fitted <- matrix(0, nrow=nsim, ncol=nopt)
-    if (se) 
-        fitted_rep <- array(0, dim=c(B, nsim, nopt))
-    for (i in 1:(nopt-1)){
-        if (verbose) message(sprintf("Decision option %s",i+1)) 
-        fit <- fitted_npreg_fn(method)(y=inb[,i], inputs=inputs, pars=pars, verbose=verbose, ...) 
-        fitted[,i+1] <- as.vector(fit)
-        if (se){
-            fitted_rep[,,i+1] <- fitted_npreg_rep_call(method, attr(fit,"model"), B, verbose)
-        }
-    }
-    if (se) attr(fitted, "rep") <- fitted_rep
-    fitted
-}
-
-fitted_npreg_fn <- function(method){
-    switch(method, 
-           gam = fitted_gam,
-           gp = fitted_gp,
-           inla = fitted_inla,
-           earth = fitted_earth)
-}
-
-fitted_npreg_rep_call <- function(method, model, B, verbose=FALSE){
-    if (verbose) message("Simulating parameters to calculate standard errors")
-    if (method=="gam") {
-        frep <- fitted_rep_gam(model, B)
-    } else stop("Standard errors only currently available for GAM method")
-    frep
-}
-
-calc_evppi <- function(fit) {
-    ## NAs are removed in BCEA here. Shouldn't we make users investigate them and remove by hand if they know what they are doing?  At least warn users if there are NAs in their samples
-    mean(apply(fit, 1, max)) - max(colMeans(fit))
 }
 
 default_evppi_method <- function(pars){

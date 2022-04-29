@@ -13,6 +13,7 @@ evppi(
   B = 500,
   nsim = NULL,
   verbose = FALSE,
+  check = FALSE,
   ...
 )
 }
@@ -64,8 +65,12 @@ This should then correspond to particular columns of \code{inputs}.    If
 \code{inputs} is a vector, this is assumed to define the single parameter
 of interest, and then \code{pars} is not required.}
 
-\item{method}{Character string indicating the calculation method.   The default
-methods are based on nonparametric regression:
+\item{method}{Character string indicating the calculation method.  If one
+string is supplied, this is used for all calculations.  A vector of different strings
+can be supplied if a different method is desired for different list components
+of \code{pars}.
+
+The default methods are based on nonparametric regression:
 
 \code{"gam"} for a generalized additive model implemented in the \code{\link{gam}}
 function from the \pkg{mgcv} package.  This is the default method for
@@ -100,6 +105,13 @@ EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 \item{verbose}{If \code{TRUE}, then messages are printed describing each step of
 the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.}
+
+\item{check}{If \code{TRUE}, then extra information about the estimation
+is saved inside the object that this function returns.  This currently
+only applies to the regression-based methods \code{"gam"} and \code{"earth"}
+where the fitted regression model objects are saved.  This allows use
+of the \code{\link{check_regression}} function, which produces some
+diagnostic checks of the regression models.}
 
 \item{...}{Other arguments to control specific methods.
 

@@ -40,8 +40,12 @@ This should then correspond to particular columns of \code{inputs}.    If
 \code{inputs} is a vector, this is assumed to define the single parameter
 of interest, and then \code{pars} is not required.}
 
-\item{method}{Character string indicating the calculation method.   The default
-methods are based on nonparametric regression:
+\item{method}{Character string indicating the calculation method.  If one
+string is supplied, this is used for all calculations.  A vector of different strings
+can be supplied if a different method is desired for different list components
+of \code{pars}.
+
+The default methods are based on nonparametric regression:
 
 \code{"gam"} for a generalized additive model implemented in the \code{\link{gam}}
 function from the \pkg{mgcv} package.  This is the default method for

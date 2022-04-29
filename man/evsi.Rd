@@ -22,6 +22,7 @@ evsi(
   npreg_method = "gam",
   nsim = NULL,
   verbose = FALSE,
+  check = FALSE,
   ...
 )
 }
@@ -148,6 +149,13 @@ Note the definition of the likelihood should agree with the definition of \code{
 \item{verbose}{If \code{TRUE}, then messages are printed describing each step of
 the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.}
+
+\item{check}{If \code{TRUE}, then extra information about the estimation
+is saved inside the object that this function returns.  This currently
+only applies to the regression-based methods \code{"gam"} and \code{"earth"}
+where the fitted regression model objects are saved.  This allows use
+of the \code{\link{check_regression}} function, which produces some
+diagnostic checks of the regression models.}
 
 \item{...}{Other arguments required by specific methods}
 }
