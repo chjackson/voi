@@ -4,10 +4,23 @@
 
 fitted_gp <- function(y, inputs, pars, verbose=FALSE, ...){
     args <- list(...)
-    gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL, verbose=verbose)$fitted
+    res <- gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL, verbose=verbose)$fitted
+    attr(res, "model") <- data.frame(y=y, fitted=res, residuals=y-res)
+    res 
 }
 
+## TODO a diagnostic check method that is helpful for voi and works for any number of pars 
+## residuals 
 
+gp.check <- function(mod){
+    ## qqplot? 
+    ## histogram of residuals
+    hist(mod$residuals, main="Histogram of residuals", xlab="Residuals")
+    ## residuals vs fitted values
+    plot(mod$fitted, mod$residuals, xlab="Fitted values", ylab="Residuals")
+    ## response vs fitted values 
+    plot(mod$fitted, mod$y, xlab="Fitted values", ylab="Response")
+}
 
 ## Code below taken from SAVI, copyright (c) 2014, 2015 the SAVI authors
 ## https://github.com/Sheffield-Accelerated-VoI/SAVI-package/blob/master/inst/SAVI/scripts_GPfunctions.R

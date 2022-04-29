@@ -51,7 +51,9 @@ fitted_inla <- function(y, inputs, pars,
                     x = y, mesh = mesh$mesh, data.scale = data, int.ord = int.ord,
                     convex.inner = convex.inner, convex.outer = convex.outer,
                     cutoff = cutoff, max.edge = max.edge, h.value = h.value, family=family)
-    fit$fitted
+    res <- fit$fitted
+    attr(res, "model") <- data.frame(y=y, fitted=res, residuals=y-res)
+    res
 }
 
 

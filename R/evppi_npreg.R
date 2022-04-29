@@ -97,23 +97,25 @@ calc_evppi <- function(fit) {
 
 ##' Check the fit of a regression model used to estimate EVPPI or EVSI
 ##'
-##' Uses the standard checking methods built into the `mgcv` and `earth` packages,
-##' which produce plots of the residuals from the regression.
+##' Produces diagnostic plots and summaries of regression models used to estimate EVPPI or EVSI, 
+##' mainly in order to check that the residuals have mean zero.
 ##'
 ##' @details For VoI estimation, the key thing we are looking for is that the residuals
 ##' have mean zero, hence that the mean of the model output is represented well by the
 ##' regression function of the model input parameters.  It should not matter if the 
-##' variance of the residuals is
-##' non-constant, or non-normally distributed.
+##' variance of the residuals is non-constant, or non-normally distributed.
 ##'
 ##' Models produced with `method="gam"` are checked using \code{\link{gam.check}}
 ##'
 ##' Models produced `method="earth"` are checked using \code{\link{plot.earth}}
+##' 
+##' Models produced with `method="gp"` or `method="inla"` are checked using a histogram
+##' of the residuals, and plots of the residuals and response against the fitted values. 
 ##'
 ##' @param x Output from \code{\link{evppi}} or \code{\link{evsi}}. The argument \code{check=TRUE}
 ##' must have been used when calling \code{evppi} or \code{evsi}, to allow the regression model
 ##' objects from \code{gam} or \code{earth} to be preserved.  (This is not done by
-##' default, since these objects can be large.)
+##' default, since these objects can be large.).   \code{attr(x, "models")} cont
 ##' 
 ##' @param pars Parameter (or parameter group) whose EVPPI calculation is to be checked.
 ##' This should be in the \code{pars} component of the object returned by \code{\link{evppi}}.
@@ -154,12 +156,12 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
     method <- attr(x,"method")
   }
   else stop("`x` should be an object returned by evppi() or evsi()")
-  if (method %in% c("gam","earth")){
+  if (method %in% npreg_methods){
     cea <- (attr(x, "outputs") == "cea")
     mods <- attr(x, "models")
     if (is.null(mods)) 
       stop("evppi() or evsi() should be run with `check=TRUE` to enable regression checks")
-    check_fn <- if (method=="gam") mgcv::gam.check else plot
+    check_fn <- if (method=="gam") mgcv::gam.check else if (method %in% c("gp","inla")) gp.check else plot
     if (inherits(x, "evppi")){
     } else if (inherits(x, "evsi")) {
     }
@@ -172,7 +174,7 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
       check_fn(mods[[pars]][[comparison]])
     }
   } else {
-    message("`check_reg` is only applicable when method=\"gam\" or \"earth\"")
+    message("`check_reg` is only applicable when method=\"gam\", \"earth\", \"gp\" or \"inla\"")
   }
   invisible()
 }
