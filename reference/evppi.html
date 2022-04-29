@@ -56,6 +56,7 @@
   B <span class="op">=</span> <span class="fl">500</span>,
   nsim <span class="op">=</span> <span class="cn">NULL</span>,
   verbose <span class="op">=</span> <span class="cn">FALSE</span>,
+  check <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -101,8 +102,11 @@ This should then correspond to particular columns of <code>inputs</code>.    If
 <code>inputs</code> is a vector, this is assumed to define the single parameter
 of interest, and then <code>pars</code> is not required.</p></dd>
 <dt>method</dt>
-<dd><p>Character string indicating the calculation method.   The default
-methods are based on nonparametric regression:</p>
+<dd><p>Character string indicating the calculation method.  If one
+string is supplied, this is used for all calculations.  A vector of different strings
+can be supplied if a different method is desired for different list components
+of <code>pars</code>.</p>
+<p>The default methods are based on nonparametric regression:</p>
 <p><code>"gam"</code> for a generalized additive model implemented in the <code>gam</code>
 function from the <span class="pkg">mgcv</span> package.  This is the default method for
 calculating the EVPPI of 4 or fewer parameters.</p>
@@ -131,6 +135,13 @@ EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> a
 <dd><p>If <code>TRUE</code>, then messages are printed describing each step of
 the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.</p></dd>
+<dt>check</dt>
+<dd><p>If <code>TRUE</code>, then extra information about the estimation
+is saved inside the object that this function returns.  This currently
+only applies to the regression-based methods <code>"gam"</code> and <code>"earth"</code>
+where the fitted regression model objects are saved.  This allows use
+of the <code><a href="check_regression.html">check_regression</a></code> function, which produces some
+diagnostic checks of the regression models.</p></dd>
 <dt>...</dt>
 <dd><p>Other arguments to control specific methods.</p>
 <p>For <code>method="gam"</code>:</p><ul><li><p><code>gam_formula</code>: a character string giving the right hand side of the
@@ -231,7 +242,7 @@ Health, 16(2), 438-448.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

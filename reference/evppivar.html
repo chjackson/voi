@@ -83,8 +83,11 @@ This should then correspond to particular columns of <code>inputs</code>.    If
 <code>inputs</code> is a vector, this is assumed to define the single parameter
 of interest, and then <code>pars</code> is not required.</p></dd>
 <dt>method</dt>
-<dd><p>Character string indicating the calculation method.   The default
-methods are based on nonparametric regression:</p>
+<dd><p>Character string indicating the calculation method.  If one
+string is supplied, this is used for all calculations.  A vector of different strings
+can be supplied if a different method is desired for different list components
+of <code>pars</code>.</p>
+<p>The default methods are based on nonparametric regression:</p>
 <p><code>"gam"</code> for a generalized additive model implemented in the <code>gam</code>
 function from the <span class="pkg">mgcv</span> package.  This is the default method for
 calculating the EVPPI of 4 or fewer parameters.</p>
@@ -180,7 +183,7 @@ Journal of the American Statistical Association, 114(528), 1436-1449.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>
