@@ -10,7 +10,7 @@ check_regression(x, pars = NULL, n = NULL, comparison = 1, outcome = "costs")
 \item{x}{Output from \code{\link{evppi}} or \code{\link{evsi}}. The argument \code{check=TRUE}
 must have been used when calling \code{evppi} or \code{evsi}, to allow the regression model
 objects from \code{gam} or \code{earth} to be preserved.  (This is not done by
-default, since these objects can be large.)}
+default, since these objects can be large.).   \code{attr(x, "models")} cont}
 
 \item{pars}{Parameter (or parameter group) whose EVPPI calculation is to be checked.
 This should be in the \code{pars} component of the object returned by \code{\link{evppi}}.
@@ -32,23 +32,29 @@ effects.  By default, \code{outcome="costs"} is used, so that the regression
 for costs is checked.}
 }
 \value{
-There is no return value.  Plots are produced, and outputs are
-printed.
+Where possible, an appropriate statistic is returned that allows the regression
+model to be compared with other regression models implemented using the same \code{method}
+but with different assumptions.   For \code{method=="gam"},
+this is Akaike's information criterion (AIC).
+For \code{method=="earth"}, this is the generalised cross-validation statistic
+\code{gcv}.    Currently not implemented for other methods.
 }
 \description{
-Uses the standard checking methods built into the \code{mgcv} and \code{earth} packages,
-which produce plots of the residuals from the regression.
+Produces diagnostic plots and summaries of regression models used to estimate EVPPI or EVSI,
+mainly in order to check that the residuals have mean zero.
 }
 \details{
 For VoI estimation, the key thing we are looking for is that the residuals
 have mean zero, hence that the mean of the model output is represented well by the
 regression function of the model input parameters.  It should not matter if the
-variance of the residuals is
-non-constant, or non-normally distributed.
+variance of the residuals is non-constant, or non-normally distributed.
 
 Models produced with \code{method="gam"} are checked using \code{\link{gam.check}}
 
 Models produced \code{method="earth"} are checked using \code{\link{plot.earth}}
+
+Models produced with \code{method="gp"} or \code{method="inla"} are checked using a histogram
+of the residuals, and plots of the residuals and response against the fitted values.
 }
 \examples{
 # TODO and refer in vignette

@@ -136,8 +136,12 @@ calc_evppi <- function(fit) {
 ##' effects.  By default, \code{outcome="costs"} is used, so that the regression
 ##' for costs is checked. 
 ##'
-##' @return There is no return value.  Plots are produced, and outputs are
-##' printed.
+##' @return Where possible, an appropriate statistic is returned that allows the regression
+##' model to be compared with other regression models implemented using the same \code{method} 
+##' but with different assumptions.   For \code{method=="gam"},
+##' this is Akaike's information criterion (AIC).    
+##' For \code{method=="earth"}, this is the generalised cross-validation statistic
+##' \code{gcv}.    Currently not implemented for other methods. 
 ##'
 ##' @examples # TODO and refer in vignette
 ##' 
@@ -169,12 +173,21 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
     if (!(comparison %in% 1:ncomp)) stop(sprintf("`comparison` should be a positive integer <= %s", ncomp))
     if (cea){
       if (!(outcome %in% c("costs","effects"))) stop("`outcome` should be \"costs\" or \"effects\"")
-      check_fn(mods[[pars]][[outcome]][[comparison]])
+      mod <- mods[[pars]][[outcome]][[comparison]]
     } else { 
-      check_fn(mods[[pars]][[comparison]])
+      mod <- mods[[pars]][[comparison]]
     }
+    check_fn(mod)
   } else {
     message("`check_reg` is only applicable when method=\"gam\", \"earth\", \"gp\" or \"inla\"")
   }
-  invisible()
+  check_regression_stats(mod, method)
+}
+
+check_regression_stats <- function(mod, method){
+  if (method=="gam") 
+    list(AIC = stats::AIC(mod)) 
+  else if (method=="earth")
+    list(gcv = mod$gcv)
+  else invisible()
 }

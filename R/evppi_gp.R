@@ -15,7 +15,7 @@ fitted_gp <- function(y, inputs, pars, verbose=FALSE, ...){
 gp.check <- function(mod){
     ## qqplot? 
     ## histogram of residuals
-    hist(mod$residuals, main="Histogram of residuals", xlab="Residuals")
+    graphics::hist(mod$residuals, main="Histogram of residuals", xlab="Residuals")
     ## residuals vs fitted values
     plot(mod$fitted, mod$residuals, xlab="Fitted values", ylab="Residuals")
     ## response vs fitted values 

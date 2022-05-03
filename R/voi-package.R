@@ -23,8 +23,8 @@
 ##' @docType package
 ##'
 ##' @importFrom grDevices dev.off
-##' @importFrom graphics points
-##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict
+##' @importFrom graphics points hist
+##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC
 ##' @importFrom utils select.list
 ##' @importFrom progress progress_bar
 ##' 
