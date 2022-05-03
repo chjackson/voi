@@ -10,7 +10,7 @@
 
 ## Installation
 
-```r
+```
 install.packages("devtools") # if devtools not already installed
 library(devtools)
 install_github("chjackson/voi")

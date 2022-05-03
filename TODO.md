@@ -102,10 +102,10 @@ Describe what you had to do to make it work in your example.  If you need to do 
 
 * House style: 
 
-	- underscores not dots to separate words in function or variable names:  my_variable_name
+	- underscores not dots to separate words in function or variable names:  `my_variable_name`
 
 	- use spaces to clearly separate elements of code, e.g. 
-       foo <- fn(a, b, c)  is much easier to read than  foo<-fn(a,b,c) 
+       `x <- fn(a, b, c)`  is much easier to read than  `x<-fn(a,b,c)` 
 
 
 
