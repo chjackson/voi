@@ -2,18 +2,12 @@ Package: voi
 Title: Expected Value of Information 
 Version: 0.1
 Authors@R: 
-    c(person(given = "Christopher",
-           family = "Jackson",
-           role = c("aut", "cre"),
-           email = "chris.jackson@mrc-bsu.cam.ac.uk"),
-	   person(given = "Anna",
-	   family = "Heath",
-	   role = c("aut"), 
-	   email = "anna.heath@sickkids.ca"),
-	   person(given = "Gianluca",
-	   family = "Baio",
-	   role = c("ctb"), 
-	   email = "g.baio@ucl.ac.uk"))
+    c(person(given = "Christopher", family = "Jackson",role = c("aut", "cre"),email = "chris.jackson@mrc-bsu.cam.ac.uk"),
+	   person(given = "Anna", family = "Heath", role = c("aut"), email = "anna.heath@sickkids.ca"),
+	   person(given = "Gianluca", family = "Baio", role = c("ctb"), email = "g.baio@ucl.ac.uk"),
+	   person(given="Kofi Placid", family="Adragni", role="aut", comment="Author of code taken from the ldr package"),
+	   person(given="Andrew", family="Raim", role="aut",comment="Author of code taken from the ldr package")
+	   )
 Description: Methods to calculate the expected value of partial perfect information (EVPPI) and expected value of sample information (EVSI) from a decision-analytic model.  Intended as an unified interface to all alternative methods for calculating these quantities. 
 License: GPL-3
 Encoding: UTF-8
@@ -21,6 +15,6 @@ LazyData: true
 Depends: R (>= 2.10)
 VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress
-Suggests: testthat, BCEA, INLA, splancs, ldr, knitr, rmarkdown
+Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)

@@ -6,9 +6,6 @@ check_packages <- function(){
     if (!isTRUE(requireNamespace("INLA", quietly = TRUE))) {
         stop("You need to install the packages 'INLA' and 'splancs'. Please run in your R terminal:\n install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')\n and\n install.packages('splancs')")
     }
-    if (!isTRUE(requireNamespace("ldr", quietly = TRUE))) {
-        stop("You need to install the package 'ldr'. Please run in your R terminal:\ninstall.packages('devtools')\ndevtools::install_version('ldr', version = '1.3.3', repos = 'http://cran.rstudio.com')")
-    }
 }
 
 ## TODO int.ord - allow different ones for costs and effects 
@@ -24,7 +21,6 @@ fitted_inla <- function(y, inputs, pars,
                         robust = FALSE,
                         int.ord = 1,
                         pfc_struc="AIC"){
-#    stop("INLA EVPPI method currently unavailable, as the `ldr` package has been removed from CRAN")
     check_packages()
     family <- if (robust) "T" else "gaussian"
     if (!is.element("INLA", (.packages()))) {
@@ -64,10 +60,10 @@ make.proj <- function(parameter, inputs, x, pfc_struc="AIC") {
     tic <- proc.time()
     scale<-8/(range(x)[2]-range(x)[1])
     scale.x <- scale*x -mean(scale*x)
-    bx<-ldr::bf(scale.x,case="poly",2)
-    fit1<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="iso")
-    fit2<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="aniso")
-    fit3<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure="unstr")
+    bx <- bf(scale.x,case="poly",2)
+    fit1 <- pfc(scale(inputs[,parameter]),scale.x,bx,structure="iso")
+    fit2 <- pfc(scale(inputs[,parameter]),scale.x,bx,structure="aniso")
+    fit3 <- pfc(scale(inputs[,parameter]),scale.x,bx,structure="unstr")
     if (pfc_struc=="AIC"){
         aics <- c(fit1$aic,fit2$aic,fit3$aic)
         minaic <- which.min(aics)
@@ -76,15 +72,15 @@ make.proj <- function(parameter, inputs, x, pfc_struc="AIC") {
     else struc <- pfc_struc
     AIC.deg<-array()
     for(i in 2:7){
-        bx<-ldr::bf(scale.x,case="poly",i)
-        fit<-ldr::pfc(scale(inputs[,parameter]),scale.x,bx,structure=struc)
+        bx <- bf(scale.x,case="poly",i)
+        fit <- pfc(scale(inputs[,parameter]),scale.x,bx,structure=struc)
         AIC.deg[i]<-fit$aic}
     deg<-which(AIC.deg==min(AIC.deg,na.rm=T))
     d<-min(dim(inputs[,parameter])[2],deg)
-    by<-ldr::bf(scale.x,case="poly",deg)
-    comp.d<-ldr::ldr(scale(inputs[,parameter]),scale.x,bx,structure=struc,model="pfc",numdir=d,numdir.test=T)
+    by <- bf(scale.x,case="poly",deg)
+    comp.d <- ldr(scale(inputs[,parameter]),scale.x,bx,structure=struc,model="pfc",numdir=d,numdir.test=T)
     dim.d<-which(comp.d$aic==min(comp.d$aic))-1
-    comp<-ldr::ldr(scale(inputs[,parameter]),scale.x,bx,structure=struc,model="pfc",numdir=2)
+    comp <- ldr(scale(inputs[,parameter]),scale.x,bx,structure=struc,model="pfc",numdir=2)
     toc <- proc.time() - tic
     time <- toc[3]
     if(dim.d>2){
