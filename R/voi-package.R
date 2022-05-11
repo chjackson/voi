@@ -24,7 +24,7 @@
 ##'
 ##' @importFrom grDevices dev.off
 ##' @importFrom graphics points hist
-##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC cov lm
+##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC cov lm fitted
 ##' @importFrom utils select.list
 ##' @importFrom progress progress_bar
 ##' 

@@ -50,6 +50,11 @@ test_that("EVPPI with INLA",{
 #    INLA:::inla.binary.install()
     evppi(chemo_nb, chemo_pars, pars=pars, method="inla", nsim=1000) # 14
 })
+
+  test_that("EVPPI with BART",{
+    pars <- c("pi1","rho")
+    evppi(chemo_nb, chemo_pars, pars=pars, method="bart", nsim=1000) # 14
+  })
 }
 
 test_that("4-parameter EVPPI",{

@@ -67,6 +67,9 @@
 ##'
 ##' \code{"inla"} for an INLA/SPDE Gaussian process regression method, from
 ##' Heath et al. (2016).   .
+##'
+##' \code{"bart"} for Bayesian additive regression trees, using the \pkg{dbarts} package.
+##' Particularly suited for joint EVPPI of many parameters. 
 ##' 
 ##' \code{"earth"} for a multivariate adaptive regression spline with the
 ##' \pkg{earth} package (Milborrow, 2019).

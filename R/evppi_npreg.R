@@ -1,5 +1,5 @@
 
-npreg_methods <- c("gam", "gp", "inla", "earth")
+npreg_methods <- c("gam", "gp", "inla", "earth", "bart")
 
 evppi_npreg <- function(outputs, ...){
     UseMethod("evppi_npreg", outputs)
@@ -79,7 +79,8 @@ fitted_npreg_fn <- function(method){
            gam = fitted_gam,
            gp = fitted_gp,
            inla = fitted_inla,
-           earth = fitted_earth)
+           earth = fitted_earth,
+           bart = fitted_bart)
 }
 
 fitted_npreg_rep_call <- function(method, model, B, verbose=FALSE){
