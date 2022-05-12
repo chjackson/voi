@@ -54,6 +54,7 @@ test_that("EVPPI with INLA",{
   test_that("EVPPI with BART",{
     pars <- c("pi1","rho")
     evppi(chemo_nb, chemo_pars, pars=pars, method="bart", nsim=1000) # 14
+    evppi(chemo_nb, chemo_pars, pars=pars, method="bart", nsim=1000, ndpost=2000, se=TRUE) # 14
   })
 }
 

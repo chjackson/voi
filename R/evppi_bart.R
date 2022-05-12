@@ -14,11 +14,16 @@ fitted_bart <- function(y, inputs, pars, verbose=FALSE, ...){
 ## Convergence check for mean of fitted values
 ## Ideally should check convergence of EVPPI instead.
 ## For that, would need to extract MCMC sample of fitted values for each net benefit 
-## then combine in list.   Expect good enough to do mean
+## then combine in list.   Expect good enough to do mean 
+## though fitted_rep function should achieve the resampling
 
 check_bart_conv <- function(model){
     sam <- dbarts::extract(model) # 1000 MCMC samples for BART fit  x  nsam fitted values to evaluate convergence of
     sam.df <- data.frame(mean = rowMeans(sam))
     summ <- summary(posterior::as_draws(sam.df))
     summ$rhat
+}
+
+fitted_rep_bart <- function(model) {
+  as.matrix(dbarts::extract(model))
 }

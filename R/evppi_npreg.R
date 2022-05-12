@@ -57,8 +57,13 @@ fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
     ## Assume it doesn't matters which option is the baseline for this purpose
     inb <- nb[, -1, drop=FALSE] - nb[,1]
     fitted <- matrix(0, nrow=nsim, ncol=nopt)
-    if (se) 
+    if (se) {
+        if (method=="bart"){
+            B <- list(...)$ndpost
+            if (is.null(B)) B <- formals(dbarts::bart)$ndpost
+        }
         fitted_rep <- array(0, dim=c(B, nsim, nopt))
+    }
     models <- vector(nopt-1, mode="list")
     for (i in 1:(nopt-1)){
         if (verbose) message(sprintf("Decision option %s",i+1)) 
@@ -87,7 +92,10 @@ fitted_npreg_rep_call <- function(method, model, B, verbose=FALSE){
     if (verbose) message("Simulating parameters to calculate standard errors")
     if (method=="gam") {
         frep <- fitted_rep_gam(model, B)
-    } else stop("Standard errors only currently available for GAM method")
+    } else if (method=="bart") {
+        frep <- fitted_rep_bart(model)
+    }
+    else stop("Standard errors only currently available for GAM method")
     frep
 }
 

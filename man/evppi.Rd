@@ -10,7 +10,7 @@ evppi(
   pars = NULL,
   method = NULL,
   se = FALSE,
-  B = 500,
+  B = 1000,
   nsim = NULL,
   verbose = FALSE,
   check = FALSE,
@@ -97,9 +97,15 @@ for single parameter EVPPI.
 for single parameter EVPPI.}
 
 \item{se}{If this is \code{TRUE}, calculate a standard error for the EVPPI
-if possible.  Currently only supported for \code{method="gam"}.}
+if possible.  Currently only supported for \code{method="gam"}, and
+\code{method="bart"}.  (In the latter method it is more correctly called
+a posterior standard deviation).}
 
-\item{B}{Number of parameter replicates for calculating the standard error.}
+\item{B}{Number of parameter replicates for calculating the standard error.
+Only applicable to \code{method="gam"}.  For \code{method="bart"} the
+analogous quantity is the number of MCMC samples, which is controlled by
+the \code{ndpost} argument to \code{\link[dbarts]{bart}}, which can be
+passed as an argument to \code{\link{evppi}}.}
 
 \item{nsim}{Number of simulations from the model to use for calculating
 EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
