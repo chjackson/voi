@@ -49,7 +49,14 @@ mainly in order to check that the residuals have mean zero.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">check_regression</span><span class="op">(</span><span class="va">x</span>, pars <span class="op">=</span> <span class="cn">NULL</span>, n <span class="op">=</span> <span class="cn">NULL</span>, comparison <span class="op">=</span> <span class="fl">1</span>, outcome <span class="op">=</span> <span class="st">"costs"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_regression</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  pars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  comparison <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  outcome <span class="op">=</span> <span class="st">"costs"</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -59,30 +66,48 @@ mainly in order to check that the residuals have mean zero.</p>
 must have been used when calling <code>evppi</code> or <code>evsi</code>, to allow the regression model
 objects from <code>gam</code> or <code>earth</code> to be preserved.  (This is not done by
 default, since these objects can be large.).   <code>attr(x, "models")</code> cont</p></dd>
+
+
 <dt>pars</dt>
 <dd><p>Parameter (or parameter group) whose EVPPI calculation is to be checked.
 This should be in the <code>pars</code> component of the object returned by <code><a href="evppi.html">evppi</a></code>.
 Only relevant if <code>x</code> is the result of an <code><a href="evppi.html">evppi</a></code> calculation.</p></dd>
+
+
 <dt>n</dt>
 <dd><p>Sample size whose EVSI calculation is to be checked.
 This should be in the <code>n</code> component of the object returned by <code><a href="evsi.html">evsi</a></code>.
 Only relevant if <code>x</code> is the result of an <code><a href="evsi.html">evsi</a></code> calculation.</p></dd>
+
+
 <dt>comparison</dt>
 <dd><p>Only relevant if there are more than two treatments in the decision model.
 Different regression models are then used for the comparisons of different treatments
 with the baseline treatment.
 <code>comparison</code> is an integer identifying which of these models is checked.</p></dd>
+
+
 <dt>outcome</dt>
 <dd><p><code>"costs"</code> or <code>"effects"</code>.  Only relevant if <code>outputs</code> was
 in cost-effectiveness format when
 calling <code>evppi</code> or <code>evsi</code>, hence different regressions are used for costs and
 effects.  By default, <code>outcome="costs"</code> is used, so that the regression
 for costs is checked.</p></dd>
+
+
+<dt>plot</dt>
+<dd><p>If <code>FALSE</code>, only numerical statistics are returned, and a plot is not made.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Where possible, an appropriate statistic is returned that allows the regression
-model to be compared with other regression models implemented using the same <code>method</code>but with different assumptions.   For <code>method=="gam"</code>,
+    
+
+<p>Where possible, an appropriate statistic is returned that allows the regression
+model to be compared with other regression models implemented using the same <code>method</code></p>
+
+
+<p>but with different assumptions.   For <code>method=="gam"</code>,
 this is Akaike's information criterion (AIC).
 For <code>method=="earth"</code>, this is the generalised cross-validation statistic
 <code>gcv</code>.    Currently not implemented for other methods.</p>
@@ -101,8 +126,8 @@ of the residuals, and plots of the residuals and response against the fitted val
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># TODO and refer in vignette</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># TODO and refer in vignette</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -118,7 +143,7 @@ of the residuals, and plots of the residuals and response against the fitted val
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

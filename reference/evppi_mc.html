@@ -53,16 +53,16 @@ implemented in the <code><a href="evppi.html">evppi</a></code> function will usu
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">evppi_mc</span><span class="op">(</span>
-  <span class="va">model_fn</span>,
-  <span class="va">par_fn</span>,
-  <span class="va">pars</span>,
-  <span class="va">nouter</span>,
-  <span class="va">ninner</span>,
-  wtp <span class="op">=</span> <span class="cn">NULL</span>,
-  mfargs <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">evppi_mc</span><span class="op">(</span></span>
+<span>  <span class="va">model_fn</span>,</span>
+<span>  <span class="va">par_fn</span>,</span>
+<span>  <span class="va">pars</span>,</span>
+<span>  <span class="va">nouter</span>,</span>
+<span>  <span class="va">ninner</span>,</span>
+<span>  wtp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  mfargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -78,6 +78,8 @@ and one column for each decision option.  If the rows have names
 costs respectively.</p>
 <p>Otherwise, the first row is assumed to be the effects, and the second the
 costs.</p></dd>
+
+
 <dt>par_fn</dt>
 <dd><p>A function to generate a random sample of values for the
 parameters of <code>model_fn</code>. This should return a matrix or a data frame
@@ -100,25 +102,38 @@ is set to a fixed value, then <code>par_fn</code> should return a sample drawn
 conditionally on that value.  If that argument is not supplied, then
 <code>par_fn</code> must return a sample drawn from the marginal distribution. See
 the vignette for an example.</p></dd>
+
+
 <dt>pars</dt>
 <dd><p>A character vector giving the parameters of interest, for which
 the EVPPI is required.   This should correspond to an explicit argument to
 <code>model_fn</code>.</p>
 <p>The parameters of interest are assumed to have uncertainty distributions
 that are independent of those of the other parameters.</p></dd>
+
+
 <dt>nouter</dt>
 <dd><p>Number of outer samples</p></dd>
+
+
 <dt>ninner</dt>
 <dd><p>Number of inner samples</p></dd>
+
+
 <dt>wtp</dt>
 <dd><p>Vector of willingness-to-pay values.  Only used if
 <code>model_fn</code> is in cost-effectiveness analyis format.</p></dd>
+
+
 <dt>mfargs</dt>
 <dd><p>Named list of additional arguments to supply to
 <code>model_fn</code>.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>Set to <code>TRUE</code> to print some additional messages to
 help with debugging.</p></dd>
+
 </dl></div>
 
   </div>
@@ -133,7 +148,7 @@ help with debugging.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

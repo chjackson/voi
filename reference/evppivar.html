@@ -47,15 +47,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">evppivar</span><span class="op">(</span>
-  <span class="va">outputs</span>,
-  <span class="va">inputs</span>,
-  pars <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>,
-  nsim <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">evppivar</span><span class="op">(</span></span>
+<span>  <span class="va">outputs</span>,</span>
+<span>  <span class="va">inputs</span>,</span>
+<span>  pars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -63,6 +63,8 @@
     <dl><dt>outputs</dt>
 <dd><p>a vector of values for the quantity of interest, sampled from the uncertainty distribution of this quantity that is induced by the uncertainty about the parameters.</p>
 <p>Typically this will come from a Monte Carlo sample, where we first sample from the uncertainty distributions of the parameters, and then compute the quantity of interest as a function of the parameters.  It might also be produced by a Markov Chain Monte Carlo sample from the joint distribution of parameters and outputs.</p></dd>
+
+
 <dt>inputs</dt>
 <dd><p>Matrix or data frame of samples from the uncertainty
 distribution of the input parameters of the decision model.   The number
@@ -70,6 +72,8 @@ of columns should equal the number of parameters, and the columns should
 be named.    This should have the same number of rows as there are samples
 in <code>outputs</code>, and each row of the samples in <code>outputs</code> should
 give the model output evaluated at the corresponding parameters.</p></dd>
+
+
 <dt>pars</dt>
 <dd><p>A character vector giving the parameters of interest, for which
 a single EVPPI calculation is required.  If the vector has multiple
@@ -82,6 +86,8 @@ vector form.</p>
 This should then correspond to particular columns of <code>inputs</code>.    If
 <code>inputs</code> is a vector, this is assumed to define the single parameter
 of interest, and then <code>pars</code> is not required.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>Character string indicating the calculation method.  If one
 string is supplied, this is used for all calculations.  A vector of different strings
@@ -105,14 +111,20 @@ Particularly suited for joint EVPPI of many parameters.</p>
 for single parameter EVPPI.</p>
 <p><code>"sal"</code> for the method of Sadatsafavi et al. (2013).  Only supported
 for single parameter EVPPI.</p></dd>
+
+
 <dt>nsim</dt>
 <dd><p>Number of simulations from the model to use for calculating
 EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> and
 <code>outputs</code> are used.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>If <code>TRUE</code>, then messages are printed describing each step of
 the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Other arguments to control specific methods.</p>
 <p>For <code>method="gam"</code>:</p><ul><li><p><code>gam_formula</code>: a character string giving the right hand side of the
@@ -165,6 +177,7 @@ one that fits best given two basis terms.  Change this to, e.g. <code>"iso"</cod
 </ul><p>For <code>method="so"</code>:</p><ul><li><p><code>n.blocks</code> Number of blocks to split the sample into. Required.</p></li>
 </ul><p>For <code>method="sal"</code>:</p><ul><li><p><code>n.seps</code> Number of separators (default 1).</p></li>
 </ul></dd>
+
 </dl></div>
     <div id="references">
     <h2>References</h2>
@@ -185,7 +198,7 @@ Journal of the American Statistical Association, 114(528), 1436-1449.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

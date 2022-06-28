@@ -47,31 +47,33 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">evsivar</span><span class="op">(</span>
-  <span class="va">outputs</span>,
-  <span class="va">inputs</span>,
-  study <span class="op">=</span> <span class="cn">NULL</span>,
-  datagen_fn <span class="op">=</span> <span class="cn">NULL</span>,
-  pars <span class="op">=</span> <span class="cn">NULL</span>,
-  n <span class="op">=</span> <span class="fl">100</span>,
-  aux_pars <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="cn">NULL</span>,
-  likelihood <span class="op">=</span> <span class="cn">NULL</span>,
-  analysis_model <span class="op">=</span> <span class="cn">NULL</span>,
-  analysis_options <span class="op">=</span> <span class="cn">NULL</span>,
-  decision_model <span class="op">=</span> <span class="cn">NULL</span>,
-  Q <span class="op">=</span> <span class="fl">30</span>,
-  npreg_method <span class="op">=</span> <span class="st">"gam"</span>,
-  nsim <span class="op">=</span> <span class="cn">NULL</span>,
-  verbose <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">evsivar</span><span class="op">(</span></span>
+<span>  <span class="va">outputs</span>,</span>
+<span>  <span class="va">inputs</span>,</span>
+<span>  study <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  datagen_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  aux_pars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  likelihood <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  analysis_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  analysis_options <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  decision_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Q <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  npreg_method <span class="op">=</span> <span class="st">"gam"</span>,</span>
+<span>  nsim <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>outputs</dt>
 <dd><p>a vector of values for the quantity of interest, sampled from the uncertainty distribution of this quantity that is induced by the uncertainty about the parameters.</p></dd>
+
+
 <dt>inputs</dt>
 <dd><p>Matrix or data frame of samples from the uncertainty
 distribution of the input parameters of the decision model.   The number
@@ -79,6 +81,8 @@ of columns should equal the number of parameters, and the columns should
 be named.    This should have the same number of rows as there are samples
 in <code>outputs</code>, and each row of the samples in <code>outputs</code> should
 give the model output evaluated at the corresponding parameters.</p></dd>
+
+
 <dt>study</dt>
 <dd><p>Name of one of the built-in study types supported by this
 package for EVSI calculation.  If this is supplied, then the columns of
@@ -101,6 +105,8 @@ deviation defaults to 1, and can be changed by specifying <code>sd</code> as a
 component of the <code>aux_pars</code> argument, e.g.
 <code>evsi(..., aux_pars=list(sd=2))</code>.</p>
 <p>Either <code>study</code> or <code>datagen_fn</code> should be supplied to <code><a href="evsi.html">evsi()</a></code>.</p></dd>
+
+
 <dt>datagen_fn</dt>
 <dd><p>If the proposed study is not one of the built-in types supported, it can be specified in this argument as an R function to sample predicted data from the study.  This function should have the following specification:</p><ol><li><p>the function's first argument should be a data frame of parameter simulations, with one row per simulation and one column per parameter.  The parameters in this data frame must all be found in <code>inputs</code>.</p></li>
 <li><p>the function should return a data frame.</p></li>
@@ -108,43 +114,70 @@ component of the <code>aux_pars</code> argument, e.g.
 <li><p>if <code>inputs</code> is considered as a sample from the posterior, then <code>datagen_fn(inputs)</code> returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.</p></li>
 <li><p>the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of <code>datagen_fn</code>.  These arguments might be used to define sample sizes for a proposed study.</p></li>
 </ol><p>Examples of this are currently in the <code>tests/tests_slow</code> package directory.</p></dd>
+
+
 <dt>pars</dt>
 <dd><p>Character vector identifying which columns of <code>inputs</code> are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the <code>study</code> argument, but not if it is specified through the <code>datagen_fn</code> argument.</p>
 <p>For example, if <code>study = "trial_binary"</code> is specified, then <code>pars</code> should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.</p>
 <p>The <code>pars</code> argument is also required for the methods which involve an intermediate EVPPI calculation, that is the <code>"is"</code> and <code>"mm"</code>.  It should consist of the variables used in the definition of <code>datagen_fn</code> (and <code>likelihood</code> if used TODO ALSO in <code>analysis_model</code> and <code>model</code>?) and only these variables.</p></dd>
+
+
 <dt>n</dt>
 <dd><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.</p></dd>
+
+
 <dt>aux_pars</dt>
 <dd><p>A list of additional fixed arguments to supply to the function to generate the data,
 whether that is a built-in or user-defined function, e.g. <code>evsi(..., aux_pars = list(sd=2))</code> to change the
 fixed standard deviation in the <code>"normal_known"</code> model.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>See <code><a href="evsi.html">evsi</a></code>, only nonparametric regression methods are
 currently supported in <code>evsivar</code>.</p></dd>
+
+
 <dt>likelihood</dt>
 <dd><p>Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:</p><ol><li><p>a data frame of predicted data. Columns are defined by the number of outcomes in the data, and names matching the data frame returned by <code>datagen_fn</code>.</p></li>
 <li><p>a data frame of parameter values, whose names should all correspond to variables in <code>inputs</code>.</p></li>
 </ol><p>The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.</p>
 <p>Examples of this are currently in <code>tests/tests_slow</code> and <code>tests/testthat</code> in the package directory.</p>
 <p>Note the definition of the likelihood should agree with the definition of <code>datagen_fn</code> to define a consistent sampling distribution for the data.</p></dd>
+
+
 <dt>analysis_model</dt>
 <dd><p>Function which fits a Bayesian model to the generated data.   Under development (need to decide format, output, JAGS dependencies, etc.). Required for <code>method="mm"</code> (and Jalal method if n0 not given)</p></dd>
+
+
 <dt>analysis_options</dt>
 <dd><p>List of arguments required by <code>analysis_model</code>.  Under development - for <code>method="mm"</code> and Jalal method.</p></dd>
+
+
 <dt>decision_model</dt>
 <dd><p>Function which evaluates the decision-analytic model, given parameter values.  Under development - for <code>method="mm"</code> and Jalal method.  Need to decide the required format for nb, c, e output.</p></dd>
+
+
 <dt>Q</dt>
 <dd><p>Number of quantiles to use in <code>method="mm"</code> (under development).</p></dd>
+
+
 <dt>npreg_method</dt>
 <dd><p>Method to use to calculate the EVPPI, for those methods that require it.  This is passed to <code><a href="evppi.html">evppi</a></code> as the <code>method</code> argument.</p></dd>
+
+
 <dt>nsim</dt>
 <dd><p>Number of simulations from the model to use for calculating EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> and <code>outputs</code> are used.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>If <code>TRUE</code>, then messages are printed describing each step of
 the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Other arguments required by specific methods</p></dd>
+
 </dl></div>
     <div id="references">
     <h2>References</h2>
@@ -166,7 +199,7 @@ Journal of the American Statistical Association, 114(528), 1436-1449.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

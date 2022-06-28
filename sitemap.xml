@@ -19,6 +19,9 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/all_interactions.html</loc>
+  </url>
+  <url>
     <loc>/reference/check_model_fn.html</loc>
   </url>
   <url>
@@ -53,6 +56,9 @@
   </url>
   <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot.evppi.html</loc>
   </url>
   <url>
     <loc>/reference/voi-package.html</loc>
