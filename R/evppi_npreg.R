@@ -143,7 +143,9 @@ calc_evppi <- function(fit) {
 ##' in cost-effectiveness format when
 ##' calling \code{evppi} or \code{evsi}, hence different regressions are used for costs and
 ##' effects.  By default, \code{outcome="costs"} is used, so that the regression
-##' for costs is checked. 
+##' for costs is checked.
+##'
+##' @param plot If \code{FALSE}, only numerical statistics are returned, and a plot is not made.
 ##'
 ##' @return Where possible, an appropriate statistic is returned that allows the regression
 ##' model to be compared with other regression models implemented using the same \code{method} 
@@ -155,7 +157,7 @@ calc_evppi <- function(fit) {
 ##' @examples # TODO and refer in vignette
 ##' 
 ##' @export
-check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"){
+check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs", plot=TRUE){
   ## TODO check for evsi vs evppi here.
   ## then treat n in evsi like pars in evppi 
   if (inherits(x, "evppi")) {
@@ -174,7 +176,6 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
     mods <- attr(x, "models")
     if (is.null(mods)) 
       stop("evppi() or evsi() should be run with `check=TRUE` to enable regression checks")
-    check_fn <- if (method=="gam") mgcv::gam.check else if (method %in% c("gp","inla")) gp.check else plot
     if (inherits(x, "evppi")){
     } else if (inherits(x, "evsi")) {
     }
@@ -186,17 +187,13 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
     } else { 
       mod <- mods[[pars]][[comparison]]
     }
-    check_fn(mod)
+    if (plot) {
+        check_plot_fn <- get(sprintf("check_plot_%s", method))
+        check_plot_fn(mod)
+    }
   } else {
     message("`check_reg` is only applicable when method=\"gam\", \"earth\", \"gp\" or \"inla\"")
   }
-  check_regression_stats(mod, method)
-}
-
-check_regression_stats <- function(mod, method){
-  if (method=="gam") 
-    list(AIC = stats::AIC(mod)) 
-  else if (method=="earth")
-    list(gcv = mod$gcv)
-  else invisible()
+  check_stats_fn <- get(sprintf("check_stats_%s", method))
+  check_stats_fn(mod)
 }

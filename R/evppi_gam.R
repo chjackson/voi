@@ -23,3 +23,38 @@ fitted_rep_gam <- function(model, B) {
     fitted_rep <- beta_rep %*% t(predict(model,type="lpmatrix"))
     fitted_rep
 }
+
+check_plot_gam <- function(mod){
+    graphics::par(mfrow=c(2,2))
+    mgcv::gam.check(mod)
+}
+
+check_stats_gam <- function(mod){
+    list(AIC = stats::AIC(mod)) 
+}
+
+#' Generate a string with all interactions of a certain degree, to be used in a GAM formula
+#'
+#' @param x Character vector of variable names
+#'
+#' @param degree Maximum interaction degree
+#'
+#' @return A string looking like the right hand side of a GAM formula with tensor product interactions.
+#'
+#' For example, if `x` is `c("x1","x2","x3")`, then `all_interactions(x, degree=2)` should return
+#'
+#' `"te(x1,x2) + te(x1,x3) + te(x1,x3)"`
+#'
+#' @examples
+#' x <- c("x1","x2","x3")
+#' all_interactions(x, 2)
+#'
+#' @export
+#' 
+all_interactions <- function(x, degree=2){
+  c_mat <- utils::combn(x, degree)
+  c_comma <- apply(c_mat, 2, function(y) paste(y, collapse = ","))
+  c_tevec <- paste0("te(",c_comma,")")
+  form_str <- paste(c_tevec, collapse = " + ")
+  form_str
+}

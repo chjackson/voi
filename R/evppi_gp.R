@@ -1,25 +1,12 @@
 ## Gaussian process method for estimating EVPPI
 ## Code from SAVI 
-## [Aren't there also packaged GP regression methods ?  gaupro, GPfit? are they more efficient?]
+## [Aren't there also packaged GP regression methods ?  kernlab?  gaupro, GPfit? are they more efficient?]
 
 fitted_gp <- function(y, inputs, pars, verbose=FALSE, ...){
     args <- list(...)
     res <- gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL, verbose=verbose)$fitted
     attr(res, "model") <- data.frame(y=y, fitted=res, residuals=y-res)
     res 
-}
-
-## TODO a diagnostic check method that is helpful for voi and works for any number of pars 
-## residuals 
-
-gp.check <- function(mod){
-    ## qqplot? 
-    ## histogram of residuals
-    graphics::hist(mod$residuals, main="Histogram of residuals", xlab="Residuals")
-    ## residuals vs fitted values
-    plot(mod$fitted, mod$residuals, xlab="Fitted values", ylab="Residuals")
-    ## response vs fitted values 
-    plot(mod$fitted, mod$y, xlab="Fitted values", ylab="Response")
 }
 
 ## Code below taken from SAVI, copyright (c) 2014, 2015 the SAVI authors
@@ -155,7 +142,7 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
   p <- length(inputs.of.interest)
   
   maxSample <- min(maxSample, length(NB)) # to avoid trying to invert huge matrix
-  
+
   input.matrix <- as.matrix(input.parameters[1:maxSample, inputs.of.interest, drop=FALSE])
     NB <- NB[1:maxSample]
   colmin <- apply(input.matrix, 2, min)
@@ -235,3 +222,22 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
     list(fitted=unlist(g.hat), V=V)
 }
 
+
+gp.check <- function(mod){
+    ## qqplot? 
+    ## histogram of residuals
+    graphics::hist(mod$residuals, main="Histogram of residuals", xlab="Residuals")
+    ## residuals vs fitted values
+    plot(mod$fitted, mod$residuals, xlab="Fitted values", ylab="Residuals")
+    ## response vs fitted values 
+    plot(mod$fitted, mod$y, xlab="Fitted values", ylab="Response")
+}
+
+check_plot_gp <- function(mod){
+    graphics::par(mfrow=c(2,2))
+    gp.check(mod)
+}
+
+check_stats_gp <- function(mod){
+    invisible()
+}

@@ -1,221 +1,241 @@
-## Chemotherapy health economic model
-##
-## Functions to generate model inputs and outputs based on current information
+################################################################################
+#### Functions for the Chemotherapy Model
+################################################################################
 
+## Function to generate the PSA parameters
+pars_fn_chemo <- function(n,n_population){
+  # n: The number of PSA simulations to be drawn
 
-##' Chemotherapy health economic model parameters
-##'
-##' Generate a sample from the uncertainty distribution of the
-##' parameters.
-##'
-##' This is the state of knowledge under current information, prior to
-##' any further research.  The distributions are all of standard
-##' analytic forms.  The distributions of pi1, gamma.hosp and
-##' gamma.dead are obtained from simple beta/binomial conjugate
-##' Bayesian inference based on current data.
-##'
-##' @param n Number of samples to draw 
-##' 
-chemo_prior_pars <- function(n){
-    num.pat <- 111 # Number of patients (observed data)  
-    num.se <- 27   # Number of patients with side effects
-    num.hosp <- 17  # Number of patients require hospital care
-    num.dead <- 1   # Number of Deaths
-    pi1 <- rbeta(n, 1 + num.se, 1 + num.pat - num.se)
-    rho <- rnorm(n, 0.65, 0.1)
-    pi2 <- rho * pi1
-    n.pred <- 1000
-    TH <- 15
-    SE1 <- rbinom(n, n.pred, pi1)
-    SE2 <- rbinom(n, n.pred, pi2)
-    gamma.hosp <- rbeta(n, 1 + num.hosp, 1 + num.se - num.hosp)
-    gamma.home <- 1 - gamma.hosp
-    gamma.dead <- rbeta(n, 1 + num.dead, 4 + num.hosp - num.dead)
-    
-    ## Convert mean and variance for a probability to beta parameters
-    betaPar <- function(mu, var) {
-        alpha <- ((1 - mu) / var - 1 / mu) * mu ^ 2
-        beta <- alpha * (1 / mu - 1)
-        list(alpha = alpha, beta = beta)
-    }
+    ## CJ FILL IN THESE
+    n_side_effects <- 27
+    n_patients <- 111
+    n_hospitalised <- 17
+    n_died <- 1 
+    rr_side_effects_mu <- 0.65 
+    rr_side_effects_sd <- 0.1
+    time_horizon <- 15
+    c_home_care_mu <- 2300
+    c_home_care_sd <- 90
+    c_hospital_mu <- 6500
+    c_hospital_sd <- 980
+    c_death_mu <- 4200
+    c_death_sd <- 560
+    u_recovery_mu <- 0.98
+    u_recovery_sd <- 0.01 
+    u_home_care_mu <- 0.5 
+    u_home_care_sd <- 0.02 
+    u_hospital_mu <- 0.2 
+    u_hospital_sd <- 0.03 
+    n_population <- 1000 
+  
+  # Probability of side effects under treatment 1
+  p_side_effects_t1 <- rbeta(n, 
+                             1 + n_side_effects, 
+                             1 + n_patients - n_side_effects)
+  
+  # Relative risk of side effects on treatment 2
+  rr_side_effects <- rnorm(n, rr_side_effects_mu, rr_side_effects_sd)
+  # Probability of side effects under treatment 2
+  p_side_effects_t2 <- rr_side_effects * p_side_effects_t1
 
-    betapars <- betaPar(0.45, 0.02)
-    lambda.home.rec.TH <- rbeta(n, betapars$alpha, betapars$beta)
-    betapars <- betaPar(0.35, 0.02)
-    lambda.hosp.rec.TH <- rbeta(n, betapars$alpha, betapars$beta)
-    lambda.home.hosp <- gamma.hosp / TH
-    lambda.home.home <- (1 - lambda.home.rec.TH)*(1 - lambda.home.hosp)
-    lambda.home.rec <- (1 - lambda.home.hosp)*lambda.home.rec.TH
-    lambda.hosp.dead <- gamma.dead/TH
-    lambda.hosp.hosp <- (1 - lambda.hosp.rec.TH)*(1-lambda.hosp.dead)
-    lambda.hosp.rec <- (1 - lambda.hosp.dead)*lambda.hosp.rec.TH 
+  # Predictive distribution of the number of side effects
+  n_side_effects_pred_t1 <- rbinom(n, n_population, p_side_effects_t1)
+  n_side_effects_pred_t2 <- rbinom(n, n_population, p_side_effects_t2)
 
-    ## Convert mean and SD on natural scale to log normal parameters
-    lognPar <- function(m,s) {
-        s2 <- s^2
-        meanlog <- log(m) - 0.5 * log(1 + s2/m^2)
-        s2log <- log(1 + (s2/m^2))
-        sdlog <- sqrt(s2log)
-        list(meanlog = meanlog, sdlog = sdlog)
-    }
-
-    lnpars <- lognPar(2300, 90)
-    c.home <- rlnorm(n, lnpars$meanlog, lnpars$sdlog)
-    lnpars <- lognPar(6500, 980)
-    c.hosp <- rlnorm(n, lnpars$meanlog, lnpars$sdlog)
-    lnpars <- lognPar(4200, 560)
-    c.dead <- rlnorm(n, lnpars$meanlog, lnpars$sdlog)
-
-#### TODO verify second pars are all really variances, not SDs
-    betapars <- betaPar(0.98, 0.001)
-    e.chemo <- rbeta(n, betapars$alpha, betapars$beta)
-    betapars <- betaPar(0.5, 0.02)
-    e.home <- rbeta(n, betapars$alpha, betapars$beta)
-    betapars <- betaPar(0.2, 0.03)
-    e.hosp <- rbeta(n, betapars$alpha, betapars$beta)
-
-    recover.amb <- -log(1 - lambda.home.rec)
-    recover.hosp <- -log(1 - lambda.hosp.rec)
-
-    data.frame(
-#### variables needed explicitly to evaluate decision model functions below
-        SE1, SE2,
-        lambda.home.home, lambda.home.hosp, lambda.home.rec,
-        lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead, 
-        c.home, c.hosp, c.dead,
-        e.chemo, e.home, e.hosp,
-
-### other variables that we could calculate EVPPI for
-        pi1, pi2, rho,
-        gamma.hosp, gamma.dead,
-        recover.amb, recover.hosp,
-        lambda.home.rec.TH, lambda.hosp.rec.TH)
+  
+  ## Variables to define transition probabilities
+  # Probability that a patient is hospitalised over the time horizon
+  p_hospitalised_total <- rbeta(n, 
+                                1 + n_hospitalised, 
+                                1 + n_side_effects - n_hospitalised)
+  # Probability that a patient dies over the time horizon given they were 
+  # hostpialised
+  p_died <- rbeta(n, 1 + n_died, 4 + p_hospitalised_total - n_died)
+  # Lambda_home: Conditional probability that a patient recovers considering 
+  # that they are not hospitalised
+  betapars <- betaPar(0.45, 0.02)
+  lambda_home <- rbeta(n, betapars$alpha, betapars$beta)
+  # Lambda_hosp: Conditional probability that a patient recovers considering 
+  # that they do not die
+  betapars <- betaPar(0.35, 0.02)
+  lambda_hosp <- rbeta(n, betapars$alpha, betapars$beta)
+  
+  ## Transition Probabilities
+  p_home_hospital <- 1 - (1 - p_hospitalised_total) ^ (1 / time_horizon)
+  p_home_home <- (1 - lambda_home) * (1 - p_home_hospital)
+  p_home_recover <- lambda_home * (1 - p_home_hospital)
+  p_hospital_dead <- 1 - (1 - p_died) ^ (1 / time_horizon)
+  p_hospital_hospital <- (1 - lambda_hosp) * (1 - p_hospital_dead)
+  p_hospital_recover <- lambda_hosp * (1 - p_hospital_dead)
+        
+  ## Health State Costs
+  lnpars <- lognPar(c_home_care_mu, c_home_care_sd)
+  c_home_care <- rlnorm(n, lnpars$meanlog, lnpars$sdlog)
+  lnpars <- lognPar(c_hospital_mu, c_hospital_sd)
+  c_hospital <- rlnorm(n, lnpars$meanlog, lnpars$sdlog)
+  lnpars <- lognPar(c_death_mu, c_death_sd)
+  c_death <- rlnorm(n, lnpars$meanlog, lnpars$sdlog)
+  
+  ## Health Utilities
+  betapars <- betaPar(u_recovery_mu, u_recovery_sd)
+  u_recovery <- rbeta(n, betapars$alpha, betapars$beta)
+  betapars <- betaPar(u_home_care_mu, u_home_care_sd)
+  u_home_care <- rbeta(n, betapars$alpha, betapars$beta)
+  betapars <- betaPar(u_hospital_mu, u_hospital_sd)
+  u_hospital <- rbeta(n, betapars$alpha, betapars$beta)
+  
+  # Specify a matrix containing all the parameters
+  params_matrix <- data.frame(
+    n_side_effects_pred_t1,
+    n_side_effects_pred_t2,
+    p_home_hospital, p_home_home, p_home_recover,
+    p_hospital_hospital, p_hospital_recover, p_hospital_dead, 
+    c_home_care, c_hospital, c_death,
+    u_recovery, u_home_care, u_hospital,
+    p_side_effects_t1, 
+    p_side_effects_t2,
+    rr_side_effects,
+    p_hospitalised_total, p_died,
+    lambda_home, lambda_hosp)
+  
+  return(params_matrix)
 }
 
-## Calculate average time each patient with adverse events spends in the health states of the Markov model
-chemo_markov_model <- function(SE1, SE2,
-                               lambda.home.home, lambda.home.hosp, lambda.home.rec,
-                               lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead)
-    ## SE: predictive distribution of number of patients in 1000 that would experience adverse events
-    ## a two-vector containing the number of adverse events for Soc and novel treatment
-    
+## Function to calculate average time each patient with adverse events spends
+## in the health states of the Markov model
+calculate_state_occupancy_markov_model <- function(
+  n_side_effects_pred_t1, 
+  n_side_effects_pred_t2,
+  p_home_home, p_home_hospital, p_home_recover,
+  p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+  time_horizon)
+  # All function arguments come from the generate_psa_parameters function except
+  # time_horizon which is a model assumption
 { 
-    ## Markov transition probability matrix 
-    ## States: Home care, Hospital care, Recovery, Death
-    TH <- 15 
-    MM.mat <- matrix(c(lambda.home.home, lambda.home.hosp, lambda.home.rec, 0,
-                       0, lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead,
-                       0, 0, 1, 0,
-                       0, 0, 0, 1),
-                     nrow = 4, ncol = 4, byrow = TRUE)
-    
-    ## Number of patients in each state for each time point 
-    ## 3 dimensions: number of states, number of time points, length of side effects
-    trace <- array(0, dim = c(4, TH + 1, 2)) 
-    trace[1, 1, ] <- c(SE1,SE2)
-    
-    for(i in 2:(TH + 1)){   
-        trace[, i, 1] <- trace[, i - 1, 1] %*% MM.mat 
-        trace[, i, 2] <- trace[, i - 1, 2] %*% MM.mat
-    }
-    
-    trace # 4*16*2 array
+  ## Markov transition probability matrix 
+  ## States: Home care, Hospital care, Recovery, Death
+  MM.mat <- matrix(c(p_home_home, p_home_hospital, p_home_recover, 0,
+                     0, p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+                     0, 0, 1, 0,
+                     0, 0, 0, 1),
+                   nrow = 4, ncol = 4, byrow = TRUE)
+  
+  ## Number of patients in each state for each time point 
+  ## 3 dimensions: number of states, number of time points, 
+  ## number of treatment options
+  trace <- array(0, dim = c(4, time_horizon + 1, 2)) 
+  # Initialise with the predicted number of side effects in the population
+  trace[1, 1, ] <- c(n_side_effects_pred_t1,n_side_effects_pred_t2)
+  
+  # Run the markove model over the time horizon
+  for(i in 2:(time_horizon + 1)){   
+    trace[, i, 1] <- trace[, i - 1, 1] %*% MM.mat 
+    trace[, i, 2] <- trace[, i - 1, 2] %*% MM.mat
+  }
+  
+  return(trace) # 4*16*2 array
 }
 
-
-##' Chemotherapy health economic model
-##'
-##' Calculate expected costs and effects for two treatments as a function of the input parameters.   Each input parameter is a scalar.
-##'
-##' TODO refer to example of looping to generate PSA output matrix (currently in data-raw)
-##'
-##' @param SE1 TODO 
-##'
-##' @param SE2 TODO 
-##'
-##' @param lambda.home.home Transition probability from 
-##'
-##' @param lambda.home.hosp Transition probability from 
-##'
-##' @param lambda.home.rec Transition probability from 
-##'
-##' @param lambda.hosp.hosp Transition probability from
-##'
-##' @param lambda.hosp.rec Transition probability from
-##' 
-##' @param lambda.hosp.dead Transition probability from
-##'
-##' @param c.home Cost TODO 
-##'
-##' @param c.hosp Cost TODO 
-##'
-##' @param c.dead Cost TODO 
-##'
-##' @param e.chemo Effect TODO 
-##
-##' @param e.home Effect TODO 
-##'
-##' @param e.hosp Effect TODO 
-##
-##' 
-##' 
-chemo_costeff_fn <- function(SE1, SE2,
-                             lambda.home.home, lambda.home.hosp, lambda.home.rec,
-                             lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead,
-                             c.home, c.hosp, c.dead,
-                             e.chemo, e.home, e.hosp){
-
-### auxilary arguments.  TODO make into formal args when we're sure of the format we'll need when calling this function 
-    TH <- 15
-    N <- 1000
-
-    trace <- chemo_markov_model(SE1, SE2,
-                                lambda.home.home, lambda.home.hosp, lambda.home.rec,
-                                lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead)
-    
-    ## costs and effectiveness for four states
-    c.states <- c(c.home, c.hosp, 0, 0)
-    e.states <- c(e.home, e.hosp, e.chemo, 0)
-    
-    c.se <- array(NA, dim = 2)
-
-    ## Average cost for both Soc and novel treatment per person per time point
-    ## (The cost includes one-off cost of death for patients who died at the end of 15 days)
-    c.se[1] <- (sum(c.states %*% trace[,,1]) + c.dead * trace[4, TH + 1, 1])/
-      (N * (TH + 1)) 
-    c.se[2] <- (sum(c.states %*% trace[,,2]) + c.dead * trace[4, TH + 1, 2])/
-      (N * (TH + 1)) 
-    c.drug <- c(110, 420)
-    cost <- c(c.drug + c.se)
-
-    ## Total QALY of side effects for both Soc and novel treatment
-    q.se <- array(NA, dim = 2)
-    q.se[1] <- sum(e.states %*% trace[,,1])
-    q.se[2] <- sum(e.states %*% trace[,,2])
-    ## QALY of total number of patients who do not experience adverse events for 15 days
-    q.chemo <- (N - c(SE1,SE2)) * e.chemo * (TH + 1)
-    
-    ## Average effect for both Soc and novel treatment per person per time point
-    effs <- c(q.se + q.chemo)/
-      (N * (TH + 1))           
-
-    names(cost) <- paste0("cost",seq_along(cost))
-    names(effs) <- paste0("eff",seq_along(effs))
-    
-    c(cost, effs)
-}
-
-chemo_nb_fn <- function(SE1, SE2,
-                        lambda.home.home, lambda.home.hosp, lambda.home.rec,
-                        lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead,
-                        c.home, c.hosp, c.dead,
-                        e.chemo, e.home, e.hosp, wtp=20000)
+## Function to calculate the costs and effects from our model
+cea_fn_chemo <- function(
+  n_side_effects_pred_t1, 
+  n_side_effects_pred_t2,
+  p_home_home, p_home_hospital, p_home_recover,
+  p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+  c_home_care, c_hospital, c_death,
+  u_recovery, u_home_care, u_hospital,
+  time_horizon,
+  n_population)
+  # All function arguments come from the generate_psa_parameters function except
+  # time_horizon which is a model assumption
 {
-    ce <- chemo_costeff_fn(SE1, SE2,
-                           lambda.home.home, lambda.home.hosp, lambda.home.rec,
-                           lambda.hosp.hosp, lambda.hosp.rec, lambda.hosp.dead,
-                           c.home, c.hosp, c.dead,
-                           e.chemo, e.home, e.hosp)
-    nb <- ce[c("eff1","eff2")]*wtp - ce[c("cost1","cost2")]
-    nb
+
+    # CJ ADDED THESE
+    c_treatment_1 <- 110 
+    c_treatment_2 <- 420 
+
+  # Calculate the trace matrix from the markov model function
+  m_markov_trace <- calculate_state_occupancy_markov_model(
+    n_side_effects_pred_t1,
+    n_side_effects_pred_t2,
+    p_home_home, p_home_hospital, p_home_recover,
+    p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+    time_horizon)
+  
+  ## costs and effectiveness for four states
+  c_state_vector <- c(c_home_care, c_hospital, 0, 0)
+  u_state_vector <- c(u_recovery, u_home_care, u_hospital, 0)
+  
+  ## Estimate the cost of side effects from the Markov model
+  c_side_effects <- array(NA, dim = 2)
+  
+  ## Average cost for both Soc and novel treatment per person
+  ## (The cost includes one-off cost of death for all patients who died)
+  c_side_effects[1] <- (sum(c_state_vector %*% m_markov_trace[, , 1]) + 
+                          c_death * m_markov_trace[4, time_horizon + 1, 1])/
+    n_population 
+  c_side_effects[2] <- (sum(c_state_vector %*% m_markov_trace[, , 2]) + 
+                c_death * m_markov_trace[4, time_horizon + 1, 2])/
+    n_population 
+  c_drug <- c(c_treatment_1, c_treatment_2)
+  c_overall <- c(c_drug + c_side_effects)
+  
+  ## Total QALY of side effects for both Soc and novel treatment
+  u_side_effects <- array(NA, dim = 2)
+  u_side_effects[1] <- sum(u_state_vector %*% m_markov_trace[,,1])
+  u_side_effects[2] <- sum(u_state_vector %*% m_markov_trace[,,2])
+  ## QALY of total number of patients who do not experience adverse events for 15 days
+  n_no_side_effects <- n_population - 
+                          c(n_side_effects_pred_t1,
+                            n_side_effects_pred_t2)
+  u_no_side_effects <-  n_no_side_effects * u_recovery * (time_horizon + 1)
+  
+  ## Average effect for both Soc and novel treatment per person
+  u_overall <- c(u_side_effects + u_no_side_effects)/
+    n_population           
+  
+  names(c_overall) <- paste0("cost",seq_along(c_overall))
+  names(u_overall) <- paste0("eff",seq_along(u_overall))
+  
+  return(rbind("c"=c_overall, "e"=u_overall))
+}
+
+calculate_net_benefit <- function(
+  costs_effects,
+  wtp=20000)
+{
+    nb <- wtp * costs_effects["e",] - 
+      costs_effects["c",]
+    return(nb)
+}
+
+
+betaPar <- function(m, s) {
+  # m:  Mean of the Beta distribution
+  # m: Standard deviation of the Beta distribution
+  
+  var <- s ^ 2
+  alpha <- ((1 - m) / var - 1 / m) * m ^ 2
+  beta <- alpha * (1 / m - 1)
+  
+  return(
+    list(alpha = alpha, beta = beta)
+  )
+}
+
+## Function to transform values for mean and standard deviation into parameters 
+## for a Log-Normal distribution
+
+lognPar <- function(m,s) {
+  # m: Mean of Log-Normal distribution
+  # s: Standard deiviation of Log-Normal distribution
+  
+  var <- s^2
+  meanlog <- log(m) - 0.5 * log(1 + var/m^2)
+  varlog <- log(1 + (var/m^2))
+  sdlog <- sqrt(varlog)
+  
+  return(
+    list(meanlog = meanlog, sdlog = sdlog)
+  )
 }

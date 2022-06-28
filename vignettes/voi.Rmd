@@ -209,17 +209,16 @@ evppi(outputs_nb, inputs, pars="p1", method="earth")
 ```
 
 #### INLA method
-(from [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) ).  This needs the following extra packages to be installed, using the following commands.   (As of writing, the `ldr` package is not on CRAN due to lack of maintenance, but the archived version has been used without any noticeable problem.) 
+(from [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) ).  This needs the following extra packages to be installed, using the following commands.  
 
 ```{r,eval=FALSE}
 install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')
 install.packages('splancs')
-devtools::install_version("ldr", version = "1.3.3", repos = "http://cran.uk.r-project.org")
 ```
 
 It is only applicable to calculating the multiparameter EVPPI for 2 or more parameters.  
 
-In this toy example it is overkill, since the two-parameter EVPPI is simply the EVPI, and the default method needs an esoteric tweak (\code{pfc_struc="iso"}) to work.
+In this toy example it is overkill, since the two-parameter EVPPI is simply the EVPI, and the default method needs an esoteric tweak (`pfc_struc`) to work.
 
 However it has been found to be more efficient than the Gaussian process method in many other situations. See [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) for more details about implementing and tuning this method. 
 
@@ -227,6 +226,13 @@ However it has been found to be more efficient than the Gaussian process method 
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla", pfc_struc="iso")
 ```
 
+#### Bayesian additive regression trees
+
+This is a promising novel method for calculating multiparameter EVPPI:
+
+```{r,eval=TRUE}
+evppi(outputs_nb, inputs, pars=c("p1","p2"), method="bart")
+```
 
 #### Tuning the generalized additive model method
 

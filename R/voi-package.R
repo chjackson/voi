@@ -23,9 +23,10 @@
 ##' @docType package
 ##'
 ##' @importFrom grDevices dev.off
-##' @importFrom graphics points hist
-##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC cov lm fitted
-##' @importFrom utils select.list
+##' @importFrom graphics points hist par
+##' @importFrom ggplot2 ggplot aes geom_point ylab xlab geom_linerange
+##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC cov lm fitted reorder
+##' @importFrom utils select.list combn
 ##' @importFrom progress progress_bar
 ##' 
 NULL

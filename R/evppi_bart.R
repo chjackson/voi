@@ -1,4 +1,3 @@
-## TODO standard errors 
 
 fitted_bart <- function(y, inputs, pars, verbose=FALSE, ...){
     opts <- list(...)
@@ -11,11 +10,10 @@ fitted_bart <- function(y, inputs, pars, verbose=FALSE, ...){
 }
 
 
-## Convergence check for mean of fitted values
-## Ideally should check convergence of EVPPI instead.
-## For that, would need to extract MCMC sample of fitted values for each net benefit 
-## then combine in list.   Expect good enough to do mean 
-## though fitted_rep function should achieve the resampling
+## Convergence check for mean of fitted values, ie for 
+## mubar = (average of mu|X over X in data)
+## where mu is the expectation that BART estimates
+## Assume this is sufficient to ensure EVPPI estimate has "converged" 
 
 check_bart_conv <- function(model){
     sam <- dbarts::extract(model) # 1000 MCMC samples for BART fit  x  nsam fitted values to evaluate convergence of

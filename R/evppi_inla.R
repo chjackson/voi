@@ -174,3 +174,12 @@ fit.inla <- function(parameter, inputs, x, mesh,
     list(fitted = fitted, model = fit, time = time, formula = formula,
          mesh = list(mesh = mesh, pts = data.scale))
 }
+
+check_plot_inla <- function(mod){
+    graphics::par(mfrow=c(2,2))
+    gp.check(mod)
+}
+
+check_stats_inla <- function(mod){
+    invisible()
+}

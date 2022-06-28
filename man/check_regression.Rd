@@ -4,7 +4,14 @@
 \alias{check_regression}
 \title{Check the fit of a regression model used to estimate EVPPI or EVSI}
 \usage{
-check_regression(x, pars = NULL, n = NULL, comparison = 1, outcome = "costs")
+check_regression(
+  x,
+  pars = NULL,
+  n = NULL,
+  comparison = 1,
+  outcome = "costs",
+  plot = TRUE
+)
 }
 \arguments{
 \item{x}{Output from \code{\link{evppi}} or \code{\link{evsi}}. The argument \code{check=TRUE}
@@ -30,6 +37,8 @@ in cost-effectiveness format when
 calling \code{evppi} or \code{evsi}, hence different regressions are used for costs and
 effects.  By default, \code{outcome="costs"} is used, so that the regression
 for costs is checked.}
+
+\item{plot}{If \code{FALSE}, only numerical statistics are returned, and a plot is not made.}
 }
 \value{
 Where possible, an appropriate statistic is returned that allows the regression

@@ -15,3 +15,12 @@ fitted_earth <- function(y, inputs, pars, verbose=FALSE, ...){
     attr(res, "model") <- model
     res
 }
+
+check_plot_earth <- function(mod){
+    graphics::par(mfrow=c(2,2))
+    plot(mod)
+}
+
+check_stats_earth <- function(mod){
+    list(gcv = mod$gcv)
+}
