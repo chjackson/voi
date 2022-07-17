@@ -236,8 +236,6 @@ evppi <- function(outputs,
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     outputs <- check_outputs(outputs, inputs)
-    wtp <- outputs$k
-    nwtp <- length(wtp)
 
     if (!is.list(pars))
         pars <- list(pars)
@@ -268,6 +266,7 @@ evppi <- function(outputs,
                               ...)
     }
     res <- do.call("rbind", eres)
+    nwtp <- if (inherits(outputs, "nb")) 1 else length(outputs$k)
     res <- cbind(pars=rep(names(pars), each = nwtp), res)
     if (check){
         attr(res, "models") <- lapply(eres, function(x)attr(x, "models"))

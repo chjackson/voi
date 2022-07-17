@@ -82,6 +82,14 @@ test_that("Multiple EVPPI calculations with the same call",{
     evtest <- evppi(chemo_cea, chemo_pars, pars=list(c("pi1", "pi2"), "rho"))
     evcea <- evppi(chemo_cea, chemo_pars, pars=c("pi1", "pi2"))
     expect_equal(evtest$evppi[evtest$pars=="pi1,pi2" & evtest$k==30000], evcea$evppi[evcea$k==30000], tol=1e-05)
+
+    e1 <- evppi(chemo_cea, chemo_pars, pars=list("pi1", "pi2"))
+    e2 <- evppi(chemo_cea, chemo_pars, pars=list("pi2"))
+    expect_equal(
+      e1$evppi[e1$pars=="pi2" & e1$k==40000],
+      e2$evppi[e2$k==40000]
+    )
+
 })
 
 test_that("Strong and Oakley single parameter", {
