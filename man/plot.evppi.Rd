@@ -2,17 +2,25 @@
 % Please edit documentation in R/plot.R
 \name{plot.evppi}
 \alias{plot.evppi}
-\title{Plot EVPPI estimates as a simple dot plot}
+\title{Plot EVPPI estimates as simple dot or curve plots.}
 \usage{
-\method{plot}{evppi}(x, order = FALSE, wtp = NULL, ...)
+\method{plot}{evppi}(x, type = NULL, order = FALSE, top = NULL, ...)
 }
 \arguments{
 \item{x}{Object returned from \code{\link{evppi}}.}
 
-\item{order}{Order the plot with highest EVPPI values at the top.}
+\item{type}{\code{"dots"} for a dot plot of the EVPPI by parameter.  If \code{x} includes multiple
+willingness-to-pay values for the same parameter, these are shown as multiple dots.
 
-\item{wtp}{Not implemented yet. Suggestions welcome for how. Multiple curves on same plot, for top few
-or selected?}
+\code{"curves"} for a plot of EVPPI against willingness-to-pay, with different
+parameters distinguished as different curves.  This is only applicable if there
+are multiple willingness-to-pay values included in \code{x}.}
+
+\item{order}{For dot plots, order the plot with highest EVPPI values at the top.}
+
+\item{top}{A positive integer. If specified, for example as \code{top=5} then only
+five parameters are included in the plot, those with the top five maximum EVPPI
+values by parameter.}
 
 \item{...}{Other arguments (currently unused).}
 }
@@ -20,7 +28,11 @@ or selected?}
 A \code{ggplot2} object.
 }
 \description{
-This is a simple \code{ggplot2} plot and returns a \code{ggplot2} object, which
-can be manipulated.  Or examine the source for this function to see how
-to construct a similar plot that can be customised.
+These plotting functions are intended for quick interactive exploration of
+EVPPI results, so they deliberately have limited options for customising them.
+}
+\details{
+For publication quality graphics, it is advised to use \code{ggplot2} by hand
+on the data returned by \code{evppi}.   Examine the code for \code{plot_evppi_dots}
+and \code{plot_evppi_curves} to see how these plots might be constructed.
 }
