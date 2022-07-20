@@ -14,7 +14,7 @@
 ##'   that are independent of those of the other parameters.
 ##'
 ##' @param model_fn A function to evaluate a decision-analytic model at a given
-##'   set of parameters. This should either return:
+##'   set of parameters. This should have one argument per parameter, and return either:
 ##'
 ##'   (net benefit format) a vector giving the net benefit for each decision
 ##'   option, or

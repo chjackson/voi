@@ -57,7 +57,7 @@ calculating the EVPPI of 4 or fewer parameters.
 of more than 4 parameters.
 
 \code{"inla"} for an INLA/SPDE Gaussian process regression method, from
-Heath et al. (2016).   .
+Heath et al. (2016).
 
 \code{"bart"} for Bayesian additive regression trees, using the \pkg{dbarts} package.
 Particularly suited for joint EVPPI of many parameters.
