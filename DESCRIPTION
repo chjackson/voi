@@ -5,8 +5,8 @@ Authors@R:
     c(person(given = "Christopher", family = "Jackson",role = c("aut", "cre"),email = "chris.jackson@mrc-bsu.cam.ac.uk"),
 	   person(given = "Anna", family = "Heath", role = c("aut"), email = "anna.heath@sickkids.ca"),
 	   person(given = "Gianluca", family = "Baio", role = c("ctb"), email = "g.baio@ucl.ac.uk"),
-	   person(given="Kofi Placid", family="Adragni", role="aut", comment="Author of code taken from the ldr package"),
-	   person(given="Andrew", family="Raim", role="aut",comment="Author of code taken from the ldr package")
+	   person(given="Kofi Placid", family="Adragni", role="ctb", comment="Author of code taken from the ldr package"),
+	   person(given="Andrew", family="Raim", role="ctb",comment="Author of code taken from the ldr package")
 	   )
 Description: Methods to calculate the expected value of partial perfect information (EVPPI) and expected value of sample information (EVSI) from a decision-analytic model.  Intended as an unified interface to all alternative methods for calculating these quantities. 
 License: GPL-3
