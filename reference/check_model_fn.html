@@ -52,7 +52,13 @@ note check_outputs adds a class</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_model_fn</span><span class="op">(</span><span class="va">model_fn</span>, <span class="va">par_fn</span>, <span class="va">mfargs</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_model_fn</span><span class="op">(</span></span>
+<span>  <span class="va">model_fn</span>,</span>
+<span>  <span class="va">par_fn</span>,</span>
+<span>  mfargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  outputs_class <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="value">
@@ -72,7 +78,7 @@ number of decision options.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Christopher Jackson, Anna Heath, Kofi Placid Adragni, Andrew Raim.</p>
+  <p></p><p>Developed by Christopher Jackson, Anna Heath.</p>
 </div>
 
 <div class="pkgdown">

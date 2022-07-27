@@ -62,9 +62,10 @@ model</p>
 <span>  aux_pars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  likelihood <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  analysis_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  analysis_options <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  decision_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  analysis_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  analysis_args <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  model_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  par_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  Q <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  npreg_method <span class="op">=</span> <span class="st">"gam"</span>,</span>
 <span>  nsim <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -136,13 +137,13 @@ component of the <code>aux_pars</code> argument, e.g.
 <li><p>the returned data frame should have number of rows equal to the number of parameter simulations in <code>inputs</code>.</p></li>
 <li><p>if <code>inputs</code> is considered as a sample from the posterior, then <code>datagen_fn(inputs)</code> returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.</p></li>
 <li><p>the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of <code>datagen_fn</code>.  These arguments might be used to define sample sizes for a proposed study.</p></li>
-</ol><p>Examples of this are currently in the <code>tests/tests_slow</code> package directory.</p></dd>
+</ol></dd>
 
 
 <dt>pars</dt>
 <dd><p>Character vector identifying which columns of <code>inputs</code> are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the <code>study</code> argument, but not if it is specified through the <code>datagen_fn</code> argument.</p>
 <p>For example, if <code>study = "trial_binary"</code> is specified, then <code>pars</code> should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.</p>
-<p>The <code>pars</code> argument is also required for the methods which involve an intermediate EVPPI calculation, that is the <code>"is"</code> and <code>"mm"</code>.  It should consist of the variables used in the definition of <code>datagen_fn</code> (and <code>likelihood</code> if used TODO ALSO in <code>analysis_model</code> and <code>model</code>?) and only these variables.</p></dd>
+<p>The <code>pars</code> argument is also required for the methods which involve an intermediate EVPPI calculation, that is the <code>"is"</code> and <code>"mm"</code>.  It should consist of the variables used in the definition of <code>datagen_fn</code> (and <code>likelihood</code>, <code>analysis_fn</code> and <code>model_fn</code>, if these are used) and only these variables.</p></dd>
 
 
 <dt>n</dt>
@@ -159,9 +160,8 @@ fixed standard deviation in the <code>"normal_known"</code> model.</p></dd>
 <dd><p>Character string indicating the calculation method.</p>
 <p>All the nonparametric regression methods supported for <code><a href="evppi.html">evppi</a></code>, that is <code>"gam","gp","earth","inla"</code>, can also be used for EVSI calculation by regressing on a summary statistic of the predicted data (Strong et al 201?).   Defaults to <code>"gam"</code>.</p>
 <p><code>"is"</code> for importance sampling (Menzies 2016)</p>
-<p><code>"mm"</code> for moment matching (Heath et al 2018) (TODO not implemented yet)</p>
-<p>Note that the  <code>"is"</code> and <code>"mm"</code> (and Jalal) methods are used in conjunction with nonparametric regression, thus the <code>gam_formula</code> argument can be supplied to <code>evsi</code> to specify this regression - see <code><a href="evppi.html">evppi</a></code>.</p>
-<p>The Heath et al. and Jalal et al. methods are under development.</p></dd>
+<p><code>"mm"</code> for moment matching (Heath et al 2018) (experimental and only partially implemented)</p>
+<p>Note that the  <code>"is"</code> and <code>"mm"</code> methods are used in conjunction with nonparametric regression, thus the <code>gam_formula</code> argument can be supplied to <code>evsi</code> to specify this regression - see <code><a href="evppi.html">evppi</a></code>.</p></dd>
 
 
 <dt>likelihood</dt>
@@ -172,20 +172,28 @@ fixed standard deviation in the <code>"normal_known"</code> model.</p></dd>
 <p>Note the definition of the likelihood should agree with the definition of <code>datagen_fn</code> to define a consistent sampling distribution for the data.</p></dd>
 
 
-<dt>analysis_model</dt>
-<dd><p>Function which fits a Bayesian model to the generated data.   Under development (need to decide format, output, JAGS dependencies, etc.). Required for <code>method="mm"</code> (and Jalal method if n0 not given)</p></dd>
+<dt>analysis_fn</dt>
+<dd><p>Function which fits a Bayesian model to the generated data.   Required for <code>method="mm"</code> if <code>study</code> is not supplied.  This should be a function that takes the following arguments:</p>
+<p><code>data</code>: A data frame with names matching the output of <code>datagen_fn</code></p>
+<p><code>args</code>: A list with constants required in the Bayesian analysis, e.g. prior parameters, or options for the analysis, e.g. number of MCMC simulations.</p>
+<p><code>pars</code> Names of the parameters whose posterior is being sampled.</p>
+<p>The function should return a data frame with names matching <code>pars</code>, containing a sample from the posterior distribution of the parameters given data supplied through <code>data</code>, and prior supplied through <code>args</code>.</p></dd>
 
 
-<dt>analysis_options</dt>
-<dd><p>List of arguments required by <code>analysis_model</code>.  Under development - for <code>method="mm"</code> and Jalal method.</p></dd>
+<dt>analysis_args</dt>
+<dd><p>List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for <code>method="mm"</code>, whether the study design is specified through <code>study</code> or through <code>analysis_fn</code>.  TODO document these for the built in designs.</p></dd>
 
 
-<dt>decision_model</dt>
-<dd><p>Function which evaluates the decision-analytic model, given parameter values.  Under development - for <code>method="mm"</code> and Jalal method.  Need to decide the required format for nb, c, e output.</p></dd>
+<dt>model_fn</dt>
+<dd><p>Function which evaluates the decision-analytic model, given parameter values.  Required for <code>method="mm"</code>.  See <code><a href="evppi_mc.html">evppi_mc</a></code> for full specification.</p></dd>
+
+
+<dt>par_fn</dt>
+<dd><p>Function to simulate values from the uncertainty distributions of parameters needed by the decision-analytic model.  Should take one argument and return a data frame with one row for each simulated value, and one column for each parameter.  See <code><a href="evppi_mc.html">evppi_mc</a></code> for full specification.</p></dd>
 
 
 <dt>Q</dt>
-<dd><p>Number of quantiles to use in <code>method="mm"</code> (under development).</p></dd>
+<dd><p>Number of quantiles to use in <code>method="mm"</code>.</p></dd>
 
 
 <dt>npreg_method</dt>
@@ -220,7 +228,6 @@ diagnostic checks of the regression models.</p></dd>
     <p>Strong, M., Oakley, J. E., Brennan, A., &amp; Breeze, P. (2015). Estimating the expected value of sample information using the probabilistic sensitivity analysis sample: a fast, nonparametric regression-based method. Medical Decision Making, 35(5), 570-583.</p>
 <p>Menzies, N. A. (2016). An efficient estimator for the expected value of sample information. Medical Decision Making, 36(3), 308-320.</p>
 <p>Heath, A., Manolopoulou, I., &amp; Baio, G. (2018). Efficient Monte Carlo estimation of the expected value of sample information using moment matching. Medical Decision Making, 38(2), 163-173.</p>
-<p>Jalal, H., &amp; Alarid-Escudero, F. (2018). A Gaussian approximation approach for value of information analysis. Medical Decision Making, 38(2), 174-188.</p>
     </div>
 
   </div>
@@ -231,7 +238,7 @@ diagnostic checks of the regression models.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Christopher Jackson, Anna Heath, Kofi Placid Adragni, Andrew Raim.</p>
+  <p></p><p>Developed by Christopher Jackson, Anna Heath.</p>
 </div>
 
 <div class="pkgdown">
