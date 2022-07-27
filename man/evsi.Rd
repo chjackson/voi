@@ -15,9 +15,10 @@ evsi(
   aux_pars = NULL,
   method = NULL,
   likelihood = NULL,
-  analysis_model = NULL,
-  analysis_options = NULL,
-  decision_model = NULL,
+  analysis_fn = NULL,
+  analysis_args = NULL,
+  model_fn = NULL,
+  par_fn = NULL,
   Q = 30,
   npreg_method = "gam",
   nsim = NULL,
@@ -94,15 +95,13 @@ Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 \item the returned data frame should have number of rows equal to the number of parameter simulations in \code{inputs}.
 \item if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
 \item the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
-}
-
-Examples of this are currently in the \code{tests/tests_slow} package directory.}
+}}
 
 \item{pars}{Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
 
 For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
 
-The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
+The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
@@ -116,11 +115,9 @@ All the nonparametric regression methods supported for \code{\link{evppi}}, that
 
 \code{"is"} for importance sampling (Menzies 2016)
 
-\code{"mm"} for moment matching (Heath et al 2018) (TODO not implemented yet)
+\code{"mm"} for moment matching (Heath et al 2018) (experimental and only partially implemented)
 
-Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}.
-
-The Heath et al. and Jalal et al. methods are under development.}
+Note that the  \code{"is"} and \code{"mm"} methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}.}
 
 \item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
 \enumerate{
@@ -134,11 +131,21 @@ Examples of this are currently in \code{tests/tests_slow} and \code{tests/testth
 
 Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.}
 
-\item{analysis_model}{Function which fits a Bayesian model to the generated data.   Under development (need to decide format, output, JAGS dependencies, etc.). Required for \code{method="mm"} (and Jalal method if n0 not given)}
+\item{analysis_fn}{Function which fits a Bayesian model to the generated data.   Required for \code{method="mm"} if \code{study} is not supplied.  This should be a function that takes the following arguments:
 
-\item{analysis_options}{List of arguments required by \code{analysis_model}.  Under development - for \code{method="mm"} and Jalal method.}
+\code{data}: A data frame with names matching the output of \code{datagen_fn}
 
-\item{decision_model}{Function which evaluates the decision-analytic model, given parameter values.  Under development - for \code{method="mm"} and Jalal method.  Need to decide the required format for nb, c, e output.}
+\code{args}: A list with constants required in the Bayesian analysis, e.g. prior parameters, or options for the analysis, e.g. number of MCMC simulations.
+
+\code{pars} Names of the parameters whose posterior is being sampled.
+
+The function should return a data frame with names matching \code{pars}, containing a sample from the posterior distribution of the parameters given data supplied through \code{data}, and prior supplied through \code{args}.}
+
+\item{analysis_args}{List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for \code{method="mm"}, whether the study design is specified through \code{study} or through \code{analysis_fn}.  TODO document these for the built in designs.}
+
+\item{model_fn}{Function which evaluates the decision-analytic model, given parameter values.  Required for \code{method="mm"}.  See \code{\link{evppi_mc}} for full specification.}
+
+\item{par_fn}{Function to simulate values from the uncertainty distributions of parameters needed by the decision-analytic model.  Should take one argument and return a data frame with one row for each simulated value, and one column for each parameter.  See \code{\link{evppi_mc}} for full specification.}
 
 \item{Q}{Number of quantiles to use in \code{method="mm"} (under development).}
 
@@ -169,6 +176,4 @@ Strong, M., Oakley, J. E., Brennan, A., & Breeze, P. (2015). Estimating the expe
 Menzies, N. A. (2016). An efficient estimator for the expected value of sample information. Medical Decision Making, 36(3), 308-320.
 
 Heath, A., Manolopoulou, I., & Baio, G. (2018). Efficient Monte Carlo estimation of the expected value of sample information using moment matching. Medical Decision Making, 38(2), 163-173.
-
-Jalal, H., & Alarid-Escudero, F. (2018). A Gaussian approximation approach for value of information analysis. Medical Decision Making, 38(2), 174-188.
 }

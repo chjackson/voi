@@ -345,13 +345,15 @@ check_outputs <- function(outputs, inputs=NULL){
 }
 
 
-check_pars <- function(pars, inputs){
-    if (is.null(pars)){
+## TODO which of these are needed for EVSI 
+
+check_pars <- function(pars, inputs, evppi=TRUE){
+    if (is.null(pars) && evppi){
         if (ncol(inputs)==1)
             pars <- colnames(inputs)
         else stop("`pars` should be specified if there are two or more parameters in `inputs`")
     }
-    if (!is.character(pars))
+    if (!is.null(pars) && !is.character(pars))
         stop("`pars` should be a character vector")
     badpars <- pars[!(pars %in% colnames(inputs))]
     if (length(badpars)>0){

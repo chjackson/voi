@@ -1,3 +1,10 @@
+pi1 <- "p_side_effects_t1"
+pi2 <- "p_side_effects_t2"
+rho <- "logor_side_effects"
+
+## TODO change the parameter names in this block. what are gamma and recover? 
+
+if (0){
 chemo_datagen_fn <- function(inputs, n=150){
     nsim <- nrow(inputs)
     with(inputs, { 
@@ -24,8 +31,8 @@ test_that("EVSI GAM method", {
 
 lik_chemo <- function(Y, inputs){
   loglik <-
-      dbinom(Y[,"X.SE1"], size=150, inputs[,"pi1"], log=TRUE) +
-      dbinom(Y[,"X.SE2"], size=150, inputs[,"pi2"], log=TRUE) +
+      dbinom(Y[,"X.SE1"], size=150, inputs[,pi1], log=TRUE) +
+      dbinom(Y[,"X.SE2"], size=150, inputs[,pi2], log=TRUE) +
       dbinom(Y[,"X.N.hosp"], Y[,"X.SE1"] + Y[,"X.SE2"], inputs[,"gamma.hosp"], log=TRUE) +
       dbinom(Y[,"X.N.die"],  Y[,"X.N.hosp"], inputs[,"gamma.dead"], log=TRUE) +
       log(inputs[,"recover.amb"]) * (Y[,"X.SE1"] + Y[,"X.SE2"] - Y[,"X.N.hosp"]) -
@@ -36,7 +43,7 @@ lik_chemo <- function(Y, inputs){
 }
 
 test_that("EVSI importance sampling method", {
-    pars <- c("pi1","pi2","gamma.hosp","gamma.dead","recover.amb","recover.hosp")
+    pars <- c(pi1,pi2,"gamma.hosp","gamma.dead","recover.amb","recover.hosp")
     gamf <- paste0("s(",pars,")", collapse=" + ") 
     set.seed(1)
     expect_equal(
@@ -45,23 +52,25 @@ test_that("EVSI importance sampling method", {
         9.252767, tol=0.01)
 })
 
+}
+
 test_that("EVSI with built-in study designs", {
     set.seed(1)
     expect_equal(
-        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c("pi1", "pi2"), verbose=FALSE)$evsi, 
-        2.285424, tol=0.01)
+        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c(pi1, pi2), verbose=FALSE)$evsi, 
+        777.1786, tol=0.01)
     set.seed(1)
-    e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c("pi1"), verbose=FALSE)$evsi
-    e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=10000, pars=c("pi1"), verbose=FALSE)$evsi
+    e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c(pi2), verbose=FALSE)$evsi
+    e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=10000, pars=c(pi2), verbose=FALSE)$evsi
     expect_gt(e2, e1)
     set.seed(1)
-    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=100, pars=c("pi1"), verbose=FALSE)$evsi
-    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, pars=c("pi1"), verbose=FALSE)$evsi
+    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=100, pars=c(pi2), verbose=FALSE)$evsi
+    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, pars=c(pi2), verbose=FALSE)$evsi
     expect_gt(e2, e1)
     set.seed(1)
-    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=2), pars=c("pi1"), verbose=FALSE)$evsi 
-    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=0.1), pars=c("pi1"), verbose=FALSE)$evsi
-    ep <- evppi(chemo_nb, chemo_pars, pars=c("pi1"), verbose=FALSE)$evppi
+    e1 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=2), pars=c(pi2), verbose=FALSE)$evsi 
+    e2 <- evsi(chemo_nb, chemo_pars, study="normal_known", n=10000, aux_pars=list(sd=0.1), pars=c(pi2), verbose=FALSE)$evsi
+    ep <- evppi(chemo_nb, chemo_pars, pars=c(pi2), verbose=FALSE)$evppi
     expect_gt(e2, e1)
     expect_gt(ep, e2)
 })
@@ -69,29 +78,29 @@ test_that("EVSI with built-in study designs", {
 test_that("EVSI with built-in study designs: IS method", {
     set.seed(1)
     expect_equal(
-        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c("pi1", "pi2"), 
+        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c(pi1, pi2), 
              method="is", nsim=1000, verbose=FALSE)$evsi
       , 
-        2.789803, tol=0.01)
+        789.1255, tol=0.01)
 })
 
 test_that("EVSI with multiple sample sizes", { 
   set.seed(1)
-  e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c("pi1"), verbose=FALSE)
-  e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=1000, pars=c("pi1"), verbose=FALSE) 
+  e1 <- evsi(chemo_nb, chemo_pars, study="binary", n=100, pars=c(pi1), verbose=FALSE)
+  e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=1000, pars=c(pi1), verbose=FALSE) 
   set.seed(1)
-  e3 <- evsi(chemo_nb, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), verbose=FALSE) 
+  e3 <- evsi(chemo_nb, chemo_pars, study="binary", n=c(100,1000), pars=c(pi1), verbose=FALSE) 
   expect_equal(e1$evsi, e3$evsi[1])
   expect_equal(e2$evsi, e3$evsi[2])
   set.seed(1)
-  e4 <- evsi(chemo_cea, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), verbose=FALSE) 
+  e4 <- evsi(chemo_cea, chemo_pars, study="binary", n=c(100,1000), pars=c(pi1), verbose=FALSE) 
   expect_equal(e4$evsi[e4$k==30000 & e4$n==100], e1$evsi, tol=1e-03)
   set.seed(1)
-  e1 <- evsi(chemo_cea, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), 
+  e1 <- evsi(chemo_cea, chemo_pars, study="binary", n=c(100,1000), pars=c(pi2), 
              verbose=FALSE, method="is", nsim=1000) 
-  expect_equal(e1$evsi[3], 0.269594863723396, tol=1e-04)
+  expect_equal(e1$evsi[2], 617.0609, tol=1e-04)
   set.seed(1)
-  e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=c(100,1000), pars=c("pi1"), 
+  e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=c(100,1000), pars=c(pi2), 
              verbose=FALSE, method="is", nsim=1000) 
-  expect_equal(e2$evsi[1], 0.4290582, tol=1e-04)
+  expect_equal(e2$evsi[1], 571.2093, tol=1e-04)
 })

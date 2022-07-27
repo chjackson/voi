@@ -9,7 +9,7 @@
 ##' number of decision options. 
 ##' 
 ##' @keywords internal 
-check_model_fn <- function(model_fn, par_fn, mfargs, verbose=FALSE){
+check_model_fn <- function(model_fn, par_fn, mfargs=NULL, outputs_class=NULL, verbose=FALSE){
     ## Test by evaluating the model function at a single set of parameters/arguments
     pars <- check_parfn1(par_fn, model_fn, mfargs)
     defaults <- get_default_args(model_fn, pars)
@@ -18,11 +18,15 @@ check_model_fn <- function(model_fn, par_fn, mfargs, verbose=FALSE){
     if (is.vector(res)){
         class(model_fn) <- c("nb", attr(model_fn, "class"))
         attr(model_fn, "nopt") <- length(res)
+        if (identical(outputs_class, "cea"))
+          stop("output of model_fn should have two rows if `outputs` is in cost-effectiveness format")
     }  else if (is.matrix(res) || is.data.frame(res)) {
         class(model_fn) <- c("cea", attr(model_fn, "class"))
         attr(model_fn, "nopt") <- ncol(res)
         if (nrow(res) != 2) {
             stop("If `model_fn` returns a matrix or data frame it should have two rows, one for effects and one for costs")
+        if (identical(outputs_class, "nb"))
+          stop("output of model_fn should be a vector if `outputs` is in cost-effectiveness format")
         }
     } else stop("`model_fn` should return a vector, matrix or data frame")
     if (verbose) 
@@ -44,7 +48,7 @@ describe_modelfn.cea <- function(model_fn, ...){
     message(sprintf("model_fn returns effects and costs for %s decision option%s", attr(model_fn, "nopt"), plural))
 }
 
-check_parfn1 <- function(par_fn, model_fn, mfargs){
+check_parfn1 <- function(par_fn, model_fn, mfargs=NULL){
     fn_try <- try(pars <- par_fn(1), silent=TRUE)
     if (inherits(fn_try, "try-error")){
         stop("Evaluating `par_fn` returned the following error:\n", 
@@ -63,7 +67,8 @@ check_parfn1 <- function(par_fn, model_fn, mfargs){
     }
     model_pars <- names(formals(model_fn))
     defaults <- get_default_args(model_fn, pars)
-    missing_pars <- setdiff(model_pars, c(names(pars),names(mfargs),names(defaults)))
+    supplied_pars <- c(names(pars),names(mfargs),names(defaults))
+    missing_pars <- setdiff(model_pars, supplied_pars)
     if (length(missing_pars) > 0)
         stop("The following parameters of `model_fn` were not found in the components of pars(1) or in the `...` argument: ",paste(missing_pars,collapse=","))
     pars 

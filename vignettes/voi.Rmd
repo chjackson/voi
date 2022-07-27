@@ -377,7 +377,7 @@ The function must return a data frame with one row per sample, and one column pe
 
 The function `datagen_normal` below does this in a vectorised way for the example.  Each row of the returned data frame is based on a different simulated $p_1$ taken from the first column of `inputs`, and contains a summary statistic $\bar{x}$ obtained from a dataset generated conditionally on that value of $p_1$.   
 
-The sample size is included as an argument `n` to the data generation function.  The names of the returned data-frame can be anything (`xbar` was used in this case to be descriptive).
+The sample size is included as an argument `n` to the data generation function.  The names of the returned data frame can be anything (`xbar` was used in this case to be descriptive).
 
 The `evsi` function can then be used to compute the EVSI for a series of different sample sizes from this design.  Note how the EVSI converges to the EVPPI as the sample size increases. 
 

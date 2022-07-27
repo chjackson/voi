@@ -1,5 +1,4 @@
 TODO\.md
-R/evsi_mm.R
 data-raw
 ^\.travis\.yml$
 ^.*\.Rproj$

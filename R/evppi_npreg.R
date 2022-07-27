@@ -25,12 +25,16 @@ evppi_npreg.nb <- function(outputs, inputs, pars, method, se, B, verbose, ...){
 
 evppi_npreg.cea <- function(outputs, inputs, pars, method, se, B, verbose, ...){
     wtp <- outputs$k
-    nwtp <- length(wtp)
-    res <- resse <- numeric(nwtp)
     if (verbose) message("Fitting nonparametric regression for costs") 
     cfit <- fitted_npreg(outputs$c, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
     if (verbose) message("Fitting nonparametric regression for effects") 
     efit <- fitted_npreg(outputs$e, inputs=inputs, pars=pars, method=method, se=se, B=B, verbose=verbose, ...)
+    calc_evppi_ce(cfit, efit, wtp, se=se, B=B, verbose=verbose)
+}
+
+calc_evppi_ce <- function(cfit, efit, wtp, se=FALSE, B=0, verbose=FALSE){
+    nwtp <- length(wtp)
+    res <- resse <- numeric(nwtp)
     for (i in 1:nwtp){
         evppi_rep <- numeric(B)
         inbfit <- efit*wtp[i] - cfit
@@ -50,7 +54,7 @@ evppi_npreg.cea <- function(outputs, inputs, pars, method, se, B, verbose, ...){
     res
 }
 
-fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B, verbose, ...){
+fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B=NULL, verbose, ...){
     nopt <- ncol(nb)
     nsim <- nrow(nb)
     ## Transforming to incremental net benefit allows us to do one fewer regression

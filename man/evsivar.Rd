@@ -13,12 +13,6 @@ evsivar(
   n = 100,
   aux_pars = NULL,
   method = NULL,
-  likelihood = NULL,
-  analysis_model = NULL,
-  analysis_options = NULL,
-  decision_model = NULL,
-  Q = 30,
-  npreg_method = "gam",
   nsim = NULL,
   verbose = TRUE,
   ...
@@ -68,15 +62,13 @@ Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 \item the returned data frame should have number of rows equal to the number of parameter simulations in \code{inputs}.
 \item if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
 \item the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
-}
-
-Examples of this are currently in the \code{tests/tests_slow} package directory.}
+}}
 
 \item{pars}{Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
 
 For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
 
-The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.}
+The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
@@ -86,28 +78,6 @@ fixed standard deviation in the \code{"normal_known"} model.}
 
 \item{method}{See \code{\link{evsi}}, only nonparametric regression methods are
 currently supported in \code{\link{evsivar}}.}
-
-\item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
-\enumerate{
-\item a data frame of predicted data. Columns are defined by the number of outcomes in the data, and names matching the data frame returned by \code{datagen_fn}.
-\item a data frame of parameter values, whose names should all correspond to variables in \code{inputs}.
-}
-
-The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.
-
-Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} in the package directory.
-
-Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.}
-
-\item{analysis_model}{Function which fits a Bayesian model to the generated data.   Under development (need to decide format, output, JAGS dependencies, etc.). Required for \code{method="mm"} (and Jalal method if n0 not given)}
-
-\item{analysis_options}{List of arguments required by \code{analysis_model}.  Under development - for \code{method="mm"} and Jalal method.}
-
-\item{decision_model}{Function which evaluates the decision-analytic model, given parameter values.  Under development - for \code{method="mm"} and Jalal method.  Need to decide the required format for nb, c, e output.}
-
-\item{Q}{Number of quantiles to use in \code{method="mm"} (under development).}
-
-\item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.  This is passed to \code{\link{evppi}} as the \code{method} argument.}
 
 \item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
 

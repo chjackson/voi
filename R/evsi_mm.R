@@ -2,145 +2,170 @@ evsi_mm <- function(outputs,
                     inputs,
                     pars,
                     datagen_fn,
-                    analysis_model,
-                    analysis_options,
-                    decision_model,
-                    n=100, likelihood,
+                    study, 
+                    analysis_fn,
+                    analysis_args,
+                    model_fn,
+                    par_fn,
+                    n=100, 
                     Q,
                     npreg_method="gam",
                     verbose, ...){
-    ## might be neater to have just one function that does both nb and cea formats 
-    if (inherits(outputs,"nb")){
-        evsi_mm_nb(nb=outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
-                   Q=Q, 
-                   analysis_model=analysis_model,
-                   analysis_options=analysis_options,
-                   decision_model=decision_model, 
-                   npreg_method=npreg_method,
-                   verbose=verbose, ...)
+  model_fn <- check_model_fn(model_fn, par_fn, mfargs=NULL, class(outputs)[1], verbose=verbose)
+
+  ## TODO check analysis_fn has required arguments (data, args, pars)
+  analysis_fn <- form_analysis_fn(study, analysis_fn) 
+
+  if (length(n) > 1)
+    stop("Only one sample size `n` at a time is currently handled in method=`mm`")
+  ## Get quantiles of input parameters from PSA sample 
+  quants <- mm_gen_quantiles(pars, inputs, Q)
+  if (inherits(outputs,"nb")){
+    evsi_mm_nb(outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+               quants=quants, Q=Q, 
+               analysis_fn=analysis_fn,
+               analysis_args=analysis_args,
+               model_fn=model_fn, 
+               par_fn=par_fn,
+               npreg_method=npreg_method,
+               verbose=verbose, ...)
+  }
+  else if (inherits(outputs,"cea")) {
+    evsi_mm_cea(outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+                quants=quants, Q=Q, 
+                analysis_fn=analysis_fn,
+                analysis_args=analysis_args,
+                model_fn=model_fn, 
+                par_fn=par_fn,
+                npreg_method=npreg_method,
+                verbose=verbose, ...)
+  }
+}
+
+evsi_mm_nb <- function(outputs, inputs, pars, datagen_fn, n,
+                       quants, Q, 
+                       analysis_fn,
+                       analysis_args,
+                       model_fn, 
+                       par_fn,
+                       npreg_method="gam",
+                       verbose=FALSE, ...){
+  fits <- evsi_mm_core(nb=outputs, inputs, pars, datagen_fn, n, quants, Q,
+                       analysis_fn, analysis_args,
+                       model_fn, par_fn, output_row=NULL, npreg_method, verbose, ...)  
+  res <- data.frame(
+    n = n,
+    evsi = calc_evppi(fits$fit_rescaled),
+    evppi = calc_evppi(fits$fit)
+  )
+  if (res$evppi < res$evsi) warning("EVSI > EVPPI may result from approximation error")
+  res
+}
+
+evsi_mm_cea <- function(outputs, inputs, pars, datagen_fn, n,
+                        quants, Q, 
+                        analysis_fn,
+                        analysis_args,
+                        model_fn, 
+                        par_fn,
+                        npreg_method="gam",
+                        verbose=FALSE, ...){
+  cfits <- evsi_mm_core(outputs$c, inputs, pars, datagen_fn, n, quants, Q,
+                        analysis_fn, analysis_args,
+                        model_fn, par_fn,
+                        output_row = "c",
+                        npreg_method, verbose, ...)
+  efits <- evsi_mm_core(outputs$e, inputs, pars, datagen_fn, n, quants, Q,
+                        analysis_fn, analysis_args,
+                        model_fn, par_fn,
+                        output_row = "e",
+                        npreg_method, verbose, ...)
+  evsi <- calc_evppi_ce(cfits$fit_rescaled, efits$fit_rescaled, outputs$k, verbose=verbose)$evppi
+  evppi <- calc_evppi_ce(cfits$fit, efits$fit, outputs$k, verbose=verbose)
+  res <- cbind(evppi, n=n, evsi=evsi)
+  res
+}
+
+evsi_mm_core <- function(nb, # could actually be nb, or c, or e
+                         inputs, pars, datagen_fn, n,
+                         quants, Q, 
+                         analysis_fn,
+                         analysis_args,
+                         model_fn, 
+                         par_fn,
+                         output_row=NULL,
+                         npreg_method="gam",
+                         verbose=FALSE, ...){
+  ## Generate future data given Q quantiles
+  var_sim <- matrix(nrow=Q, ncol=ncol(nb)-1)
+  pb <- progress::progress_bar$new(total = Q) 
+  for(i in 1:Q){
+    ## Generate one dataset given parameters equal to a specific prior quantile
+    simdata <- datagen_fn(inputs = quants[i,,drop=FALSE], n = n, pars=pars)
+
+    ## Fit Bayesian model to future data to get a sample from posterior(pars|simdata)
+    postpars <- analysis_fn(simdata, analysis_args, pars)
+    niter <- nrow(postpars)
+    
+    ## Combine with samples from the prior for remaining parameters of the decision model
+    modelpars <- par_fn(niter)
+    modelpars <- modelpars[names(formals(model_fn))]
+    modelpars[names(postpars)] <- postpars
+    
+    ## Run the decision model, giving a sample from posterior(INB|simdata)
+    inbpost <- matrix(nrow=niter, ncol=ncol(nb)-1)
+    for (j in 1:niter){
+      ## TODO check handles error for nb 1 col or otherwise wrong format 
+      nbpost <- do.call(model_fn, modelpars[j,,drop=FALSE])
+      if (!is.null(output_row)) nbpost <- nbpost[mfi(nbpost)[[output_row]],]
+      inbpost[j,] <- nbpost[-1] - nbpost[1]
     }
-    else if (inherits(outputs,"cea")){
-        evsi_mm_cea(costs=outputs$c, effects=outputs$e, wtp=outputs$k,
-                    inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
-                    Q=Q, 
-                    analysis_model=analysis_model,
-                    analysis_options=analysis_options,
-                    decision_model=decision_model, 
-                    npreg_method=npreg_method,
-                    verbose=verbose, ...)
-    }
+    var_sim[i,] <- apply(inbpost, 2, var) # TODO CHECK works with >2 decision options 
+    pb$tick()
+  }
+  mean_prep_var <- apply(var_sim, 2, mean)
+  inbprior <- nb[,-1,drop=FALSE] - nb[,1]
+  prior_var <- apply(inbprior, 2, var)
+  var_prep_mean <- max(0, prior_var - mean_prep_var)  # Why is the 0 needed here? Monte Carlo error?
+  
+  ## Calculate fitted values for EVPPI
+  fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
+  fitn1 <- fit[,-1,drop=FALSE]
+  var_fit <- apply(fitn1, 2, var)
+  mean_fit <- apply(fitn1, 2, mean)
+  
+  ## s1/s2 is the prop of variance explained by new data.
+  ## if 1 then EVSI=EVPPI.  if 0 then EVSI=0. 
+  s1 <- sqrt(var_prep_mean)
+  s2 <- sqrt(var_fit)
+  fit_rescaled <- (fitn1 - mean_fit) * s1/s2 + mean_fit
+  fit_rescaled <- cbind(0, fit_rescaled)
+
+  list(fit=fit, fit_rescaled=fit_rescaled, p_shrink=s1/s2)
 }
 
-evsi_mm_nb <- function(nb, inputs, pars, datagen_fn, n, Q=Q, 
-                       analysis_model,
-                       analysis_options,
-                       decision_model, 
-                       npreg_method,
-                       verbose, ...){
-
-    ## TODO adapt from EVSI package
-
-    ## Get quantiles of input parameters from PSA sample 
-    ## TODO multiple sample sizes argument to this 
-    quants <- mm_gen_quantiles(pars, inputs, Q)
-
-    ## Instead of a monolithic "mm.post.var" function
-    ## break it down into logical steps
-    ## generate data / fit bayesian model / run HE model 
-
-    ## Generate future data given Q quantiles
-    var_sim <- vector(Q, mode="list")
-    for(i in 1:Q){
-        simdata <- datagen_fn(quants[i,], quants[i,"N"])
-
-        ## Fit Bayesian model to future data to get posterior
-        ## Skeleton example of an "analysis_model" function is analysis_model_jags below. 
-        postpars <- analysis_model(simdata, analysis_options)
-
-        ## TODO append simulations from the prior for all parameters in the decision model
-        ## Users could specify these in analysis_model through extra pars in their JAGS model that are simulated from their priors
-        ## Any not supplied there might be filled in through an extra user-supplied function to simulate parameters from the model - a built-in example is chemo_prior_pars 
-        
-        ## Run HE model again with posterior sample (TODO get exact arg formats correct )
-        inb <- decision_model(postpars)
-        var_sim[[q]] <- var(inb)
-    }
-
-    ## Calculate EVPPI
-    ## version that works on net benefit 
-    evppi_fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
-
-    ## version that splits costs, effects and WTP 
-#    evppi_cfit <- fitted_npreg(costs, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
-#    evppi_efit <- fitted_npreg(effects, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
-
-    ## Now rewrite evsi.calc.   Instead of accepting a monolithic mm.var object,
-    ## break that object into logical components that might come from inputs to evsi_mm_nb: 
-    ## * simulated variances
-    ## * EVPPIs 
-    ## * original simulations from decision model 
-    ## * WTPs [ will need to handle in evsi_mm_cea method, but not in evsi_mm_nb ] 
-    ## * sample sizes 
-
-    evsi <- evsi.calc(var_sim,    # simulated variances 
-                      evppi_res,  # EVPPI results  [ todo handle nb and cea formats ] 
-                      nb,         # 
-                      wtp=NULL,
-                      N=NULL,
-                      CI=NULL)
-
-    ## Perhaps split into two functions, one to calculate EVSI the standard moment-matching way, and a second function to interpolate EVSIs for different sample sizes by regression 
-    ## For multiple sample sizes, I reckon to just use our favourite MCMC updater to do the nonlinear regression.
-    ## It's a different situation from when the user specifies the Bayesian model governing their proposed study.
-    ## Here the Bayesian model is pre-specified, so we can pre-specify our favourite software to fit it [ though will it always follow the same functional shape ? ]
-
-    ## Return object of similar format so we can do same output analysis / graph things as EVSI package
-}
-
-## Example of "analysis_model" function that user could supply 
-## Main thing user needs to supply is a textfile of JAGS model code
-## All data needed by this model should be returned by the user-supplied datagen_fn. 
-## User would call evsi(..., analysis_model = analysis_model_jags, analysis_options = list(jags_model_file = "my_model.txt", nburn=1000, niter=10000))
-
-analysis_model_jags <- function(simdata, jags_options){
-    if (is.null(jags_options$model_file)) stop("JAGS model file must be specified in `analysis_options`") 
-    if (is.null(jags_options$nburn)) nburn <- 1000
-    if (is.null(jags_options$niter)) niter <- 10000  # or such like 
-    ## then convert simdata from data frame to JAGS format
-
-    ## build inits
-
-    ## run JAGS
-
-    ## extract sample from posterior, return as data frame 
-}
-
-
-## This may have some code in common with evsi_mm_nb
-## Let's see how it works out
-## Or just have one function that does both if it turns out tidier. 
-
-evsi_mm_cea <- function(costs, effects, wtp, inputs, pars, datagen_fn, n, Q=Q, 
-                    analysis_model,
-                    decision_model, 
-                    npreg_method,
-                    verbose, ...){
-}
-
-
-mm_gen_quantiles <- function(pars, inputs, Q, N.size = NULL){
+#' @param pars Character vector of parameters of interest 
+#'
+#' @param inputs Data frame with sampled values from current distribution of `pars`
+#'
+#' @param Q Number of equally-spaced quantiles to generate 
+#'
+#' @return Data frame with one column for each parameter in `pars` and one row per quantile
+#' For each variable, the quantiles are randomly permuted.
+#'
+#' A future version of this function should perhaps use a Latin hypercube instead, see the quasi Monte
+#' Carlo stuff
+#' 
+#' @noRd
+mm_gen_quantiles <- function(pars,
+                             inputs,
+                             Q,
+                             N.size = NULL){
     quantiles.parameters <- array(NA, dim = c(Q, length(pars)))
     colnames(quantiles.parameters) <- pars
     for(i in 1:length(pars)){
         quantiles.parameters[,i] <- sample(quantile(inputs[,pars[i]],
                                                     probs = 1:Q / (Q + 1), type = 4))
     }
-
-# TODO handle multiple sample sizes    
-#    if (!is.null(N.size)) {
-#        N.size <- round(exp(seq(log(min(N.size)),log(max(N.size)),length.out = Q)))
-#        quantiles.aug <- cbind(quantiles.parameters, N = N.size)
-#        quantiles.parameters <- quantiles.aug
-#    }
     as.data.frame(quantiles.parameters)
 }

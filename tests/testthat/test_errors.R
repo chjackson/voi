@@ -1,5 +1,10 @@
 context("Error handling")
 
+pi1 <- "p_side_effects_t1"
+pi2 <- "p_side_effects_t2"
+rho <- "logor_side_effects"
+pars <- c(pi1, pi2)
+
 test_that("Basic inputs are of the right format",{
     pars <- "effect"
 
@@ -25,7 +30,8 @@ test_that("Basic inputs are of the right format",{
 
 
 test_that("Errors in data generating function", { 
-    expect_error(evsi(chemo_nb, chemo_pars, pars=pars, nsim=1000, datagen_fn="foo", verbose=FALSE),
+    pars <- c(pi1, pi2)
+  expect_error(evsi(chemo_nb, chemo_pars, pars=pars, nsim=1000, datagen_fn="foo", verbose=FALSE),
              "`datagen_fn` should be a function")
     expect_error(evsi(chemo_nb, chemo_pars, pars=pars, nsim=1000, verbose=FALSE),
                  "`datagen_fn` should be supplied if `study` is not supplied")
@@ -59,8 +65,8 @@ test_that("Errors in data generating function", {
 example_datagen_fn <- function(inputs, n=150){
     nsim <- nrow(inputs)
     with(inputs, { 
-        X.SE1 <- rbinom(nsim, size=n, prob=pi1)
-        X.SE2 <- rbinom(nsim, size=n, prob=pi2)
+        X.SE1 <- rbinom(nsim, size=n, prob=p_side_effects_t1)
+        X.SE2 <- rbinom(nsim, size=n, prob=p_side_effects_t2)
         data.frame(X.SE1, X.SE2)
     })
 }
@@ -93,3 +99,4 @@ test_that("Errors in likelihood for importance sampling method", {
                  "likelihood function returns a vector of length")
 
 })
+

@@ -16,22 +16,16 @@
 ##'
 ##' @export
 evsivar <- function(outputs,
-                 inputs,
-                 study=NULL,
-                 datagen_fn=NULL,
-                 pars=NULL,
-                 n=100,
-                 aux_pars=NULL, 
-                 method=NULL, # TODO speficy gam here or npreg? 
-                 likelihood=NULL,
-                 analysis_model=NULL,
-                 analysis_options=NULL,
-                 decision_model=NULL,
-                 Q=30,
-                 npreg_method="gam",
-                 nsim=NULL,
-                 verbose=TRUE, 
-                 ...)
+                    inputs,
+                    study=NULL,
+                    datagen_fn=NULL,
+                    pars=NULL,
+                    n=100,
+                    aux_pars=NULL, 
+                    method=NULL,
+                    nsim=NULL,
+                    verbose=TRUE, 
+                    ...)
 {
     inputs <- check_inputs(inputs, iname=deparse(substitute(inputs)))
     check_outputs_vector(outputs, inputs)

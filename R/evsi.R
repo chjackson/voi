@@ -46,13 +46,11 @@
 ##'
 ##' 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
 ##'
-##' Examples of this are currently in the \code{tests/tests_slow} package directory.
-##'
 ##' @param pars Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
 ##'
 ##' For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
 ##' 
-##' The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood} if used TODO ALSO in \code{analysis_model} and \code{model}?) and only these variables.
+##' The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.
 ##'
 ##' @param n Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument. 
 ##'
@@ -66,11 +64,9 @@
 ##'
 ##' \code{"is"} for importance sampling (Menzies 2016)
 ##'
-##' \code{"mm"} for moment matching (Heath et al 2018) (TODO not implemented yet) 
+##' \code{"mm"} for moment matching (Heath et al 2018) (experimental and only partially implemented) 
 ##'
-##' Note that the  \code{"is"} and \code{"mm"} (and Jalal) methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}. 
-##' 
-##' The Heath et al. and Jalal et al. methods are under development.
+##' Note that the  \code{"is"} and \code{"mm"} methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}. 
 ##'
 ##' @param likelihood Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
 ##'
@@ -84,11 +80,21 @@
 ##'
 ##' Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.
 ##'
-##' @param analysis_model Function which fits a Bayesian model to the generated data.   Under development (need to decide format, output, JAGS dependencies, etc.). Required for \code{method="mm"} (and Jalal method if n0 not given)
+##' @param analysis_fn Function which fits a Bayesian model to the generated data.   Required for \code{method="mm"} if \code{study} is not supplied.  This should be a function that takes the following arguments:
 ##'
-##' @param analysis_options List of arguments required by \code{analysis_model}.  Under development - for \code{method="mm"} and Jalal method. 
+##' `data`: A data frame with names matching the output of `datagen_fn`
 ##'
-##' @param decision_model Function which evaluates the decision-analytic model, given parameter values.  Under development - for \code{method="mm"} and Jalal method.  Need to decide the required format for nb, c, e output.
+##' `args`: A list with constants required in the Bayesian analysis, e.g. prior parameters, or options for the analysis, e.g. number of MCMC simulations.
+##'
+##' `pars` Names of the parameters whose posterior is being sampled. 
+##'
+##' The function should return a data frame with names matching `pars`, containing a sample from the posterior distribution of the parameters given data supplied through `data`, and prior supplied through `args`. 
+##'
+##' @param analysis_args List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for \code{method="mm"}, whether the study design is specified through \code{study} or through \code{analysis_fn}.  TODO document these for the built in designs.
+##'
+##' @param model_fn Function which evaluates the decision-analytic model, given parameter values.  Required for \code{method="mm"}.  See \code{\link{evppi_mc}} for full specification. 
+##'
+##' @param par_fn Function to simulate values from the uncertainty distributions of parameters needed by the decision-analytic model.  Should take one argument and return a data frame with one row for each simulated value, and one column for each parameter.  See \code{\link{evppi_mc}} for full specification. 
 ##'
 ##' @param Q Number of quantiles to use in \code{method="mm"} (under development). 
 ##'
@@ -106,9 +112,6 @@
 ##'
 ##' Heath, A., Manolopoulou, I., & Baio, G. (2018). Efficient Monte Carlo estimation of the expected value of sample information using moment matching. Medical Decision Making, 38(2), 163-173.
 ##'
-##' Jalal, H., & Alarid-Escudero, F. (2018). A Gaussian approximation approach for value of information analysis. Medical Decision Making, 38(2), 174-188.
-##' 
-##'
 ##' @export
 evsi <- function(outputs,
                  inputs,
@@ -119,9 +122,10 @@ evsi <- function(outputs,
                  aux_pars=NULL, 
                  method=NULL,
                  likelihood=NULL,
-                 analysis_model=NULL,
-                 analysis_options=NULL,
-                 decision_model=NULL,
+                 analysis_fn=NULL,
+                 analysis_args=NULL,
+                 model_fn=NULL,
+                 par_fn=NULL,
                  Q=30,
                  npreg_method="gam",
                  nsim=NULL,
@@ -132,6 +136,7 @@ evsi <- function(outputs,
     check_inputs(inputs)
     check_ss(n)
     outputs <- check_outputs(outputs, inputs)
+    check_pars(pars, inputs, evppi=FALSE)
     if (is.null(method))
         method <- default_evsi_method()
 
@@ -154,15 +159,16 @@ evsi <- function(outputs,
                 aux_pars=aux_pars, likelihood=likelihood,
                 npreg_method=npreg_method, verbose=verbose, ...)
     } else if (method=="mm") {
-        stop("Moment matching method currently not implemented")
-#        evsi_mm(outputs=outputs, inputs=inputs, 
-#                pars=pars, datagen_fn=datagen_fn, n=n, Q=Q,
-#                aux_pars = aux_pars, 
-#                analysis_model=analysis_model,
-#                analysis_options=analysis_options,
-#                decision_model=decision_model, 
-#                npreg_method=npreg_method,
-#                verbose=verbose, ...)
+        res <- evsi_mm(outputs=outputs, inputs=inputs, 
+                       pars=pars, datagen_fn=datagen_fn,
+                       study=study, 
+                       analysis_fn=analysis_fn,
+                       analysis_args=analysis_args,
+                       model_fn=model_fn, 
+                       par_fn=par_fn, 
+                       n=n, Q=Q,
+                       npreg_method=npreg_method,
+                       verbose=verbose, ...)
     }
     else stop("Other methods not implemented yet")
     attr(res, "method") <- method
@@ -200,18 +206,22 @@ default_evsi_method <- function(){
     "gam"
 }
 
+check_study <- function(study) {
+    if (!is.character(study) || (!(study %in% studies_builtin)))
+      stop("``study` should be a character string matching one of the supported study designs")
+}
+
 form_datagen_fn <- function(study, datagen_fn, inputs, aux_pars=NULL){
-    if (!is.null(study)){
-        if (!is.character(study) || (!(study %in% studies_builtin)))
-            stop("``study` should be a character string matching one of the supported study designs")
-        else datagen_fn <- get(sprintf("datagen_%s", study))
-    } else {
-        if (is.null(datagen_fn)) stop("`datagen_fn` should be supplied if `study` is not supplied")
-        if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
-        formals(datagen_fn) <- c(formals(datagen_fn), list(pars=NULL))
-        check_datagen_fn(datagen_fn, inputs, aux_pars)
-    }
-    datagen_fn
+  if (!is.null(study)) {
+    check_study(study)
+    datagen_fn <- get(sprintf("datagen_%s", study))
+  } else {
+    if (is.null(datagen_fn)) stop("`datagen_fn` should be supplied if `study` is not supplied")
+    if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
+    formals(datagen_fn) <- c(formals(datagen_fn), list(pars=NULL))
+    check_datagen_fn(datagen_fn, inputs, aux_pars)
+  }
+  datagen_fn
 }
 
 check_datagen_fn <- function(datagen_fn, inputs, pars=NULL, aux_pars=NULL){
@@ -235,6 +245,19 @@ check_datagen_fn <- function(datagen_fn, inputs, pars=NULL, aux_pars=NULL){
     if (nrow(ret) != nrow(inputs)){
         stop(sprintf("`datagen_fn` returns a data frame with %s rows. There should be %s rows, the same number of rows as `inputs`", nrow(ret), nrow(inputs)))
     }
+}
+
+form_analysis_fn <- function(study, analysis_fn){
+  if (!is.null(study)){
+    check_study(study)
+    analysis_fn <- get(sprintf("analysis_%s", study))
+  } else {
+    if (is.null(analysis_fn)) stop("`analysis_fn` should be supplied if `study` is not supplied")
+    if (!is.function(analysis_fn)) stop("`analysis_fn` should be a function")
+#    formals(analysis_fn) <- c(formals(analysis_fn), list(pars=NULL))
+#     check_analysis_fn(analysis_fn, inputs, aux_pars) # TODO 
+  }
+  analysis_fn
 }
 
 check_ss <- function(n){

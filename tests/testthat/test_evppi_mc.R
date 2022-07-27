@@ -7,8 +7,8 @@ par_fn <- function(n){data.frame(p1 = rnorm(n, 0, s1), p2 = rnorm(n, 0, s2))}
 
 test_that("Monte Carlo EVPPI, net benefit format",{
   set.seed(1)
-  expect_equal(evppi_mc(model_fn, par_fn, pars="p1", nouter=100, ninner=50)$evppi, 0.448, tol=1e-01)
-  expect_equal(evppi_mc(model_fn, par_fn, pars="p2", nouter=100, ninner=50)$evppi, 0.602, tol=1e-01)
+  expect_equal(evppi_mc(model_fn, par_fn, pars="p1", nouter=100, ninner=50)$evppi, 0.3546835, tol=1e-01)
+  expect_equal(evppi_mc(model_fn, par_fn, pars="p2", nouter=100, ninner=50)$evppi, 0.6015171, tol=1e-01)
 })
 
 test_that("Errors in Monte Carlo EVPPI",{

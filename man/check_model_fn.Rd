@@ -5,7 +5,13 @@
 \title{Check that a decision-analytic model function is of the appropriate form.  Detect if it returns net benefit or CEA format
 note check_outputs adds a class}
 \usage{
-check_model_fn(model_fn, par_fn, mfargs, verbose = FALSE)
+check_model_fn(
+  model_fn,
+  par_fn,
+  mfargs = NULL,
+  outputs_class = NULL,
+  verbose = FALSE
+)
 }
 \value{
 A modified copy of \code{model_fn} with a \code{class} attribute indicating whether it is

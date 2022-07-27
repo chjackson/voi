@@ -5,6 +5,7 @@
 ## https://github.com/convoigroup/Chemotherapy_Book/blob/main/03_R/02_misc_functions.R
 ## on 20/07/2022 
 ## but with the constants pasted inside the functions 
+## CJ TODO also change relative risk to log odds ratio 
 
 ################################################################################
 #### Misc Functions for the Chemotherapy Model
@@ -50,64 +51,70 @@ lognPar <- function(m,s) {
 
 
 ## Function to generate the PSA parameters
+## Function to generate the PSA parameters
 generate_psa_parameters <- function(n){
-  # n: The number of PSA simulations to be drawn
-    time_horizon <- 50
-    n_patients <- 111
-    n_side_effects <- 52
-    n_hospitalised <- 43
-    n_died <- 8
+  ## n: The number of PSA simulations to be drawn
+  time_horizon <- 50
+  n_patients <- 111
+  n_side_effects <- 52
+  n_hospitalised <- 43
+  n_died <- 8
 
-    ## Parameters for the PSA distribution of the risk reduction of side effects
-    rr_side_effects_mu <- 0.67
-    rr_side_effects_sd <- 0.2
+  ## Parameters for the PSA distribution of the risk reduction of side effects
+  logor_side_effects_mu <- log(0.54)
+  logor_side_effects_sd <- 0.3
 
-    ## Parameters for the PSA distribution of the recovery time for patients who are
-    ## not hospitalised
-    p_recovery_home_mu <- 0.21
-    p_recovery_home_sd <- 0.03
+  ## Parameters for the PSA distribution of the recovery time for patients who are
+  ## not hospitalised
+  p_recovery_home_mu <- 0.21
+  p_recovery_home_sd <- 0.03
 
-    ## Parameters for the PSA distribution of the recovery time for patients who are
-    ## hospitalised
-    p_recovery_hosp_mu <- 0.03
-    p_recovery_hosp_sd <- 0.0065
+  ## Parameters for the PSA distribution of the recovery time for patients who are
+  ## hospitalised
+  p_recovery_hosp_mu <- 0.03
+  p_recovery_hosp_sd <- 0.0065
 
-    ## Parameters for the PSA distribution of the costs of treating patients at home
-    c_home_care_mu <- 830
-    c_home_care_sd <- sqrt(150)
+  ## Parameters for the PSA distribution of the costs of treating patients at home
+  c_home_care_mu <- 830
+  c_home_care_sd <- sqrt(150)
 
-    ## Parameters for the PSA distribution of the costs of treating patients in
-    ## hospital
-    c_hospital_mu <- 2400
-    c_hospital_sd <- sqrt(1880)
+  ## Parameters for the PSA distribution of the costs of treating patients in
+  ## hospital
+  c_hospital_mu <- 2400
+  c_hospital_sd <- sqrt(1880)
 
-    ## Parameters for the PSA distribution of the one-off cost of death
-    c_death_mu <- 1710
-    c_death_sd <- sqrt(760)
+  ## Parameters for the PSA distribution of the one-off cost of death
+  c_death_mu <- 1710
+  c_death_sd <- sqrt(760)
 
-    ## Parameters for the PSA distribution of the utility for recovered patients
-    u_recovery_mu <- 0.98
-    u_recovery_sd <- sqrt(0.001)
+  ## Parameters for the PSA distribution of the utility for recovered patients
+  u_recovery_mu <- 0.98
+  u_recovery_sd <- sqrt(0.001)
 
-    ## Parameters for the PSA distribution of the utility of patients who are treated
-    ## at home. 
-    u_home_care_mu <- 0.7
-    u_home_care_sd <- sqrt(0.02)
+  ## Parameters for the PSA distribution of the utility of patients who are treated
+  ## at home. 
+  u_home_care_mu <- 0.7
+  u_home_care_sd <- sqrt(0.02)
 
-    ## Parameters for the PSA distribution of the utility of treating patients in 
-    ## hospital
-    u_hospital_mu <- 0.3
-    u_hospital_sd <- sqrt(0.03)
-  
+  ## Parameters for the PSA distribution of the utility of treating patients in 
+  ## hospital
+  u_hospital_mu <- 0.3
+  u_hospital_sd <- sqrt(0.03)
+
   # Probability of side effects under treatment 1
   p_side_effects_t1 <- rbeta(n, 
                              1 + n_side_effects, 
                              1 + n_patients - n_side_effects)
   
-  # Relative risk of side effects on treatment 2
-  rr_side_effects <- rnorm(n, rr_side_effects_mu, rr_side_effects_sd)
+  # Log odds of side effects on treatment 2
+  logor_side_effects <- rnorm(n, logor_side_effects_mu, logor_side_effects_sd)
+  # Odds of side effects on treatment 1
+  odds_side_effects_t1 <- p_side_effects_t1 / (1 - p_side_effects_t1)
+  # Odds for side effects on treatment 2
+  odds_side_effects_t2 <- odds_side_effects_t1 * exp(logor_side_effects)
+
   # Probability of side effects under treatment 2
-  p_side_effects_t2 <- rr_side_effects * p_side_effects_t1
+  p_side_effects_t2    <- odds_side_effects_t2 / (1 + odds_side_effects_t2)
 
   ## Variables to define transition probabilities
   # Probability that a patient is hospitalised over the time horizon
@@ -115,7 +122,7 @@ generate_psa_parameters <- function(n){
                                 1 + n_hospitalised, 
                                 1 + n_side_effects - n_hospitalised)
   # Probability that a patient dies over the time horizon given they were 
-  # hostpialised
+  # hospitalised
   p_died <- rbeta(n, 1 + n_died, 1 + n_hospitalised - n_died)
   # Lambda_home: Conditional probability that a patient recovers considering 
   # that they are not hospitalised
@@ -158,7 +165,7 @@ generate_psa_parameters <- function(n){
     p_hospital_hospital, p_hospital_recover, p_hospital_dead, 
     c_home_care, c_hospital, c_death,
     u_recovery, u_home_care, u_hospital,
-    rr_side_effects,
+    logor_side_effects,
     p_hospitalised_total, p_died,
     lambda_home, lambda_hosp)
   

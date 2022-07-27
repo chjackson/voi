@@ -1,19 +1,11 @@
-##' Chemotherapy health economic model
-##'
-##' @aliases chemo_nb
-##' @aliases chemo_pars
-##' @aliases chemo_cea
-##'
-##' @format List
-##'
-##' @source TODO
-##'
-##' @references Convoi1
-##' @name chemo_cea
+##' @rdname chemo_model
+##' @format NULL
 "chemo_cea"
 
-#' @rdname chemo_cea
+##' @rdname chemo_model
+##' @format NULL
 "chemo_nb"
 
-#' @rdname chemo_cea
+##' @rdname chemo_model
+##' @format NULL
 "chemo_pars"

@@ -16,8 +16,12 @@
 ##' @param u_recovery Utility of a period in the recovery state 
 ##' @param u_home_care Utility of home care state 
 ##' @param u_hospital Utility of hospital state
+##'
+##' @param n Number of samples to generate from the uncertainty distribution of the parameters in \code{chemo_pars_fn}. 
 ##' 
 ##' @return
+##' Three functions are provided for the model.
+##' 
 ##' \code{chemo_model_nb} returns a vector with elements giving the net monetary benefit for standard of care
 ##' and novel treatment, respectively, at a willingness-to-pay of 20,000 pounds per QALY.
 ##'
@@ -29,9 +33,9 @@
 ##' treatment. 
 ##' 
 ##' \code{chemo_pars_fn} generates a sample from the uncertainty distribution of the parameters in the chemotherapy model . This returns a data frame with parameters matching the arguments of
-##' \code{\link{chemo_model_nb}}.  Additional derived parameters are: 
+##' \code{\link{chemo_model_nb}}, and the following additional derived parameters: 
 ##'
-##' * `rr_side_effects`: relative risk of side effects for treatment 2 compared to 1
+##' * `logor_side_effects`: log odds ratio of side effects for treatment 2 compared to 1
 ##' 
 ##' * `p_hospitalised_total`: probability of hospitalisation over the 50 year time horizon
 ##' 
@@ -41,6 +45,18 @@
 ##' 
 ##' * `lambda_hosp`: conditional probability that a patient in hospital recovers given they do not die
 ##'
+##' @format Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
+##' following data objects:
+##' \describe{
+##' \code{chemo_pars}: Sample from the distributions of the parameters, as a data frame with names as documented above.
+##'
+##' \code{chemo_cea}: List with components `e` (sampled effects), `c` (sampled costs), and `k` (a set of five
+##' equally-spaced willingess-to-pay values from 10000 to 50000 pounds).   The effects and costs are data frames
+##' with two columns, one for each decision option. 
+##'
+##' \code{chemo_nb}: Data frame with two columns, giving the net monetary benefit for each decision option,
+##' at a willingness-to-pay of 20000 pounds. 
+##' }
 ##' @name chemo_model
 NULL
 
@@ -59,6 +75,8 @@ chemo_model_nb <- function(p_side_effects_t1,
                            c_home_care, c_hospital, c_death,
                            u_recovery, u_home_care, u_hospital)
 {
+    if (length(p_side_effects_t1) > 1)
+        stop("This function is not vectorised, and parameters should be supplied as scalars")
     ce <- calculate_costs_effects(p_side_effects_t1, 
                                   p_side_effects_t2,
                                   p_home_home, p_home_hospital, p_home_recover,
@@ -77,6 +95,8 @@ chemo_model_cea <- function(p_side_effects_t1,
                             c_home_care, c_hospital, c_death,
                             u_recovery, u_home_care, u_hospital)
 {
+    if (length(p_side_effects_t1) > 1)
+        stop("This function is not vectorised, and parameters should be supplied as scalars")
     ce <- calculate_costs_effects(p_side_effects_t1, 
                                   p_side_effects_t2,
                                   p_home_home, p_home_hospital, p_home_recover,
