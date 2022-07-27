@@ -230,7 +230,7 @@ evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla", pfc_struc="iso")
 
 This is a promising novel method for calculating multiparameter EVPPI:
 
-```{r,eval=TRUE}
+```{r,eval=FALSE}
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="bart")
 ```
 
@@ -278,7 +278,7 @@ evppi(outputs_nb, inputs, pars="p1", method="sal")
 
 
 
-### Traditional Monte Carlo nested loop method
+### Traditional Monte Carlo nested loop method {#evppimc}
 
 (see e.g. [Brennan et al.](https://doi.org/10.1177/0272989x07302555))
 
@@ -394,7 +394,7 @@ evsi(outputs_nb, inputs, datagen_fn = datagen_normal, n=c(10,100,1000))
 
 
 
-### Built-in study designs 
+### Built-in study designs {#evsibuiltin}
 
 The function `datagen_normal` is also included in the `voi` package as a built-in study design.  To invoke the `evsi` function for a built-in study design, we have to supply the name of the design (in this case `"normal_known"`) and the name of the parameter or parameters (corresponding to a column of "inputs") which is estimated by the study data.   
 
@@ -445,10 +445,63 @@ evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is"
 ```
 
 
-### Further work
+### Moment matching method
 
-Other EVSI calculation methods (including [Heath et al](https://doi.org/10.1177/0272989X19837983)) are planned to be implemented. 
+The momemt matching method from [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) is available as `evsi(..., method="mm")`.   The implementation in the `voi` package is experimental and has not been 
+fully tested - note there is another implementation at [https://github.com/annaheath/EVSI](https://github.com/annaheath/EVSI).  
 
+The generalisation of this method to efficiently estimate the EVSI for the same design but with many different sample sizes (from [Heath et al](https://doi.org/10.1177/0272989X19837983)) has not been implemented yet, so currently `evsi(..., method="mm")` can only handle one sample size at a time. 
+
+Roughly, this method works as follows (see [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) for full details) 
+
+* a small set of values $\theta_q: q = 1,\ldots, Q$ are simulated for the decision model parameters $\theta$ ($Q<50$ is sufficient). 
+
+* for each $\theta_q$, future study data $x_q|\theta_q$ are generated from the sampling distribution (as specified through `study` for built-in study designs, or `datagen_fn` for custom designs).
+
+* a sample is generated from the posterior distribution of $\theta | x_q$.
+
+* the posterior variance $v_q$ of the decision model net benefit $NB(\theta)$ is deduced from this sample.
+
+The average posterior variance over all samples $q$ is compared to the prior variance, obtaining an estimate of the proportion of uncertainty explained by the proposed study.  This is used as a "shrinkage" factor to modify the regression-based EVPPI computation to produce an estimate of the EVSI. 
+
+To use the moment matching method, `evsi` needs to know some information that is not needed by the other EVSI calculation functions.  This includes: 
+
+* a function `model_fn` to evaluate the decision model, and a function `par_fn` to sample from the distribution of the model parameters under current information.  These are supplied in the same form as in the [EVPPI Monte Carlo method function](#evppimc), `evppi_mc`.
+
+* information about how data $x_q$ are analysed to produce the posterior.  
+
+    For the built-in study designs, nothing extra is needed from the user here, as this information is built in.  
+    
+    For custom study designs specified using `datagen_fn`, an extra function should be defined, and supplied as the `analysis_fn` argument to `evsi(..., method="mm")`.  This function should take three arguments: 
+
+    * `data` a data frame with names matching the output of `datagen_fn`
+
+    * `args` a list of required constants, e.g. prior parameters or options for posterior computation
+  
+    * `pars` names of the parameters whose posterior is being sampled.
+
+    and return a data frame with each row containing a draw from the posterior distribution of the parameters named in the columns.    If specialised Bayesian analysis software such as JAGS or Stan is needed, then this function should wrap around a complete call to this software.
+
+* `analysis_args`: a list of constants that the data analysis function needs to know.   This is needed whether or not a built-in design is used.   This would typically include parameters that define the prior distributions, and settings to control posterior computation (e.g. number of MCMC iterations).  The specific components that are needed in this list depends on the study design, as specified by `analysis_fn` or `study`. 
+
+
+#### Moment matching method: example
+
+This is the first EVSI example computation [shown above](#evsibuiltin), implemented using the moment matching method with a study sample size of 1000. 
+
+Recall the sampling distribution for the study data is a normal with known variance, specified through `study="normal_known"`.  The Bayesian inference procedure here is a simple conjugate normal analysis, and is built in to the package, so we do not need to supply `analysis_fn`. 
+
+However we do need to supply `analysis_args`.  The constants required by the conjugate normal analysis are the prior mean and SD of the parameter `p1`, and the sampling SD of $\bar{x}$ in the study (note this is a function of the study sample size).
+
+```{r,message=FALSE}
+evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1", method="mm", Q=30,
+     model_fn = model_fn_nb, par_fn = par_fn,
+     analysis_args = list(prior_mean=1, prior_sd=1, sampling_sd=1/sqrt(1000), niter=1000))
+```
+
+The result here is fairly close to the result from the regression method.
+
+A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by increasing $Q$ (default 30) in the call to `evsi`, and the number of posterior samples (default 1000) through the `niter` component of `analysis_args`.
 
 
 ## Value of Information in models for estimation

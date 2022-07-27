@@ -11,8 +11,11 @@
 ##' @keywords internal 
 check_model_fn <- function(model_fn, par_fn, mfargs=NULL, outputs_class=NULL, verbose=FALSE){
     ## Test by evaluating the model function at a single set of parameters/arguments
+    if (is.null(model_fn)) stop("`model_fn` was not supplied")
+    if (is.null(par_fn)) stop("`par_fn` was not supplied")
     pars <- check_parfn1(par_fn, model_fn, mfargs)
     defaults <- get_default_args(model_fn, pars)
+  
     res <- do.call(model_fn, c(pars, mfargs, defaults)[names(formals(model_fn))])
 
     if (is.vector(res)){

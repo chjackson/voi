@@ -147,7 +147,7 @@ The function should return a data frame with names matching \code{pars}, contain
 
 \item{par_fn}{Function to simulate values from the uncertainty distributions of parameters needed by the decision-analytic model.  Should take one argument and return a data frame with one row for each simulated value, and one column for each parameter.  See \code{\link{evppi_mc}} for full specification.}
 
-\item{Q}{Number of quantiles to use in \code{method="mm"} (under development).}
+\item{Q}{Number of quantiles to use in \code{method="mm"}.}
 
 \item{npreg_method}{Method to use to calculate the EVPPI, for those methods that require it.  This is passed to \code{\link{evppi}} as the \code{method} argument.}
 

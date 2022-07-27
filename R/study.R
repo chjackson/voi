@@ -16,6 +16,8 @@ likelihood_binary <- function(Y, inputs, n=100, pars){
     exp(loglik)
 }
 
+## TODO document analysis formats needed by each built in function 
+
 ## @param `data` A data frame with one row and the following columns
 ## `X1` a binomially-distributed outcome
 ## `N` the binomial denominator                
@@ -29,6 +31,7 @@ likelihood_binary <- function(Y, inputs, n=100, pars){
 analysis_binary <- function(data, args, pars, ...){
     if (is.null(args$niter))
       args$niter <- 1000
+    check_analysis_args(args, c("a", "b", "n")) # TODO further up 
     res <- data.frame(rbeta(args$niter,
                             shape1 = data$X1 + args$a,
                             shape2 = args$n - data$X1 + args$b))
@@ -39,6 +42,7 @@ analysis_binary <- function(data, args, pars, ...){
 analysis_trial_binary <- function(data, args, pars,...){
     if (is.null(args$niter))
       args$niter <- 1000
+    check_analysis_args(args, c("a1", "a2", "b1", "b2", "n1", "n2")) # TODO further up 
     p1 <- rbeta(args$niter,
                 shape1 = data$X1 + args$a1,
                 shape2 = args$n1 - data$X1 + args$b1)
@@ -50,7 +54,7 @@ analysis_trial_binary <- function(data, args, pars,...){
     res
 }
 
-## Could we do one that estimates of a log odds ratio from a study with two binary outcomes???
+## Could we do one that estimates a log odds ratio from a study with two binary outcomes???
 ## But if we did a study of two treatments we'd get the absolute outcomes too.
 
 ## Two-arm trial of a binary outcome
@@ -88,15 +92,10 @@ likelihood_normal_known <- function(Y, inputs, n=100, pars, sd=1){
     dnorm(Y[,"X1"], mu, sd/sqrt(n))
 }
 
-## TODO random sample from normal posterior given data of what form 
-## a summary mean from a study, called X1
-## and prior = list(prior_mean= ... prior_sd = ..., sampling_sd = )
-## with sampling variance known to be sd
-## so what is this posterior?  weighted aver of 
-
 analysis_normal_known <- function(data, args, pars,...){
   if (is.null(args$niter))
     args$niter <- 1000
+  check_analysis_args(args, c("prior_mean", "prior_sd", "sampling_sd")) # TODO further up 
   w <- args$prior_sd^2 / (args$prior_sd^2 + args$sampling_sd^2)
   post_mean <- w*data$X1 + (1-w)*args$prior_mean
   post_var <- 1 / (1 / args$prior_sd^2 + 1 / args$sampling_sd^2)
@@ -107,3 +106,10 @@ analysis_normal_known <- function(data, args, pars,...){
 
 
 studies_builtin <- c("binary","trial_binary","normal_known")
+
+check_analysis_args <- function(args, required){
+  for (i in required){
+    if (is.null(args[[i]]))
+      stop(sprintf("`%s` not supplied in `analysis_args`", i))
+  }
+}
