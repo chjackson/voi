@@ -81,8 +81,8 @@ give the model output evaluated at the corresponding parameters.</p></dd>
 <dd><p>Name of one of the built-in study types supported by this
 package for EVSI calculation.  If this is supplied, then the columns of
 <code>inputs</code> that correspond to the parameters governing the study data
-should be identified in <code>poi</code>.</p>
-<p>Currently supported studies are</p>
+should be identified in <code>pars</code>.</p>
+<p>Current built-in studies are</p>
 <p><code>"binary"</code> A study with a binary outcome observed on one sample of
 individuals.   Requires one parameter: the probability of the outcome.
 The sample size is specifed in the <code>n</code> argument to <code><a href="evsi.html">evsi()</a></code>, and
@@ -113,7 +113,7 @@ component of the <code>aux_pars</code> argument, e.g.
 <dt>pars</dt>
 <dd><p>Character vector identifying which columns of <code>inputs</code> are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the <code>study</code> argument, but not if it is specified through the <code>datagen_fn</code> argument.</p>
 <p>For example, if <code>study = "trial_binary"</code> is specified, then <code>pars</code> should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.</p>
-<p>The <code>pars</code> argument is also required for the methods which involve an intermediate EVPPI calculation, that is the <code>"is"</code> and <code>"mm"</code>.  It should consist of the variables used in the definition of <code>datagen_fn</code> (and <code>likelihood</code>, <code>analysis_fn</code> and <code>model_fn</code>, if these are used) and only these variables.</p></dd>
+<p>The <code>pars</code> argument is also required for the methods which involve an intermediate EVPPI calculation, that is, <code>method="is"</code> and <code>method="mm"</code>.  It should consist of the variables used in the definition of <code>datagen_fn</code> (and <code>likelihood</code>, <code>analysis_fn</code> and <code>model_fn</code>, if these are used) and only these variables.</p></dd>
 
 
 <dt>n</dt>

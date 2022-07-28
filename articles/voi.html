@@ -62,7 +62,7 @@
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
                         <h4 data-toc-skip class="author">Christopher Jackson</h4>
             
-            <h4 data-toc-skip class="date">2022-07-27</h4>
+            <h4 data-toc-skip class="date">2022-07-28</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -442,12 +442,12 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <p>The generalisation of this method to efficiently estimate the EVSI for the same design but with many different sample sizes (from <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>) has not been implemented yet, so currently <code>evsi(..., method="mm")</code> can only handle one sample size at a time.</p>
 <p>Roughly, this method works as follows (see <a href="https://journals.sagepub.com/doi/10.1177/0272989X17738515" class="external-link">Heath et al.</a> for full details)</p>
 <ul>
-<li><p>a small set of values <span class="math inline">\(\theta_q: q = 1,\ldots, Q\)</span> are simulated for the decision model parameters <span class="math inline">\(\theta\)</span> (<span class="math inline">\(Q&lt;50\)</span> is sufficient).</p></li>
+<li><p>a small set of values <span class="math inline">\(\theta_q: q = 1,\ldots, Q\)</span> are simulated for the decision model parameters <span class="math inline">\(\theta\)</span> (typically <span class="math inline">\(Q&lt;50\)</span> is sufficient).</p></li>
 <li><p>for each <span class="math inline">\(\theta_q\)</span>, future study data <span class="math inline">\(x_q|\theta_q\)</span> are generated from the sampling distribution (as specified through <code>study</code> for built-in study designs, or <code>datagen_fn</code> for custom designs).</p></li>
 <li><p>a sample is generated from the posterior distribution of <span class="math inline">\(\theta | x_q\)</span>.</p></li>
 <li><p>the posterior variance <span class="math inline">\(v_q\)</span> of the decision model net benefit <span class="math inline">\(NB(\theta)\)</span> is deduced from this sample.</p></li>
+<li><p>the average posterior variance over all samples <span class="math inline">\(q\)</span> is compared to the prior variance, obtaining an estimate of the proportion of uncertainty explained by the proposed study. This is used as a “shrinkage” factor to modify the regression-based EVPPI computation to produce an estimate of the EVSI.</p></li>
 </ul>
-<p>The average posterior variance over all samples <span class="math inline">\(q\)</span> is compared to the prior variance, obtaining an estimate of the proportion of uncertainty explained by the proposed study. This is used as a “shrinkage” factor to modify the regression-based EVPPI computation to produce an estimate of the EVSI.</p>
 <p>To use the moment matching method, <code>evsi</code> needs to know some information that is not needed by the other EVSI calculation functions. This includes:</p>
 <ul>
 <li><p>a function <code>model_fn</code> to evaluate the decision model, and a function <code>par_fn</code> to sample from the distribution of the model parameters under current information. These are supplied in the same form as in the <a href="#evppimc">EVPPI Monte Carlo method function</a>, <code>evppi_mc</code>.</p></li>
@@ -476,8 +476,8 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <span>     analysis_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>prior_mean<span class="op">=</span><span class="fl">1</span>, prior_sd<span class="op">=</span><span class="fl">1</span>, sampling_sd<span class="op">=</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, niter<span class="op">=</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      n       evsi      evppi</span></span>
 <span><span class="co">## 1 1000 0.07513273 0.08210074</span></span></code></pre>
-<p>The result here is fairly close to the result from the regression method.</p>
-<p>A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by increasing <span class="math inline">\(Q\)</span> (default 30) in the call to <code>evsi</code>, and the number of posterior samples (default 1000) through the <code>niter</code> component of <code>analysis_args</code>.</p>
+<p>The estimate of the EVSI is fairly close to the result from the regression method. The moment matching method also computes the regression-based estimate of the EVPPI, so this is returned alongside the EVSI estimate.</p>
+<p>A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by changing <span class="math inline">\(Q\)</span> (default 30) in the call to <code>evsi</code>, the number of posterior samples (default 1000) through the <code>niter</code> component of <code>analysis_args</code>, and the size of <code>outputs</code> and <code>inputs</code> (as in most VoI calculation methods).</p>
 </div>
 </div>
 </div>
