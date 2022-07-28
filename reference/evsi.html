@@ -147,7 +147,7 @@ component of the <code>aux_pars</code> argument, e.g.
 
 
 <dt>n</dt>
-<dd><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.</p></dd>
+<dd><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  If more than one quantity is required to describe the sample size (e.g. trials with unbalanced arms) currently you will have to write a different <code>datagen_fn</code> for each different sample size that you want the EVSI for.</p></dd>
 
 
 <dt>aux_pars</dt>
@@ -180,7 +180,11 @@ fixed standard deviation in the <code>"normal_known"</code> model.</p></dd>
 
 
 <dt>analysis_args</dt>
-<dd><p>List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for <code>method="mm"</code>, whether the study design is one of the built-in ones specified in <code>study</code>, or a custom design specifed through <code>analysis_fn</code>.  TODO document these for the built-in designs.</p></dd>
+<dd><p>List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Only used in <code>method="mm"</code>.  This is required if the study design is one of the built-in ones specified in <code>study</code>.  If a custom design is specifed through <code>analysis_fn</code>, then any constants needed in <code>analysis_fn</code> can either be supplied in <code>analysis_args</code>, or hard-coded in <code>analysis_fn</code> itself.</p>
+<p>For the built-in designs, the lists should have the following named components.  In addition for each study, to a component named <code>n</code> (the study sample size) should be supplied (TODO can't we read this from the evsi arg??).  An optional component <code>niter</code> in each case defines the posterior sample size (default 1000).</p>
+<p><code>study="binary"</code>: <code>a</code> and <code>b</code>: Beta shape parameters</p>
+<p><code>study="trial_binary"</code>: <code>a1</code> and <code>b1</code>: Beta shape parameters for the prior for the first arm,  <code>a2</code> and <code>b2</code>: Beta shape parameters for the prior for the second arm.</p>
+<p><code>study="normal_known"</code>: <code>prior_mean</code>, <code>prior_sd</code> (prior mean and standard deviation) and <code>sampling_sd</code> (SD of an individual-level normal observation, so that the sampling SD of the mean outcome over the study is <code>sampling_sd/sqrt(n)</code>.</p></dd>
 
 
 <dt>model_fn</dt>

@@ -117,7 +117,7 @@ component of the <code>aux_pars</code> argument, e.g.
 
 
 <dt>n</dt>
-<dd><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.</p></dd>
+<dd><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  If more than one quantity is required to describe the sample size (e.g. trials with unbalanced arms) currently you will have to write a different <code>datagen_fn</code> for each different sample size that you want the EVSI for.</p></dd>
 
 
 <dt>aux_pars</dt>
