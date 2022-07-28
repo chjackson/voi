@@ -64,9 +64,9 @@ give the model output evaluated at the corresponding parameters.}
 \item{study}{Name of one of the built-in study types supported by this
 package for EVSI calculation.  If this is supplied, then the columns of
 \code{inputs} that correspond to the parameters governing the study data
-should be identified in \code{poi}.
+should be identified in \code{pars}.
 
-Currently supported studies are
+Current built-in studies are
 
 \code{"binary"} A study with a binary outcome observed on one sample of
 individuals.   Requires one parameter: the probability of the outcome.
@@ -101,7 +101,7 @@ Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 
 For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
 
-The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
+The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is, \code{method="is"} and \code{method="mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
@@ -111,7 +111,7 @@ fixed standard deviation in the \code{"normal_known"} model.}
 
 \item{method}{Character string indicating the calculation method.
 
-All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistic of the predicted data (Strong et al 201?).   Defaults to \code{"gam"}.
+All the nonparametric regression methods supported for \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be used for EVSI calculation by regressing on a summary statistic of the predicted data (Strong et al 2015).   Defaults to \code{"gam"}.
 
 \code{"is"} for importance sampling (Menzies 2016)
 
@@ -119,19 +119,17 @@ All the nonparametric regression methods supported for \code{\link{evppi}}, that
 
 Note that the  \code{"is"} and \code{"mm"} methods are used in conjunction with nonparametric regression, thus the \code{gam_formula} argument can be supplied to \code{evsi} to specify this regression - see \code{\link{evppi}}.}
 
-\item{likelihood}{Likelihood function, required (and only required) for the importance sampling method.  This should have two arguments as follows:
+\item{likelihood}{Likelihood function, required (and only required) for the importance sampling method when a study design other than one of the built-in ones is used.  This should have two arguments as follows:
 \enumerate{
 \item a data frame of predicted data. Columns are defined by the number of outcomes in the data, and names matching the data frame returned by \code{datagen_fn}.
 \item a data frame of parameter values, whose names should all correspond to variables in \code{inputs}.
 }
 
-The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.
-
-Examples of this are currently in \code{tests/tests_slow} and \code{tests/testthat} in the package directory.
+The function should return a vector whose length matches the number of rows of the parameters data frame given as the second argument.   Each element of the vector gives the likelihood of the corresponding set of parameters, given the data in the first argument.  An example is given in the vignette.
 
 Note the definition of the likelihood should agree with the definition of \code{datagen_fn} to define a consistent sampling distribution for the data.}
 
-\item{analysis_fn}{Function which fits a Bayesian model to the generated data.   Required for \code{method="mm"} if \code{study} is not supplied.  This should be a function that takes the following arguments:
+\item{analysis_fn}{Function which fits a Bayesian model to the generated data.   Required for \code{method="mm"} if a study design other than one of the built-in ones is used.  This should be a function that takes the following arguments:
 
 \code{data}: A data frame with names matching the output of \code{datagen_fn}
 
@@ -141,7 +139,7 @@ Note the definition of the likelihood should agree with the definition of \code{
 
 The function should return a data frame with names matching \code{pars}, containing a sample from the posterior distribution of the parameters given data supplied through \code{data}, and prior supplied through \code{args}.}
 
-\item{analysis_args}{List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for \code{method="mm"}, whether the study design is specified through \code{study} or through \code{analysis_fn}.  TODO document these for the built in designs.}
+\item{analysis_args}{List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for \code{method="mm"}, whether the study design is one of the built-in ones specified in \code{study}, or a custom design specifed through \code{analysis_fn}.  TODO document these for the built-in designs.}
 
 \item{model_fn}{Function which evaluates the decision-analytic model, given parameter values.  Required for \code{method="mm"}.  See \code{\link{evppi_mc}} for full specification.}
 

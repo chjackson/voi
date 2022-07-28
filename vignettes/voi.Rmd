@@ -367,6 +367,7 @@ The sample mean is distributed as $\bar{x} \sim N(p_1, \sigma / \sqrt{n})$.   Su
 To calculate the EVSI using this method, we generate a sample from the _predictive distribution_ of this summary statistic under current information.  This is achieved by generating a value of $p_1$ from its current $N(1,1)$ distribution, followed by a value of $\bar{x}$ from $N(p_1, \sigma / \sqrt{n})$.
 
 
+
 ### Function to generate study data
 
 The function should generate a sample from the predictive distribution of the summary statistic, given a sample `inputs` from the current uncertainty distribution of the parameters. 
@@ -454,7 +455,7 @@ The generalisation of this method to efficiently estimate the EVSI for the same 
 
 Roughly, this method works as follows (see [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) for full details) 
 
-* a small set of values $\theta_q: q = 1,\ldots, Q$ are simulated for the decision model parameters $\theta$ ($Q<50$ is sufficient). 
+* a small set of values $\theta_q: q = 1,\ldots, Q$ are simulated for the decision model parameters $\theta$ (typically $Q<50$ is sufficient). 
 
 * for each $\theta_q$, future study data $x_q|\theta_q$ are generated from the sampling distribution (as specified through `study` for built-in study designs, or `datagen_fn` for custom designs).
 
@@ -462,7 +463,7 @@ Roughly, this method works as follows (see [Heath et al.](https://journals.sagep
 
 * the posterior variance $v_q$ of the decision model net benefit $NB(\theta)$ is deduced from this sample.
 
-The average posterior variance over all samples $q$ is compared to the prior variance, obtaining an estimate of the proportion of uncertainty explained by the proposed study.  This is used as a "shrinkage" factor to modify the regression-based EVPPI computation to produce an estimate of the EVSI. 
+* the average posterior variance over all samples $q$ is compared to the prior variance, obtaining an estimate of the proportion of uncertainty explained by the proposed study.  This is used as a "shrinkage" factor to modify the regression-based EVPPI computation to produce an estimate of the EVSI. 
 
 To use the moment matching method, `evsi` needs to know some information that is not needed by the other EVSI calculation functions.  This includes: 
 
@@ -499,9 +500,9 @@ evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1", method="mm
      analysis_args = list(prior_mean=1, prior_sd=1, sampling_sd=1/sqrt(1000), niter=1000))
 ```
 
-The result here is fairly close to the result from the regression method.
+The estimate of the EVSI is fairly close to the result from the regression method.  The moment matching method also computes the regression-based estimate of the EVPPI, so this is returned alongside the EVSI estimate.
 
-A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by increasing $Q$ (default 30) in the call to `evsi`, and the number of posterior samples (default 1000) through the `niter` component of `analysis_args`.
+A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by changing $Q$ (default 30) in the call to `evsi`, the number of posterior samples (default 1000) through the `niter` component of `analysis_args`, and the size of `outputs` and `inputs` (as in most VoI calculation methods).
 
 
 ## Value of Information in models for estimation

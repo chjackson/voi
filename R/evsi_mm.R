@@ -154,8 +154,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
 #' @return Data frame with one column for each parameter in `pars` and one row per quantile
 #' For each variable, the quantiles are randomly permuted.
 #'
-#' A future version of this function should perhaps use a Latin hypercube instead, see the quasi Monte
-#' Carlo stuff
+#' A future version of this function should perhaps use Sobol sequences (randtoolbox package).
 #' 
 #' @noRd
 mm_gen_quantiles <- function(pars,

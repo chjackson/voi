@@ -13,7 +13,7 @@
 \format{
 Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
 following data objects:
-\describe{
+
 \code{chemo_pars}: Sample from the distributions of the parameters, as a data frame with names as documented above.
 
 \code{chemo_cea}: List with components \code{e} (sampled effects), \code{c} (sampled costs), and \code{k} (a set of five
@@ -22,7 +22,6 @@ with two columns, one for each decision option.
 
 \code{chemo_nb}: Data frame with two columns, giving the net monetary benefit for each decision option,
 at a willingness-to-pay of 20000 pounds.
-}
 }
 \usage{
 chemo_cea
@@ -123,5 +122,7 @@ treatment.
 }
 \description{
 An artificial health economic decision model with a typical Markov model structure, used for illustrating Value of Information methods.
+Functions are provided to generate model parameters and evaluate the model, and samples from probabilistic analysis of the model are
+provided as built-in datasets.
 }
 \keyword{datasets}

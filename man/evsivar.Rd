@@ -31,9 +31,9 @@ give the model output evaluated at the corresponding parameters.}
 \item{study}{Name of one of the built-in study types supported by this
 package for EVSI calculation.  If this is supplied, then the columns of
 \code{inputs} that correspond to the parameters governing the study data
-should be identified in \code{poi}.
+should be identified in \code{pars}.
 
-Currently supported studies are
+Current built-in studies are
 
 \code{"binary"} A study with a binary outcome observed on one sample of
 individuals.   Requires one parameter: the probability of the outcome.
@@ -68,7 +68,7 @@ Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 
 For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
 
-The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is the \code{"is"} and \code{"mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
+The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is, \code{method="is"} and \code{method="mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
 
 \item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
 
