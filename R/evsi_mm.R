@@ -121,7 +121,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
       if (!is.null(output_row)) nbpost <- nbpost[mfi(nbpost)[[output_row]],]
       inbpost[j,] <- nbpost[-1] - nbpost[1]
     }
-    var_sim[i,] <- apply(inbpost, 2, var) # TODO CHECK works with >2 decision options 
+    var_sim[i,] <- apply(inbpost, 2, var) # TODO CHECK works with >2 decision options.  TODO should we account for the covariance
     pb$tick()
   }
   mean_prep_var <- apply(var_sim, 2, mean)
