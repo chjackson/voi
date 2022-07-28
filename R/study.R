@@ -16,22 +16,10 @@ likelihood_binary <- function(Y, inputs, n=100, pars){
     exp(loglik)
 }
 
-## TODO document analysis formats needed by each built in function 
-
-## @param `data` A data frame with one row and the following columns
-## `X1` a binomially-distributed outcome
-## `N` the binomial denominator                
-## @param `prior` List of prior parameters with components
-## `a` first Beta shape parameter
-## `b` second Beta shape parameter
-## @param `options` niter number of samples to draw
-## @param `pars` Name used in the decision model for the probability parameter
-## @return A sample of size `niter` from the posterior Beta distribution given the supplied data and prior. This
-## is data frame with one column with name supplied in `pars`.
 analysis_binary <- function(data, args, pars, ...){
     if (is.null(args$niter))
       args$niter <- 1000
-    check_analysis_args(args, c("a", "b", "n")) # TODO further up 
+    check_analysis_args(args, c("a", "b"))
     res <- data.frame(rbeta(args$niter,
                             shape1 = data$X1 + args$a,
                             shape2 = args$n - data$X1 + args$b))
@@ -42,13 +30,13 @@ analysis_binary <- function(data, args, pars, ...){
 analysis_trial_binary <- function(data, args, pars,...){
     if (is.null(args$niter))
       args$niter <- 1000
-    check_analysis_args(args, c("a1", "a2", "b1", "b2", "n1", "n2")) # TODO further up 
+    check_analysis_args(args, c("a1", "a2", "b1", "b2"))
     p1 <- rbeta(args$niter,
                 shape1 = data$X1 + args$a1,
-                shape2 = args$n1 - data$X1 + args$b1)
+                shape2 = args$n - data$X1 + args$b1)
     p2 <- rbeta(args$niter,
                 shape1 = data$X2 + args$a2,
-                shape2 = args$n2 - data$X2 + args$b2)
+                shape2 = args$n - data$X2 + args$b2)
     res <- data.frame(p1, p2)
     names(res) <- pars
     res
@@ -95,10 +83,12 @@ likelihood_normal_known <- function(Y, inputs, n=100, pars, sd=1){
 analysis_normal_known <- function(data, args, pars,...){
   if (is.null(args$niter))
     args$niter <- 1000
-  check_analysis_args(args, c("prior_mean", "prior_sd", "sampling_sd")) # TODO further up 
-  w <- args$prior_sd^2 / (args$prior_sd^2 + args$sampling_sd^2)
+  check_analysis_args(args, c("prior_mean", "prior_sd", "sampling_sd"))
+  
+  xbar_var <- args$sampling_sd^2 / args$n
+  w <- args$prior_sd^2 / (args$prior_sd^2 + xbar_var)
   post_mean <- w*data$X1 + (1-w)*args$prior_mean
-  post_var <- 1 / (1 / args$prior_sd^2 + 1 / args$sampling_sd^2)
+  post_var <- 1 / (1 / args$prior_sd^2 + 1 / xbar_var)
   res <- data.frame(rnorm(args$niter, post_mean, sqrt(post_var)))
   names(res) <- pars
   res

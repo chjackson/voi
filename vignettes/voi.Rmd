@@ -492,12 +492,12 @@ This is the first EVSI example computation [shown above](#evsibuiltin), implemen
 
 Recall the sampling distribution for the study data is a normal with known variance, specified through `study="normal_known"`.  The Bayesian inference procedure here is a simple conjugate normal analysis, and is built in to the package, so we do not need to supply `analysis_fn`. 
 
-However we do need to supply `analysis_args`.  The constants required by the conjugate normal analysis are the prior mean and SD of the parameter `p1`, and the sampling SD of $\bar{x}$ in the study (note this is a function of the study sample size).
+However we do need to supply `analysis_args`.  The constants required by the conjugate normal analysis are the prior mean and SD of the parameter `p1`, and the sampling SD of an individual-level observation in the study, here $\sigma=1$. 
 
 ```{r,message=FALSE}
-evsi(outputs_nb, inputs, study = "normal_known", n=1000, pars = "p1", method="mm", Q=30,
+evsi(outputs_nb, inputs, study = "normal_known", n=10000, pars = "p1", method="mm", Q=30,
      model_fn = model_fn_nb, par_fn = par_fn,
-     analysis_args = list(prior_mean=1, prior_sd=1, sampling_sd=1/sqrt(1000), niter=1000))
+     analysis_args = list(prior_mean=1, prior_sd=1, sampling_sd=1, niter=1000))
 ```
 
 The estimate of the EVSI is fairly close to the result from the regression method.  The moment matching method also computes the regression-based estimate of the EVPPI, so this is returned alongside the EVSI estimate.

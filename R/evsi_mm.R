@@ -14,8 +14,8 @@ evsi_mm <- function(outputs,
   model_fn <- check_model_fn(model_fn, par_fn, mfargs=NULL, class(outputs)[1], verbose=verbose)
 
   ## TODO check analysis_fn has required arguments (data, args, pars)
-## TODO error if analysis_args not supplied.  Easy for built in, harder for users 
   analysis_fn <- form_analysis_fn(study, analysis_fn) 
+  analysis_args <- form_analysis_args(analysis_args, study, n)
     
   if (length(n) > 1)
     stop("Only one sample size `n` at a time is currently handled in method=`mm`")

@@ -103,7 +103,7 @@ For example, if \code{study = "trial_binary"} is specified, then \code{pars} sho
 
 The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is, \code{method="is"} and \code{method="mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
 
-\item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument.}
+\item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  If more than one quantity is required to describe the sample size (e.g. trials with unbalanced arms) currently you will have to write a different \code{datagen_fn} for each different sample size that you want the EVSI for.}
 
 \item{aux_pars}{A list of additional fixed arguments to supply to the function to generate the data,
 whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the
@@ -139,7 +139,15 @@ Note the definition of the likelihood should agree with the definition of \code{
 
 The function should return a data frame with names matching \code{pars}, containing a sample from the posterior distribution of the parameters given data supplied through \code{data}, and prior supplied through \code{args}.}
 
-\item{analysis_args}{List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for \code{method="mm"}, whether the study design is one of the built-in ones specified in \code{study}, or a custom design specifed through \code{analysis_fn}.  TODO document these for the built-in designs.}
+\item{analysis_args}{List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Only used in \code{method="mm"}.  This is required if the study design is one of the built-in ones specified in \code{study}.  If a custom design is specifed through \code{analysis_fn}, then any constants needed in \code{analysis_fn} can either be supplied in \code{analysis_args}, or hard-coded in \code{analysis_fn} itself.
+
+For the built-in designs, the lists should have the following named components.  In addition for each study, to a component named \code{n} (the study sample size) should be supplied (TODO can't we read this from the evsi arg??).  An optional component \code{niter} in each case defines the posterior sample size (default 1000).
+
+\code{study="binary"}: \code{a} and \code{b}: Beta shape parameters
+
+\code{study="trial_binary"}: \code{a1} and \code{b1}: Beta shape parameters for the prior for the first arm,  \code{a2} and \code{b2}: Beta shape parameters for the prior for the second arm.
+
+\code{study="normal_known"}: \code{prior_mean}, \code{prior_sd} (prior mean and standard deviation) and \code{sampling_sd} (SD of an individual-level normal observation, so that the sampling SD of the mean outcome over the study is \code{sampling_sd/sqrt(n)}.}
 
 \item{model_fn}{Function which evaluates the decision-analytic model, given parameter values.  Required for \code{method="mm"}.  See \code{\link{evppi_mc}} for full specification.}
 

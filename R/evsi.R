@@ -52,7 +52,7 @@
 ##' 
 ##' The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is, \code{method="is"} and \code{method="mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.
 ##'
-##' @param n Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  TODO if we want to design trials with multiple unbalanced arms, we'll need more than one argument. 
+##' @param n Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  If more than one quantity is required to describe the sample size (e.g. trials with unbalanced arms) currently you will have to write a different `datagen_fn` for each different sample size that you want the EVSI for.
 ##'
 ##' @param aux_pars A list of additional fixed arguments to supply to the function to generate the data, 
 ##' whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the 
@@ -88,7 +88,15 @@
 ##'
 ##' The function should return a data frame with names matching `pars`, containing a sample from the posterior distribution of the parameters given data supplied through `data`, and prior supplied through `args`. 
 ##'
-##' @param analysis_args List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Required for \code{method="mm"}, whether the study design is one of the built-in ones specified in \code{study}, or a custom design specifed through \code{analysis_fn}.  TODO document these for the built-in designs.
+##' @param analysis_args List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Only used in \code{method="mm"}.  This is required if the study design is one of the built-in ones specified in \code{study}.  If a custom design is specifed through \code{analysis_fn}, then any constants needed in `analysis_fn` can either be supplied in `analysis_args`, or hard-coded in `analysis_fn` itself.
+##'
+##' For the built-in designs, the lists should have the following named components.  In addition for each study, to a component named `n` (the study sample size) should be supplied (TODO can't we read this from the evsi arg??).  An optional component `niter` in each case defines the posterior sample size (default 1000).
+##'
+##' `study="binary"`: `a` and `b`: Beta shape parameters 
+##'
+##' `study="trial_binary"`: `a1` and `b1`: Beta shape parameters for the prior for the first arm,  `a2` and `b2`: Beta shape parameters for the prior for the second arm. 
+##'
+##' `study="normal_known"`: `prior_mean`, `prior_sd` (prior mean and standard deviation) and `sampling_sd` (SD of an individual-level normal observation, so that the sampling SD of the mean outcome over the study is `sampling_sd/sqrt(n)`. 
 ##'
 ##' @param model_fn Function which evaluates the decision-analytic model, given parameter values.  Required for \code{method="mm"}.  See \code{\link{evppi_mc}} for full specification. 
 ##'
@@ -263,4 +271,13 @@ check_ss <- function(n){
         stop("sample size `n` should be a numeric vector")
     if (any(n < 0))
         stop("sample sizes `n` should all be positive integers")
+}
+
+form_analysis_args <- function(analysis_args, study, n){
+  if (study %in% studies_builtin){
+    if (!is.list(analysis_args))
+      stop("analysis_args should be supplied as a named list if using one of the built-in study designs")
+    analysis_args$n <- n
+  }
+  analysis_args
 }
