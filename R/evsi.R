@@ -274,10 +274,12 @@ check_ss <- function(n){
 }
 
 form_analysis_args <- function(analysis_args, study, n){
+  if (!is.null(study)){
   if (study %in% studies_builtin){
     if (!is.list(analysis_args))
       stop("analysis_args should be supplied as a named list if using one of the built-in study designs")
     analysis_args$n <- n
+  }
   }
   analysis_args
 }
