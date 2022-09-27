@@ -27,7 +27,27 @@ test_that("errors in moment matching method",{
          model_fn = chemo_model_nb,  par_fn = chemo_pars_fn),
     "output of model_fn should have two rows"
   )
-})
-  
 
-## TODO additional args to model_fn (mfargs)
+  datagen_fn <- function(inputs, n=100){
+    nsim <- nrow(inputs)
+    data.frame(x1 = rbinom(nsim, size=n, prob=inputs[,"p_side_effects_t1"]))
+  }
+  
+  expect_error(  
+    evsi(outputs=chemo_nb, inputs=chemo_pars, 
+         pars="p_side_effects_t1",
+         method = "mm",
+         datagen_fn = datagen_fn, 
+         model_fn = chemo_model_nb,  par_fn = chemo_pars_fn),
+    "`analysis_fn` should be supplied")
+  
+  expect_error(  
+    evsi(outputs=chemo_nb, inputs=chemo_pars, 
+         pars="p_side_effects_t1",
+         method = "mm",
+         datagen_fn = datagen_fn, 
+         model_fn = chemo_model_nb,  par_fn = chemo_pars_fn),
+    "`analysis_fn` should be supplied")
+
+})
+
