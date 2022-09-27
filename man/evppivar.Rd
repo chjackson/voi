@@ -15,7 +15,7 @@ evppivar(
 )
 }
 \arguments{
-\item{outputs}{a vector of values for the quantity of interest, sampled from the uncertainty distribution of this quantity that is induced by the uncertainty about the parameters.
+\item{outputs}{a vector of values for the quantity of interest, sampled from the uncertainty distribution of this quantity that is induced by the uncertainty about the parameters.   This can also be a data frame with one column.
 
 Typically this will come from a Monte Carlo sample, where we first sample from the uncertainty distributions of the parameters, and then compute the quantity of interest as a function of the parameters.  It might also be produced by a Markov Chain Monte Carlo sample from the joint distribution of parameters and outputs.}
 

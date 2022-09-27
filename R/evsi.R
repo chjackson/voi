@@ -132,7 +132,7 @@ evsi <- function(outputs,
                  analysis_args=NULL,
                  model_fn=NULL,
                  par_fn=NULL,
-                 Q=30,
+                 Q=50,
                  npreg_method="gam",
                  nsim=NULL,
                  verbose=FALSE, 
@@ -281,5 +281,5 @@ form_analysis_args <- function(analysis_args, study, n){
       analysis_args$n <- n
     }
   }
-  analysis_args
+  analysis_args
 }

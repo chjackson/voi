@@ -100,6 +100,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
   ## Generate future data given Q quantiles
   var_sim <- matrix(nrow=Q, ncol=ncol(nb)-1)
   pb <- progress::progress_bar$new(total = Q) 
+
   for(i in 1:Q){
     ## Generate one dataset given parameters equal to a specific prior quantile
     simdata <- datagen_fn(inputs = quants[i,,drop=FALSE], n = n, pars=pars)
@@ -107,10 +108,11 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
     ## Fit Bayesian model to future data to get a sample from posterior(pars|simdata)
     postpars <- analysis_fn(simdata, analysis_args, pars)
     niter <- nrow(postpars)
+    if (i==1)
+      priorpars <- par_fn(niter) # TODO inputs isn't really needed here then
     
     ## Combine with samples from the prior for remaining parameters of the decision model
-    modelpars <- par_fn(niter)
-    modelpars <- modelpars[names(formals(model_fn))]
+    modelpars <- priorpars[names(formals(model_fn))]
     modelpars[names(postpars)] <- postpars
     
     ## Run the decision model, giving a sample from posterior(INB|simdata)

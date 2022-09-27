@@ -19,7 +19,7 @@ evsi(
   analysis_args = NULL,
   model_fn = NULL,
   par_fn = NULL,
-  Q = 30,
+  Q = 50,
   npreg_method = "gam",
   nsim = NULL,
   verbose = FALSE,

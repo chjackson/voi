@@ -16,5 +16,5 @@ Depends: R (>= 2.10)
 VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress, dbarts, posterior, ggplot2
 Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
