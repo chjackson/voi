@@ -2,7 +2,7 @@
 ##'
 ##' Calculate the expected value of partial perfect information for an estimation problem.  This computes the expected reduction in variance in some quantity of interest with perfect information about a parameter or parameters of interest.   
 ##'
-##' @param outputs a vector of values for the quantity of interest, sampled from the uncertainty distribution of this quantity that is induced by the uncertainty about the parameters.
+##' @param outputs a vector of values for the quantity of interest, sampled from the uncertainty distribution of this quantity that is induced by the uncertainty about the parameters.   This can also be a data frame with one column. 
 ##'
 ##' Typically this will come from a Monte Carlo sample, where we first sample from the uncertainty distributions of the parameters, and then compute the quantity of interest as a function of the parameters.  It might also be produced by a Markov Chain Monte Carlo sample from the joint distribution of parameters and outputs. 
 ##'
@@ -61,10 +61,16 @@ evppivar_list <- function(outputs, inputs, pars, method, nsim, verbose, ...)
 }
 
 check_outputs_vector <- function(outputs, inputs){
-    if (!is.numeric(outputs)) stop("`outputs` should be a numeric vector")
-    if (length(outputs) != nrow(inputs))
-        stop(sprintf("Length of `outputs` (%s) should equal the number of rows of `inputs` (%s)",
-                     length(outputs), nrow(inputs)))
+  if (is.data.frame(outputs)) {
+    if (ncol(outputs) > 1)
+      stop("if `outputs` is supplied as a data frame, it should have only one column")
+    outputs <- unlist(outputs)
+  }
+  if (!is.numeric(outputs))
+    stop("`outputs` should be a numeric vector or a data frame with one column")
+  if (length(outputs) != nrow(inputs))
+    stop(sprintf("Length of `outputs` (%s) should equal the number of rows of `inputs` (%s)",
+                 length(outputs), nrow(inputs)))
 }
 
 evppivar_npreg <- function(outputs, inputs, pars, method, verbose, ...){
