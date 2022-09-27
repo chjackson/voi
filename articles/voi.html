@@ -474,8 +474,8 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/evsi.html">evsi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"normal_known"</span>, n<span class="op">=</span><span class="fl">10000</span>, pars <span class="op">=</span> <span class="st">"p1"</span>, method<span class="op">=</span><span class="st">"mm"</span>, Q<span class="op">=</span><span class="fl">30</span>,</span>
 <span>     model_fn <span class="op">=</span> <span class="va">model_fn_nb</span>, par_fn <span class="op">=</span> <span class="va">par_fn</span>,</span>
 <span>     analysis_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>prior_mean<span class="op">=</span><span class="fl">1</span>, prior_sd<span class="op">=</span><span class="fl">1</span>, sampling_sd<span class="op">=</span><span class="fl">1</span>, niter<span class="op">=</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       n      evsi      evppi</span></span>
-<span><span class="co">## 1 10000 0.0751012 0.08210074</span></span></code></pre>
+<pre><code><span><span class="co">##       n       evsi      evppi</span></span>
+<span><span class="co">## 1 10000 0.05094176 0.08210074</span></span></code></pre>
 <p>The estimate of the EVSI is fairly close to the result from the regression method. The moment matching method also computes the regression-based estimate of the EVPPI, so this is returned alongside the EVSI estimate.</p>
 <p>A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by changing <span class="math inline">\(Q\)</span> (default 30) in the call to <code>evsi</code>, the number of posterior samples (default 1000) through the <code>niter</code> component of <code>analysis_args</code>, and the size of <code>outputs</code> and <code>inputs</code> (as in most VoI calculation methods).</p>
 </div>
@@ -507,7 +507,7 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <p>The EVPI is trivially <span class="math inline">\(var(p_2)\)</span>, the variance under current information, which we can compute from the sample as</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.003654296</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.003566403</span></span></code></pre>
 <p>A more interesting quantity is the EVPPI for a parameter. It describes the expected reduction in variance given perfect knowledge of a particular parameter. In this example, we compute the EVPPI for <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>, respectively, defined as</p>
 <p><span class="math display">\[EVPPI[p_1] = var(p_2) - E(var(p_2| p_1)\]</span> <span class="math display">\[EVPPI[\beta] = var(p_2) - E(var(p_2 | \beta)\]</span></p>
 <p>These can be computed using nonparametric regression, as described in <a href="https://doi.org/10.1080/01621459.2018.1562932" class="external-link">Jackson et al. 2019</a>. This is implemented in the function <code>evppivar</code> in the <code>voi</code> package.</p>
@@ -515,22 +515,22 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <code class="sourceCode R"><span><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">beta</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">evppi_beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evppivar.html">evppivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, par<span class="op">=</span><span class="st">"beta"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   pars       evppi</span></span>
-<span><span class="co">## 1 beta 0.001532921</span></span></code></pre>
+<span><span class="co">## 1 beta 0.001498406</span></span></code></pre>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">evppi_p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evppivar.html">evppivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, par<span class="op">=</span><span class="st">"p1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   pars       evppi</span></span>
-<span><span class="co">## 1   p1 0.001970697</span></span></code></pre>
+<span><span class="co">## 1   p1 0.001915543</span></span></code></pre>
 <p>Hence a slightly greater improvement in variance is expected from knowing the true risk in the biased sample, compared to knowing the relative odds of infection.</p>
 <p>These EVPPI values are easier to interpret if they are converted to the scale of a <em>standard deviation</em>. If we subtract the EVPPI from the original variance of <span class="math inline">\(p_2\)</span> we get, for example <span class="math inline">\(E(var(p_2) | p_1)\)</span>. The square root of this is an estimate of what the standard deviation of <span class="math inline">\(p_2\)</span> would be if we learnt <span class="math inline">\(p_1\)</span> (note that is not exactly the <em>expected</em> SD remaining, since we cannot swap the order of the square root and expectation operators).</p>
 <div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span><span class="op">)</span> <span class="co"># or sd(p2)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.06045077</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.05971937</span></span></code></pre>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_beta</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.04605839</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.04547524</span></span></code></pre>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_p1</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.04103168</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.04063079</span></span></code></pre>
 <p>Hence we would expect to reduce the SD of <span class="math inline">\(p_1\)</span> to around 2/3 of its original value by learning <span class="math inline">\(p_1\)</span> or <span class="math inline">\(\beta\)</span>.</p>
 </div>
 <div class="section level3">
@@ -548,12 +548,12 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p1res</span> <span class="op">&lt;-</span> <span class="va">p2</span> <span class="op">-</span> <span class="va">p1fit</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p1res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.001971757</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.001916577</span></span></code></pre>
 <p>This agrees (up to Monte Carlo error) with the value produced by <code>evppivar</code>, which is obtained by a closely-related method, as the variance of the fitted values from this regression. This is equal to the total variance minus the variance of the residuals, through the “law of total variance”:</p>
 <p><span class="math display">\[var(Y) - E_{X}\left[var_{Y| X}(Y |X)\right] = var_{X} \left[E_{Y|X}(Y|X)\right]\]</span></p>
 <div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p1fit</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.001970697</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.001915543</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="evsi-for-estimation">EVSI for estimation<a class="anchor" aria-label="anchor" href="#evsi-for-estimation"></a>
@@ -568,19 +568,19 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 </ul>
 <div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p1"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span>,<span class="fl">10000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##       n        evsi</span></span>
-<span><span class="co">## 1   100 0.001017276</span></span>
-<span><span class="co">## 2  1000 0.001814248</span></span>
-<span><span class="co">## 3 10000 0.001950872</span></span></code></pre>
+<pre><code><span><span class="co">##       n         evsi</span></span>
+<span><span class="co">## 1   100 0.0009579006</span></span>
+<span><span class="co">## 2  1000 0.0017476769</span></span>
+<span><span class="co">## 3 10000 0.0018962755</span></span></code></pre>
 <p>As the proposed sample sizes increase, the expected value of sample information informing <span class="math inline">\(p_1\)</span> converges to the EVPPI, the expected value of perfect information about <span class="math inline">\(p_1\)</span>.</p>
 <p>Alternatively, suppose we were able to collect information about the <em>unbiased</em> population, whose infection prevalence is <span class="math inline">\(p_2\)</span>. That is, suppose we surveyed <span class="math inline">\(n\)</span> individuals, each infected with probability <span class="math inline">\(p_2\)</span>. In this case, we can compute the EVSI by using <code>evsivar</code> with the model <code>inputs</code> defined to equal the model outputs, as follows:</p>
 <div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inputs_p2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p2 <span class="op">=</span> <span class="va">p2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, inputs<span class="op">=</span><span class="va">inputs_p2</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p2"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       n        evsi</span></span>
-<span><span class="co">## 1   100 0.002894155</span></span>
-<span><span class="co">## 2  1000 0.003562721</span></span>
-<span><span class="co">## 3 10000 0.003645034</span></span></code></pre>
+<span><span class="co">## 1   100 0.002808475</span></span>
+<span><span class="co">## 2  1000 0.003471948</span></span>
+<span><span class="co">## 3 10000 0.003556959</span></span></code></pre>
 <p>The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size. As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest <span class="math inline">\(p_2\)</span>.</p>
 </div>
 </div>
