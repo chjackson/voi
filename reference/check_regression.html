@@ -118,10 +118,10 @@ For <code>method=="earth"</code>, this is the generalised cross-validation stati
 have mean zero, hence that the mean of the model output is represented well by the
 regression function of the model input parameters.  It should not matter if the
 variance of the residuals is non-constant, or non-normally distributed.</p>
-<p>Models produced with <code>method="gam"</code> are checked using <code>gam.check</code></p>
-<p>Models produced <code>method="earth"</code> are checked using <code>plot.earth</code></p>
-<p>Models produced with <code>method="gp"</code> or <code>method="inla"</code> are checked using a histogram
-of the residuals, and plots of the residuals and response against the fitted values.</p>
+<p>Models produced with <code>method="gam"</code> are summarised using <code>gam.check</code></p>
+<p>Models produced <code>method="earth"</code> are summarised using <code>plot.earth</code></p>
+<p>For any regression model, if <code><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted()</a></code> and <code><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals()</a></code> methods are defined for those models,
+then a histogram of the residuals and a scatterplot of residuals against fitted values is produced.</p>
     </div>
 
     <div id="ref-examples">
