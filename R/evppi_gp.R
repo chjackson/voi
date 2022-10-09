@@ -4,7 +4,7 @@
 
 fitted_gp <- function(y, inputs, pars, verbose=FALSE, ...){
     args <- list(...)
-    model <- gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL, verbose=verbose)
+    model <- gp(y=y, X=inputs[,pars], m=args$gp_hyper_n, maxSample=args$maxSample, verbose=verbose)
     res <- model$fitted
     attr(res, "model") <- model
     res 
@@ -14,16 +14,11 @@ fitted_rep_gp <- function(model, B, ...){
   mvtnorm::rmvnorm(B, model$fitted, model$V)
 }
 
-## Code below taken from SAVI, copyright (c) 2014, 2015 the SAVI authors
+## Code below adapted from SAVI, copyright (c) 2014, 2015 the SAVI authors
 ## https://github.com/Sheffield-Accelerated-VoI/SAVI-package/blob/master/inst/SAVI/scripts_GPfunctions.R
-
-## Changes made by CJ for voi package
-## 
-## * Shiny progress messages commented out 
-## * Edited to only accept a vector of INBs, since we iterate over multiple INBs outside this file.
-## * gpFunc returns the fitted values and variances, since EVPPI is computed from these outside this file
+## * Changes to make it more clean/modular. 
+## * Check for constant/collinearity temporarily moved out 
 ## * Added gp_hyper_n option to select the number of iterations used for estimating the hyperparameters.  BCEA [code from older SAVI version?] uses all by default, while SAVI uses a small number for efficiency.  SAVI value taken as the default here. 
-## * Some restructuring for consistency with other nonparametric regression methods
 
 dinvgamma <- function(x, alpha, beta) {
   (beta ^ alpha) / gamma(alpha) * x ^ (-alpha - 1) * exp(-beta / x)
@@ -79,7 +74,7 @@ post.density <- function(hyperparams, NB, input.m) {
 }
 
 
-estimate.hyperparameters <- function(NB, inputs, session, verbose=FALSE) {
+estimate.hyperparameters <- function(NB, inputs, verbose=FALSE) {
   p <- NCOL(inputs)
   hyperparameters <- NA
     initial.values <- rep(0, p + 1)
@@ -100,77 +95,76 @@ estimate.hyperparameters <- function(NB, inputs, session, verbose=FALSE) {
 }
 
 
-
-gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  session, verbose=FALSE) {
-  
-#  input.parameters <- cache$params
-  paramSet <- cbind(input.parameters[, sets])
-  constantParams <- (apply(paramSet, 2, var) == 0)
-
-  #remove constants
-  if (sum(constantParams) == length(sets)) return(list(EVPI=0, SE=0)) # if all regressors are constant
-  if (sum(constantParams) > 0) sets <- sets[-which(constantParams)] # remove constants
-  
-  # check for linear dependence and remove 
-  paramSet <- cbind(cbind(input.parameters)[, sets]) # now with constants removed
-  rankifremoved <- sapply(1:NCOL(paramSet), function (x) qr(paramSet[, -x])$rank)
-  while(length(unique(rankifremoved)) > 1) {
-    linearCombs <- which(rankifremoved == max(rankifremoved))
-    # print(linearCombs)
-    if (verbose) 
-        print(paste("Linear dependence: removing column", colnames(paramSet)[max(linearCombs)]))
-    paramSet <- cbind(paramSet[, -max(linearCombs)])
-    sets <- sets[-max(linearCombs)]
-    rankifremoved <- sapply(1:NCOL(paramSet), function(x) qr(paramSet[, -x])$rank)
-  }  
-  if(qr(paramSet)$rank == rankifremoved[1]) {
-    paramSet <- cbind(paramSet[, -1]) # special case only lincomb left
-    sets <- sets[-1]
-    if (verbose) 
-        print(paste("Linear dependence: removing column", colnames(paramSet)[1]))
-  }
-  
-  inputs.of.interest <- sets
-  p <- length(inputs.of.interest)
-  
-  maxSample <- min(maxSample, length(NB)) # to avoid trying to invert huge matrix
-
-  input.matrix <- as.matrix(input.parameters[1:maxSample, inputs.of.interest, drop=FALSE])
-    NB <- NB[1:maxSample]
-  colmin <- apply(input.matrix, 2, min)
-  colmax <- apply(input.matrix, 2, max)
+##' Fit a Gaussian process regression
+##'
+##' @param y Vector of outcome data
+##' 
+##' @param X Matrix of inputs
+##'
+##' @param hyper Hyperparameter values. If set to \code{"est"} (the default), these are estimated. 
+##'
+##' @param m number of samples to use to estimate the hyperparameters. By default, this is the minimum
+##' of the following three quantities: 30 times the number of predictors in \code{X}, 
+##' interest, 250, and the length of \code{y}. 
+##'
+##' @param maxSample Maximum sample size to employ. If datasets larger than this are supplied, they are
+##' truncated to this size.
+##'
+##' @param verbose Progress messages: currently not fully implemented.
+##'
+##' @return A list with the following components
+##'
+##' \code{fitted} The fitted values
+##'
+##' \code{V} The covariance matrix of the fitted values
+##'
+##' \code{residuals} The residuals
+##'
+##' \code{hyper} The hyperparameters (delta and nu) used in the fit. Lower values of delta give
+##' less smooth regression fits, and nu is an independent measurement error variance (or "nugget").
+##'
+##' Prediction outside the input data points is not implemented. 
+##'
+##' @noRd
+gp <- function(y, X, hyper="est", m=NULL, maxSample=5000,  verbose=FALSE) {
+  maxSample <- min(maxSample, length(y)) # to avoid trying to invert huge matrix
+  X <- as.matrix(X)[1:maxSample, , drop=FALSE]
+  y <- y[1:maxSample]
+  colmin <- apply(X, 2, min)
+  colmax <- apply(X, 2, max)
   colrange <- colmax - colmin
-  input.matrix <- sweep(input.matrix, 2, colmin, "-")
-  input.matrix <- sweep(input.matrix, 2, colrange, "/")
-  N <- nrow(input.matrix)
-  p <- ncol(input.matrix)
-  H <- cbind(1, input.matrix)
+  X <- sweep(X, 2, colmin, "-")
+  X <- sweep(X, 2, colrange, "/")
+  N <- nrow(X)
+  p <- ncol(X)
+  H <- cbind(1, X)
   q <- ncol(H)
 
     if(is.null(m)){
         m <- min(30 * p, 250)
-        m <- min(length(NB), m)
+        m <- min(length(y), m)
     }
     setForHyperparamEst <- 1:m # sample(1:N, m, replace=FALSE)
-    hyperparameters <- estimate.hyperparameters(NB[setForHyperparamEst], 
-                                              input.matrix[setForHyperparamEst, ], session, verbose=verbose)
-    
-#  progress1$set(message = 'Calculating conditional expected net benefits',
-#                detail = 'Please wait...')
-#    print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
+  if (identical(hyper,"est"))
+    hyper <- estimate.hyperparameters(y[setForHyperparamEst], 
+                                              X[setForHyperparamEst, ], verbose=verbose)
+  else {
+    if (!is.numeric(hyper) || (length(hyper !=2)))
+      stop("`hyper` should be a numeric vector of length two, or \"est\"")
+  }
 
-    delta.hat <- hyperparameters[1:p]
-    nu.hat <- hyperparameters[p+1]
-    A <- makeA.Gaussian(input.matrix, delta.hat)
+    delta.hat <- hyper[1:p]
+    nu.hat <- hyper[p+1]
+    A <- makeA.Gaussian(X, delta.hat)
     Astar <- A + nu.hat * diag(N)
     Astarinv <- chol2inv(chol(Astar))
     rm(Astar); gc()
-    AstarinvY <- Astarinv %*% NB
+    AstarinvY <- Astarinv %*% y
     tHAstarinv <- t(H) %*% Astarinv
     tHAHinv <- solve(tHAstarinv %*% H + 1e-7* diag(q))
-    betahat <- tHAHinv %*% (tHAstarinv %*% NB)
+    betahat <- tHAHinv %*% (tHAstarinv %*% y)
     Hbetahat <- H %*% betahat
-    resid <- NB - Hbetahat
+    resid <- y - Hbetahat
     g.hat <- Hbetahat+A %*% (Astarinv %*% resid)
     AAstarinvH <- A %*% t(tHAstarinv)
     sigmasqhat <- as.numeric(t(resid) %*% Astarinv %*% resid)/(N - q - 2)
@@ -178,22 +172,8 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
                             (H - AAstarinvH) %*% (tHAHinv %*% t(H - AAstarinvH)))
     rm(A, Astarinv, AstarinvY, tHAstarinv, tHAHinv, betahat, Hbetahat, resid, sigmasqhat);gc()
 
-#  progress2$set(message = 'Calculating Standard Error',
-#                detail = 'Please wait...')
-#  tilde.g <- MASS::mvrnorm(s,
-#                           g.hat[[d]][1:(min(N, 1000))],
-#                           V[[d]][1:(min(N, 1000)),
-#                                  1:(min(N, 1000))])
-#  sampled.perfect.info <- rowMeans(do.call(pmax, tilde.g))
-#  sampled.baseline <- do.call(pmax, lapply(tilde.g, rowMeans)) 
-#  sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
-#  SE <- sd(sampled.partial.evpi)
-  # g.hat.short <- lapply(g.hat,function(x) x[1:(min(N, 1000))])
-  # mean.partial.evpi <- mean(do.call(pmax, g.hat.short)) - max(unlist(lapply(g.hat.short,mean)))
-  # upward.bias <- mean(sampled.partial.evpi) - mean.partial.evpi 
-
-      fitted <- unlist(g.hat)
-    list(y=NB, fitted=fitted, V=V, residuals=NB-fitted)
+  fitted <- unlist(g.hat)
+  list(y=y, fitted=fitted, V=V, residuals=y-fitted, hyper=hyper)
 }
 
 

@@ -376,3 +376,34 @@ clean_pars <- function(pars) {
     }
     parsc
 }
+
+## TODO TEST AND INTEGRATE THIS
+remove_constant_linear_cols <- function(inputs, verbose=TRUE){
+  inputs <- as.matrix(inputs)
+  p <- ncol(inputs)
+  sets <- seq_len(p)
+  constantParams <- (apply(inputs, 2, var) == 0)
+  if (sum(constantParams) == p)
+    stop("EVPI is zero as all parameters are constant")
+  if (sum(constantParams) > 0)
+    sets <- sets[-which(constantParams)] # remove constants
+  inputs <- inputs[, sets, drop=FALSE] # now with constants removed
+
+  rankifremoved <- sapply(1:NCOL(inputs), function (x) qr(inputs[, -x])$rank)
+  while(length(unique(rankifremoved)) > 1) {
+    linearCombs <- which(rankifremoved == max(rankifremoved))
+    if (verbose) 
+        print(paste("Linear dependence: removing column", colnames(inputs)[max(linearCombs)]))
+    inputs <- inputs[, -max(linearCombs), drop=FALSE]
+    sets <- sets[-max(linearCombs)]
+    rankifremoved <- sapply(1:NCOL(inputs), function(x) qr(inputs[, -x])$rank)
+  }  
+  if(qr(inputs)$rank == rankifremoved[1]) {
+    inputs <- inputs[, -1, drop=FALSE] # special case only lincomb left
+    sets <- sets[-1]
+    if (verbose) 
+        print(paste("Linear dependence: removing column", colnames(inputs)[1]))
+  }
+  inputs[, sets, drop=FALSE]
+}
+
