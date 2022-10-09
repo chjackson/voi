@@ -4,9 +4,14 @@
 
 fitted_gp <- function(y, inputs, pars, verbose=FALSE, ...){
     args <- list(...)
-    res <- gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL, verbose=verbose)$fitted
-    attr(res, "model") <- data.frame(y=y, fitted=res, residuals=y-res)
+    model <- gpFunc(NB=y, sets=pars, s=1000, input.parameters=inputs, m=args$gp_hyper_n, maxSample=args$maxSample, session=NULL, verbose=verbose)
+    res <- model$fitted
+    attr(res, "model") <- model
     res 
+}
+
+fitted_rep_gp <- function(model, B, ...){
+  mvtnorm::rmvnorm(B, model$fitted, model$V)
 }
 
 ## Code below taken from SAVI, copyright (c) 2014, 2015 the SAVI authors
@@ -18,7 +23,7 @@ fitted_gp <- function(y, inputs, pars, verbose=FALSE, ...){
 ## * Edited to only accept a vector of INBs, since we iterate over multiple INBs outside this file.
 ## * gpFunc returns the fitted values and variances, since EVPPI is computed from these outside this file
 ## * Added gp_hyper_n option to select the number of iterations used for estimating the hyperparameters.  BCEA [code from older SAVI version?] uses all by default, while SAVI uses a small number for efficiency.  SAVI value taken as the default here. 
-
+## * Some restructuring for consistency with other nonparametric regression methods
 
 dinvgamma <- function(x, alpha, beta) {
   (beta ^ alpha) / gamma(alpha) * x ^ (-alpha - 1) * exp(-beta / x)
@@ -75,19 +80,8 @@ post.density <- function(hyperparams, NB, input.m) {
 
 
 estimate.hyperparameters <- function(NB, inputs, session, verbose=FALSE) {
-  
   p <- NCOL(inputs)
-  
   hyperparameters <- NA
-
-#  progress1 <- shiny::Progress$new(session, min=1, max=D)
-#  on.exit(progress1$close())
-#  progress1$set(message = 'Estimating GP hyperparameters',
-#                detail = 'Please wait...')
-#  progress1$set(value = 1)
-  
-
-#    progress1$set(value = d)
     initial.values <- rep(0, p + 1)
     repeat {
         if (verbose) 
@@ -102,9 +96,7 @@ estimate.hyperparameters <- function(NB, inputs, session, verbose=FALSE) {
       }	
       initial.values <- log.hyperparameters
     }
-  
   return(hyperparameters)
-  
 }
 
 
@@ -163,13 +155,8 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
     hyperparameters <- estimate.hyperparameters(NB[setForHyperparamEst], 
                                               input.matrix[setForHyperparamEst, ], session, verbose=verbose)
     
-#  progress1 <- shiny::Progress$new(session, min=1, max=D)
-  #on.exit(progress1$close())
 #  progress1$set(message = 'Calculating conditional expected net benefits',
 #                detail = 'Please wait...')
-#  progress1$set(value = 1)
-  
-#    progress1$set(value = d)
 #    print(paste("estimating g.hat for incremental NB for option", d, "versus 1"))
 
     delta.hat <- hyperparameters[1:p]
@@ -191,35 +178,22 @@ gpFunc <- function(NB, sets, s=1000, input.parameters, m=NULL, maxSample=5000,  
                             (H - AAstarinvH) %*% (tHAHinv %*% t(H - AAstarinvH)))
     rm(A, Astarinv, AstarinvY, tHAstarinv, tHAHinv, betahat, Hbetahat, resid, sigmasqhat);gc()
 
-#  progress1$close()
-#  perfect.info <- mean(do.call(pmax, g.hat)) 
-#  baseline <- max(unlist(lapply(g.hat, mean)))
-  
- # partial.evpi <- perfect.info - baseline
-  
-#  print("Computing standard error via Monte Carlo")
-#  tilde.g <- matrix(0, nrow=s, ncol=N)     
-  
-#  progress2 <- shiny::Progress$new(session, min=1, max=D)
-  #on.exit(progress2$close())
 #  progress2$set(message = 'Calculating Standard Error',
 #                detail = 'Please wait...')
-#  progress2$set(value = 1)
-
-#    progress2$set(value = d)
-#    tilde.g <- MASS::mvrnorm(s, g.hat[[d]][1:(min(N, 1000))], V[[d]][1:(min(N, 1000)), 1:(min(N, 1000))])
-#  progress2$close()
-  
+#  tilde.g <- MASS::mvrnorm(s,
+#                           g.hat[[d]][1:(min(N, 1000))],
+#                           V[[d]][1:(min(N, 1000)),
+#                                  1:(min(N, 1000))])
 #  sampled.perfect.info <- rowMeans(do.call(pmax, tilde.g))
 #  sampled.baseline <- do.call(pmax, lapply(tilde.g, rowMeans)) 
-#  rm(tilde.g);gc()
 #  sampled.partial.evpi <- sampled.perfect.info - sampled.baseline
 #  SE <- sd(sampled.partial.evpi)
   # g.hat.short <- lapply(g.hat,function(x) x[1:(min(N, 1000))])
   # mean.partial.evpi <- mean(do.call(pmax, g.hat.short)) - max(unlist(lapply(g.hat.short,mean)))
   # upward.bias <- mean(sampled.partial.evpi) - mean.partial.evpi 
-                                        #   return(list(EVPI=partial.evpi, SE=SE))
-    list(fitted=unlist(g.hat), V=V)
+
+      fitted <- unlist(g.hat)
+    list(y=NB, fitted=fitted, V=V, residuals=NB-fitted)
 }
 
 

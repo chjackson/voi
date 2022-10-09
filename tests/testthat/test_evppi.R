@@ -27,6 +27,8 @@ test_that("single-parameter EVPPI, GP",{
         1269.009, tol=1e-03)
     expect_equal(evppi(chemo_nb, chemo_pars, pars=pi2, method="gp", nsim=100, gp_hyper_n=100)$evppi,
                  1269.009, tol=1e-03)
+    gse <- evppi(chemo_nb, chemo_pars, pars=pi2, method="gp", nsim=100, se=TRUE, B=10)$se
+    expect_true(is.numeric(gse))
 })
 
 test_that("single-parameter EVPPI, earth",{

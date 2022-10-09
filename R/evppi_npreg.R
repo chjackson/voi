@@ -96,10 +96,12 @@ fitted_npreg_rep_call <- function(method, model, B, verbose=FALSE){
     if (verbose) message("Simulating parameters to calculate standard errors")
     if (method=="gam") {
         frep <- fitted_rep_gam(model, B)
+    } else if (method=="gp") {
+        frep <- fitted_rep_gp(model, B)
     } else if (method=="bart") {
         frep <- fitted_rep_bart(model)
     }
-    else stop("Standard errors only currently available for GAM method")
+    else stop("Standard errors only currently available for GAM, GP and BART methods")
     frep
 }
 
