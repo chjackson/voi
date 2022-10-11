@@ -24,12 +24,7 @@ dinvgamma <- function(x, alpha, beta) {
   (beta ^ alpha) / gamma(alpha) * x ^ (-alpha - 1) * exp(-beta / x)
 }
 
-cor.Gaussian <- function(X, phi, m) { #  needs sorting...... probably with dist()
-  txbuild1 <- function(h) exp(-rowSums(t((t(X) - h) / phi) ^ 2))
-  apply(as.matrix(as.matrix(X)[1:m, ]), 1, txbuild1)
-}
-
-makeA.Gaussian <- function(X, phi) { # function to make A matrix with the Gaussian correlation function
+makeA.Gaussian.old <- function(X, phi) { # function to make A matrix with the Gaussian correlation function
   n <- NROW(X)
   if(length(phi) > 1) {
     b <- diag(phi ^ (-2))
@@ -41,8 +36,35 @@ makeA.Gaussian <- function(X, phi) { # function to make A matrix with the Gaussi
   exp(2 * R - S - t(S))
 }
 
-# function to calculate posterior density
+##' Form a squared exponential correlation matrix between two sets of predictors for a Gaussian process regression
+##'
+##' @param X First set of predictors.  Matrix with number of columns given by the number of
+##' predictors in the model, and number of rows given by the number of alternative values for these. 
+##'
+##' @param Xstar Second set of predictors, in the same format. 
+##'
+##' @param phi correlation parameter. Vector with length given by the number of predictors.
+##'
+##' @return A matrix with \code{nrow(X)} and \code{nrow(Xstar)} columns, with \eqn{r},\eqn{s} entry
+##' given by the correlation between the
+##' \eqn{r}th element of \code{X} and the \eqn{s}th element of \code{Xstar}.
+##'
+##' @noRd
+makeA.Gaussian <- function(X, Xstar, phi){
+  if (!is.matrix(X)) stop("`X` should be a matrix")
+  if (!is.matrix(Xstar)) stop("`Xstar` should be a matrix")
+  n <- nrow(X)
+  m <- nrow(Xstar)
+  if (!(n>0)) stop("X should have 1 or more rows")
+  if (!(m>0)) stop("Xstar should have 1 or more rows")
+  X_rep <- X[rep(1:n, m), , drop=FALSE]
+  Xstar_rep <- Xstar[rep(1:m, each=n), , drop=FALSE]
+  scale_rep <- matrix(phi, nrow=n*m, ncol=length(phi), byrow=TRUE)
+  dists <- rowSums(((X_rep - Xstar_rep) / scale_rep)^2)
+  matrix(exp(-dists), nrow=n, ncol=m)
+}
 
+# function to calculate posterior density
 
 post.density <- function(hyperparams, NB, input.m) {
   
@@ -58,7 +80,7 @@ post.density <- function(hyperparams, NB, input.m) {
   delta <- exp(hyperparams)[1:p]
   nu <- exp(hyperparams)[p + 1]
   
-  A <- makeA.Gaussian(input.m, delta)
+  A <- makeA.Gaussian(input.m, input.m, delta)
   Astar <- A + nu * diag(N)
   T <- chol(Astar)
   y <- backsolve(t(T), NB, upper.tri = FALSE)
@@ -101,6 +123,8 @@ estimate.hyperparameters <- function(NB, inputs, verbose=FALSE) {
 ##' 
 ##' @param X Matrix of inputs
 ##'
+##' @param Xpred Matrix of inputs at which predictions are wanted
+##'
 ##' @param hyper Hyperparameter values. If set to \code{"est"} (the default), these are estimated. 
 ##'
 ##' @param m number of samples to use to estimate the hyperparameters. By default, this is the minimum
@@ -114,29 +138,42 @@ estimate.hyperparameters <- function(NB, inputs, verbose=FALSE) {
 ##'
 ##' @return A list with the following components
 ##'
-##' \code{fitted} The fitted values
+##' \code{fitted} The fitted values at the input data points 
 ##'
-##' \code{V} The covariance matrix of the fitted values
+##' \code{pred} The fitted values at \code{Xpred}
+
+##' \code{V} The covariance matrix of the fitted values 
 ##'
 ##' \code{residuals} The residuals
 ##'
 ##' \code{hyper} The hyperparameters (delta and nu) used in the fit. Lower values of delta give
 ##' less smooth regression fits, and nu is an independent measurement error variance (or "nugget").
 ##'
-##' Prediction outside the input data points is not implemented. 
+##' The variance of the predicted points is currently not implemented.
 ##'
 ##' @noRd
-gp <- function(y, X, hyper="est", m=NULL, maxSample=5000,  verbose=FALSE) {
+gp <- function(y, X, Xpred=NULL, hyper="est", m=NULL, maxSample=5000,  verbose=FALSE) {
   maxSample <- min(maxSample, length(y)) # to avoid trying to invert huge matrix
   X <- as.matrix(X)[1:maxSample, , drop=FALSE]
   y <- y[1:maxSample]
-  colmin <- apply(X, 2, min)
-  colmax <- apply(X, 2, max)
-  colrange <- colmax - colmin
-  X <- sweep(X, 2, colmin, "-")
-  X <- sweep(X, 2, colrange, "/")
-  N <- nrow(X)
+
+  standardiseX <- function(X){
+    colmin <- apply(X, 2, min)
+    colmax <- apply(X, 2, max)
+    colrange <- colmax - colmin
+    X <- sweep(X, 2, colmin, "-")
+    X <- sweep(X, 2, colrange, "/")
+    X
+  }
+  X <- standardiseX(X)
+
   p <- ncol(X)
+  if (is.null(Xpred))
+    Xpred <- X
+  else {
+    Xpred <- as.matrix(Xpred)
+    Xpred <- standardiseX(Xpred)
+  }  
   H <- cbind(1, X)
   q <- ncol(H)
 
@@ -149,13 +186,15 @@ gp <- function(y, X, hyper="est", m=NULL, maxSample=5000,  verbose=FALSE) {
     hyper <- estimate.hyperparameters(y[setForHyperparamEst], 
                                               X[setForHyperparamEst, ], verbose=verbose)
   else {
-    if (!is.numeric(hyper) || (length(hyper !=2)))
+    if (!is.numeric(hyper) || (length(hyper) !=2))
       stop("`hyper` should be a numeric vector of length two, or \"est\"")
   }
 
     delta.hat <- hyper[1:p]
     nu.hat <- hyper[p+1]
-    A <- makeA.Gaussian(X, delta.hat)
+    A <- makeA.Gaussian(X, X, delta.hat)
+    Apred <- makeA.Gaussian(Xpred, X, delta.hat)
+    N <- nrow(X)
     Astar <- A + nu.hat * diag(N)
     Astarinv <- chol2inv(chol(Astar))
     rm(Astar); gc()
@@ -165,15 +204,26 @@ gp <- function(y, X, hyper="est", m=NULL, maxSample=5000,  verbose=FALSE) {
     betahat <- tHAHinv %*% (tHAstarinv %*% y)
     Hbetahat <- H %*% betahat
     resid <- y - Hbetahat
-    g.hat <- Hbetahat+A %*% (Astarinv %*% resid)
+
+    g.hat <- Hbetahat  +  A %*% (Astarinv %*% resid)
+
+    Hpred <- cbind(1, Xpred)
+    Hbetahatpred <- Hpred %*% betahat
+    pred <- Hbetahatpred  +  Apred %*% (Astarinv %*% resid)
+
     AAstarinvH <- A %*% t(tHAstarinv)
+
+    ## get the variance V of the fitted values 
     sigmasqhat <- as.numeric(t(resid) %*% Astarinv %*% resid)/(N - q - 2)
-    V <- sigmasqhat*(nu.hat * diag(N) - nu.hat ^ 2 * Astarinv +
-                            (H - AAstarinvH) %*% (tHAHinv %*% t(H - AAstarinvH)))
-    rm(A, Astarinv, AstarinvY, tHAstarinv, tHAHinv, betahat, Hbetahat, resid, sigmasqhat);gc()
+    V <- sigmasqhat*(nu.hat * diag(N) -
+                     nu.hat ^ 2 * Astarinv +
+                     (H - AAstarinvH) %*% (tHAHinv %*% t(H - AAstarinvH)))
+
+    rm(A, Astarinv, AstarinvY, tHAstarinv, tHAHinv, Hbetahat, resid);gc()
 
   fitted <- unlist(g.hat)
-  list(y=y, fitted=fitted, V=V, residuals=y-fitted, hyper=hyper)
+  pred <- unlist(pred)
+  list(y=y, fitted=fitted, V=V, pred=pred, residuals = y - fitted, hyper=hyper, beta=betahat, sigmasq=sigmasqhat)
 }
 
 
