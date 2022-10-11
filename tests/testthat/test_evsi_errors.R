@@ -39,6 +39,3 @@ test_that("Errors in sample size are handled", {
     expect_error(evsi(chemo_nb, chemo_pars, study="binary", pars="p_side_effects_t1", n=c(10, 100, -1)),
                  "should all be positive integers")
 })
-
-test_that("Errors in analysis function are handled",{
-})

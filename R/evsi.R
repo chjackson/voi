@@ -253,17 +253,37 @@ check_datagen_fn <- function(datagen_fn, inputs, pars=NULL, aux_pars=NULL){
     }
 }
 
-form_analysis_fn <- function(study, analysis_fn){
+form_analysis_fn <- function(study, analysis_fn, analysis_args, datagen_fn, inputs, n, pars){
   if (!is.null(study)){
     check_study(study)
     analysis_fn <- get(sprintf("analysis_%s", study))
   } else {
     if (is.null(analysis_fn)) stop("`analysis_fn` should be supplied if `study` is not supplied")
-    if (!is.function(analysis_fn)) stop("`analysis_fn` should be a function")
-#    formals(analysis_fn) <- c(formals(analysis_fn), list(pars=NULL))
-#     check_analysis_fn(analysis_fn, inputs, aux_pars) # TODO 
+    check_analysis_fn(analysis_fn, analysis_args, datagen_fn, inputs, n, pars)
   }
   analysis_fn
+}
+
+check_analysis_fn <- function(analysis_fn, analysis_args, datagen_fn, inputs, n, pars){
+  if (!is.function(analysis_fn)) stop("`analysis_fn` should be a function")
+  if (!identical(names(formals(analysis_fn)), c("data","args","pars")))
+    stop("`analysis_fn` should have arguments `data`,`args`,`pars` in that order")
+  testdata <- datagen_fn(inputs = inputs, n = n, pars=pars)
+  post_pars <- analysis_fn(data = testdata, args = analysis_args, pars=pars)
+  missing_pars <- setdiff(pars, names(post_pars))
+  if (length(missing_pars) > 0){
+    badpars <- paste(missing_pars, collapse=",")
+    stop(sprintf("Parameters %s not found in data frame returned by `analysis_fn`", badpars))
+  }
+}
+
+check_pars_in_modelfn <- function(pars, model_fn){
+  mfargs <- names(formals(model_fn))
+  missing_args <- setdiff(pars, mfargs)
+  if (length(missing_args) > 0){
+    badpars <- paste(missing_args, collapse=",")
+    stop(sprintf("Parameters %s returned by `analysis_fn` are not arguments to model_fn. Should model_fn be reparameterised?", badpars))
+  } 
 }
 
 check_ss <- function(n){
@@ -278,8 +298,11 @@ form_analysis_args <- function(analysis_args, study, n){
     if (study %in% studies_builtin){
       if (!is.list(analysis_args))
         stop("analysis_args should be supplied as a named list if using one of the built-in study designs")
-      analysis_args$n <- n
     }
   }
-  analysis_args
+  if (is.null(analysis_args))
+    analysis_args <- list()
+  if (!is.null(n))
+      analysis_args$n <- n
+  analysis_args
 }

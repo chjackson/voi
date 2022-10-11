@@ -13,9 +13,9 @@ evsi_mm <- function(outputs,
                     verbose, ...){
   model_fn <- check_model_fn(model_fn, par_fn, mfargs=NULL, class(outputs)[1], verbose=verbose)
 
-  ## TODO check analysis_fn has required arguments (data, args, pars)
-  analysis_fn <- form_analysis_fn(study, analysis_fn) 
+  check_pars_in_modelfn(pars, model_fn)
   analysis_args <- form_analysis_args(analysis_args, study, n)
+  analysis_fn <- form_analysis_fn(study, analysis_fn, analysis_args, datagen_fn, inputs, n, pars) 
     
   if (length(n) > 1)
     stop("Only one sample size `n` at a time is currently handled in method=`mm`")
@@ -103,7 +103,10 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
 
   for(i in 1:Q){
     ## Generate one dataset given parameters equal to a specific prior quantile
-    simdata <- datagen_fn(inputs = quants[i,,drop=FALSE], n = n, pars=pars)
+    inputsQ <- inputs
+    for (j in names(quants)) 
+      inputsQ[[j]] <- quants[i,j]
+    simdata <- datagen_fn(inputs = inputsQ, n = n, pars=pars)
 
     ## Fit Bayesian model to future data to get a sample from posterior(pars|simdata)
     postpars <- analysis_fn(simdata, analysis_args, pars)
