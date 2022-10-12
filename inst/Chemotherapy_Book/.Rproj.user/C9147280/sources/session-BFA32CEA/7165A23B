@@ -1,0 +1,26 @@
+{
+    "id": "7165A23B",
+    "path": "~/GitHub/Chemotherapy_Book/04_analysis/02_baseline_model_output.R",
+    "project_path": "04_analysis/02_baseline_model_output.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1658867460592.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "72,0",
+        "scrollLine": "48"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1657398957,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1657398957,
+    "read_only": false,
+    "read_only_alternatives": []
+}
