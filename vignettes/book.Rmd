@@ -1,0 +1,32 @@
+---
+title: 'Value of Information for Health Economic Evaluations: book code resources'
+author: "Christopher Jackson"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+ \usepackage[utf8]{inputenc}
+ %\VignetteIndexEntry{VoI Book: guide to code by chapter}
+ %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+This is a guide to the code and software resources for the book _Value of Information for Health Economic Evaluations_ (eds. Heath, Jackson, Kunst)
+
+Chapters 1 and 2: no example code
+
+For all: set current directory to
+
+```system.file("Chemotherapy_Book",package="voi")```
+
+or change commands in book to read files from this directory
+
+# Chapter 3: Chemotherapy case study 
+
+# Chapter 4: Value of Perfect Information
+
+# Chapter 5: Value of Sample Information
+
+# Chapter 6: Other topics
