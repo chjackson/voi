@@ -9,6 +9,8 @@
 \alias{chemo_pars_fn}
 \alias{chemo_model_nb}
 \alias{chemo_model_cea}
+\alias{chemo_model_lor_nb}
+\alias{chemo_model_lor_cea}
 \title{Chemotherapy cost-effectiveness model}
 \format{
 Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
@@ -65,6 +67,40 @@ chemo_model_cea(
   u_home_care,
   u_hospital
 )
+
+chemo_model_lor_nb(
+  p_side_effects_t1,
+  logor_side_effects,
+  p_home_home,
+  p_home_hospital,
+  p_home_recover,
+  p_hospital_hospital,
+  p_hospital_recover,
+  p_hospital_dead,
+  c_home_care,
+  c_hospital,
+  c_death,
+  u_recovery,
+  u_home_care,
+  u_hospital
+)
+
+chemo_model_lor_cea(
+  p_side_effects_t1,
+  logor_side_effects,
+  p_home_home,
+  p_home_hospital,
+  p_home_recover,
+  p_hospital_hospital,
+  p_hospital_recover,
+  p_hospital_dead,
+  c_home_care,
+  c_hospital,
+  c_death,
+  u_recovery,
+  u_home_care,
+  u_hospital
+)
 }
 \arguments{
 \item{n}{Number of samples to generate from the uncertainty distribution of the parameters in \code{chemo_pars_fn}.}
@@ -96,9 +132,11 @@ chemo_model_cea(
 \item{u_home_care}{Utility of home care state}
 
 \item{u_hospital}{Utility of hospital state}
+
+\item{logor_side_effects}{Log odds ratio for side effects between treatment 1 and treatment 2}
 }
 \value{
-Three functions are provided for the model.
+Two alternative functions are provided to evaluate the decision model for given parameters.
 
 \code{chemo_model_nb} returns a vector with elements giving the net monetary benefit for standard of care
 and novel treatment, respectively, at a willingness-to-pay of 20,000 pounds per QALY.
@@ -109,6 +147,11 @@ and novel treatment, respectively, at a willingness-to-pay of 20,000 pounds per 
 \item two columns, the first for the "standard of care" decision option, and the second for the novel
 treatment.
 }
+
+\code{chemo_model_lor_nb} and \code{chemo_model_lor_cea} are the same model, but parameterised in terms of
+the probability of side effects for the standard of care \code{p_side_effects_t1} and the log odds ratio
+of side effects between treatment groups \code{logor_side_effects}, rather than in terms of
+\code{p_side_effects_t1} and \code{p_side_effects_t2}
 
 \code{chemo_pars_fn} generates a sample from the uncertainty distribution of the parameters in the chemotherapy model . This returns a data frame with parameters matching the arguments of
 \code{\link{chemo_model_nb}}, and the following additional derived parameters:

@@ -6,6 +6,7 @@
 ##'
 ##' @param p_side_effects_t1 Probability of side effects under treatment 1
 ##' @param p_side_effects_t2 Probability of side effects under treatment 2
+##' @param logor_side_effects Log odds ratio for side effects between treatment 1 and treatment 2
 ##' @param p_home_home Annual transition probability from home to home
 ##' @param p_home_hospital Transition probability from home to hospital
 ##' @param p_home_recover Transition probability from home to recovery
@@ -22,7 +23,7 @@
 ##' @param n Number of samples to generate from the uncertainty distribution of the parameters in \code{chemo_pars_fn}. 
 ##' 
 ##' @return
-##' Three functions are provided for the model.
+##' Two alternative functions are provided to evaluate the decision model for given parameters.
 ##' 
 ##' \code{chemo_model_nb} returns a vector with elements giving the net monetary benefit for standard of care
 ##' and novel treatment, respectively, at a willingness-to-pay of 20,000 pounds per QALY.
@@ -32,7 +33,12 @@
 ##' * two rows, the first for expected costs and the second for expected effects (QALYs) over the fifty year time horizon, and 
 ##' 
 ##' * two columns, the first for the "standard of care" decision option, and the second for the novel
-##' treatment. 
+##' treatment.
+##'
+##' \code{chemo_model_lor_nb} and \code{chemo_model_lor_cea} are the same model, but parameterised in terms of
+##' the probability of side effects for the standard of care \code{p_side_effects_t1} and the log odds ratio
+##' of side effects between treatment groups \code{logor_side_effects}, rather than in terms of
+##' \code{p_side_effects_t1} and \code{p_side_effects_t2}
 ##' 
 ##' \code{chemo_pars_fn} generates a sample from the uncertainty distribution of the parameters in the chemotherapy model . This returns a data frame with parameters matching the arguments of
 ##' \code{\link{chemo_model_nb}}, and the following additional derived parameters: 
@@ -79,8 +85,7 @@ chemo_model_nb <- function(p_side_effects_t1,
 {
     if (length(p_side_effects_t1) > 1)
         stop("This function is not vectorised, and parameters should be supplied as scalars")
-    ce <- calculate_costs_effects(p_side_effects_t1, 
-                                  p_side_effects_t2,
+    ce <- calculate_costs_effects(p_side_effects_t1, p_side_effects_t2,
                                   p_home_home, p_home_hospital, p_home_recover,
                                   p_hospital_hospital, p_hospital_recover, p_hospital_dead,
                                   c_home_care, c_hospital, c_death,
@@ -99,11 +104,52 @@ chemo_model_cea <- function(p_side_effects_t1,
 {
     if (length(p_side_effects_t1) > 1)
         stop("This function is not vectorised, and parameters should be supplied as scalars")
-    ce <- calculate_costs_effects(p_side_effects_t1, 
-                                  p_side_effects_t2,
+    ce <- calculate_costs_effects(p_side_effects_t1, p_side_effects_t2,
                                   p_home_home, p_home_hospital, p_home_recover,
                                   p_hospital_hospital, p_hospital_recover, p_hospital_dead,
                                   c_home_care, c_hospital, c_death,
                                   u_recovery, u_home_care, u_hospital)
     t(ce[1,,])
+}
+
+##' @rdname chemo_model
+##' @export
+chemo_model_lor_nb <- function(p_side_effects_t1, logor_side_effects,
+                               p_home_home, p_home_hospital, p_home_recover,
+                               p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+                               c_home_care, c_hospital, c_death,
+                               u_recovery, u_home_care, u_hospital)
+{
+  if (length(p_side_effects_t1) > 1)
+    stop("This function is not vectorised, and parameters should be supplied as scalars")
+  odds1 <- p_side_effects_t1 / (1 - p_side_effects_t1)
+  odds2 <- odds1 * exp(logor_side_effects)
+  p_side_effects_t2 <- odds2 / (1 + odds2)
+  ce <- calculate_costs_effects(p_side_effects_t1, p_side_effects_t2,
+                                p_home_home, p_home_hospital, p_home_recover,
+                                p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+                                c_home_care, c_hospital, c_death,
+                                u_recovery, u_home_care, u_hospital)
+  calculate_net_benefit(ce, wtp=20000)
+}
+
+##' @rdname chemo_model
+##' @export
+chemo_model_lor_cea <- function(p_side_effects_t1, logor_side_effects,
+                                p_home_home, p_home_hospital, p_home_recover,
+                                p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+                                c_home_care, c_hospital, c_death,
+                                u_recovery, u_home_care, u_hospital)
+{
+  if (length(p_side_effects_t1) > 1)
+    stop("This function is not vectorised, and parameters should be supplied as scalars")
+  odds1 <- p_side_effects_t1 / (1 - p_side_effects_t1)
+  odds2 <- odds1 * exp(logor_side_effects)
+  p_side_effects_t2 <- odds2 / (1 + odds2)
+  ce <- calculate_costs_effects(p_side_effects_t1, p_side_effects_t2,
+                                p_home_home, p_home_hospital, p_home_recover,
+                                p_hospital_hospital, p_hospital_recover, p_hospital_dead,
+                                c_home_care, c_hospital, c_death,
+                                u_recovery, u_home_care, u_hospital)
+  t(ce[1,,])
 }

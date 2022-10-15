@@ -5,7 +5,6 @@
 ## https://github.com/convoigroup/Chemotherapy_Book/blob/main/03_R/02_misc_functions.R
 ## on 20/07/2022 
 ## but with the constants pasted inside the functions 
-## CJ TODO also change relative risk to log odds ratio 
 
 ################################################################################
 #### Misc Functions for the Chemotherapy Model

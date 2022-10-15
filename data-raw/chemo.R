@@ -2,7 +2,7 @@
 ## using functions built into package
 
 ## Work out data constants used in the model 
-dat_side_effs_SC <- read.csv("~/work/voibook/Chemotherapy_Book/01_data_raw/Side_Effects_SC.csv",
+dat_side_effs_SC <- read.csv("inst/Chemotherapy_Book/01_data_raw/Side_Effects_SC.csv",
                              header = TRUE)
 n_patients <- nrow(dat_side_effs_SC) # 111
 n_side_effects <- sum(dat_side_effs_SC$Side_Effects) ## 52
