@@ -61,7 +61,7 @@ Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
 \item the function should return a data frame.
 \item the returned data frame should have number of rows equal to the number of parameter simulations in \code{inputs}.
 \item if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
-\item the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
+\item the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  If there is an argument called \code{n}, then it is interpreted as the sample size for the proposed study.
 }}
 
 \item{pars}{Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
@@ -70,7 +70,13 @@ For example, if \code{study = "trial_binary"} is specified, then \code{pars} sho
 
 The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is, \code{method="is"} and \code{method="mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
 
-\item{n}{Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  If more than one quantity is required to describe the sample size (e.g. trials with unbalanced arms) currently you will have to write a different \code{datagen_fn} for each different sample size that you want the EVSI for.}
+\item{n}{Sample size of future study, or vector of alternative sample sizes.  This is understood by the built-in study designs.  For studies specified by the user with \code{datagen_fn}, if \code{datagen_fn} has an argument \code{n}, then this is interpreted as the sample size.
+Currently this shortcut is not supported if more than one quantity is required to describe the sample size, for example, trials with unbalanced arms.  In that case, you will have to hard-code the required sample sizes into \code{datagen_fn}.
+
+For the nonparametric regression and importance sampling methods, the computation is simply repeated for each sample size supplied here.
+
+The moment matching method uses a regression model to estimate the dependency of the EVSI on the sample size,
+hence to enable EVSI to be calculated efficiently for any number of sample sizes (Heath et al. 2019).}
 
 \item{aux_pars}{A list of additional fixed arguments to supply to the function to generate the data,
 whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the

@@ -44,7 +44,7 @@
 ##'
 ##' 4. if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
 ##'
-##' 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  These arguments might be used to define sample sizes for a proposed study.
+##' 5. the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  If there is an argument called \code{n}, then it is interpreted as the sample size for the proposed study. 
 ##'
 ##' @param pars Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
 ##'
@@ -52,7 +52,13 @@
 ##' 
 ##' The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is, \code{method="is"} and \code{method="mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.
 ##'
-##' @param n Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  If more than one quantity is required to describe the sample size (e.g. trials with unbalanced arms) currently you will have to write a different `datagen_fn` for each different sample size that you want the EVSI for.
+##' @param n Sample size of future study, or vector of alternative sample sizes.  This is understood by the built-in study designs.  For studies specified by the user with \code{datagen_fn}, if \code{datagen_fn} has an argument \code{n}, then this is interpreted as the sample size.
+##' Currently this shortcut is not supported if more than one quantity is required to describe the sample size, for example, trials with unbalanced arms.  In that case, you will have to hard-code the required sample sizes into `datagen_fn`.
+##'
+##' For the nonparametric regression and importance sampling methods, the computation is simply repeated for each sample size supplied here.
+##' 
+##' The moment matching method uses a regression model to estimate the dependency of the EVSI on the sample size,
+##' hence to enable EVSI to be calculated efficiently for any number of sample sizes (Heath et al. 2019).
 ##'
 ##' @param aux_pars A list of additional fixed arguments to supply to the function to generate the data, 
 ##' whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the 
@@ -83,6 +89,7 @@
 ##' `data`: A data frame with names matching the output of `datagen_fn`
 ##'
 ##' `args`: A list with constants required in the Bayesian analysis, e.g. prior parameters, or options for the analysis, e.g. number of MCMC simulations.
+##' The component of this list called \code{n} is assumed to contain the sample size of the study.
 ##'
 ##' `pars` Names of the parameters whose posterior is being sampled. 
 ##'
@@ -90,7 +97,8 @@
 ##'
 ##' @param analysis_args List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Only used in \code{method="mm"}.  This is required if the study design is one of the built-in ones specified in \code{study}.  If a custom design is specifed through \code{analysis_fn}, then any constants needed in `analysis_fn` can either be supplied in `analysis_args`, or hard-coded in `analysis_fn` itself.
 ##'
-##' For the built-in designs, the lists should have the following named components.  In addition for each study, to a component named `n` (the study sample size) should be supplied (TODO can't we read this from the evsi arg??).  An optional component `niter` in each case defines the posterior sample size (default 1000).
+##' For the built-in designs, the lists should have the following named components.
+##' An optional component `niter` in each case defines the posterior sample size (default 1000).
 ##'
 ##' `study="binary"`: `a` and `b`: Beta shape parameters 
 ##'
@@ -117,6 +125,8 @@
 ##' Menzies, N. A. (2016). An efficient estimator for the expected value of sample information. Medical Decision Making, 36(3), 308-320.
 ##'
 ##' Heath, A., Manolopoulou, I., & Baio, G. (2018). Efficient Monte Carlo estimation of the expected value of sample information using moment matching. Medical Decision Making, 38(2), 163-173.
+##'
+##' Heath, A., Manolopoulou, I., & Baio, G. (2019). Estimating the expected value of sample information across different sample sizes using moment matching and nonlinear regression. Medical Decision Making, 39(4), 347-359.
 ##'
 ##' @export
 evsi <- function(outputs,
@@ -293,7 +303,7 @@ check_ss <- function(n){
         stop("sample sizes `n` should all be positive integers")
 }
 
-form_analysis_args <- function(analysis_args, study, n){
+form_analysis_args <- function(analysis_args, study){
   if (!is.null(study)){
     if (study %in% studies_builtin){
       if (!is.list(analysis_args))
@@ -302,7 +312,5 @@ form_analysis_args <- function(analysis_args, study, n){
   }
   if (is.null(analysis_args))
     analysis_args <- list()
-  if (!is.null(n))
-      analysis_args$n <- n
   analysis_args
 }

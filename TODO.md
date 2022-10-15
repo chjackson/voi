@@ -17,6 +17,7 @@
 
 ## TODO
 
+* A test model with more than two decision options 
 
 EVPPI
 
@@ -26,19 +27,18 @@ EVPPI
 
 * Test earth gam method more, compare against other methods to suggest advantages, while developing book material. 
 
-* Standard errors for GP, earth.  INLA too?
-
-* Diagnostics for fit of nonparametric regression models 
-
-* MLMC and QMC methods
-
-* Parallel processing for standard 2 level Monte Carlo, and partial results for convergence checking 
+* Standard errors for earth.  INLA too?
 
 * Anything to facilitate algebraic methods?
 
 * Any other plots for communication?
 
 * Use "wtp" or "k"?
+
+* MLMC and QMC methods
+
+* Parallel processing for standard 2 level Monte Carlo, and partial results for convergence checking 
+
 
 
 EVSI
@@ -48,8 +48,6 @@ EVSI
 * Any need to handle designs controlled by more than one sample size?  If so, make sure multiple arguments to datagen_fn are handled nicely
 
 * Guidance for users to specify appropriate GAM formulae for their applications when the default formula is too intensive.  Relatedly, appropriate number of PSA samples to use. 
-
-* Add Heath EVSI method: Tricky bit is updating the parameters given new data and rerunning the model - code this more abstractly than is currently done.
 
 * Add Jalal EVSI method
 

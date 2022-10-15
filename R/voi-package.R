@@ -26,7 +26,7 @@
 ##' @importFrom graphics points hist par
 ##' @importFrom ggplot2 ggplot aes geom_point ylab xlab geom_linerange geom_histogram
 ##' @importFrom gridExtra grid.arrange
-##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC cov lm fitted reorder IQR residuals
+##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC cov lm fitted reorder IQR residuals update
 ##' @importFrom utils select.list combn
 ##' @importFrom progress progress_bar
 ##' 
