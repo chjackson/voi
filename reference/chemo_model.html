@@ -30,6 +30,16 @@ provided as built-in datasets."><!-- mathjax --><script src="https://cdnjs.cloud
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/book.html">Value of Information for Health Economic Evaluations: book code resources</a>
+    </li>
+  </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -79,6 +89,40 @@ provided as built-in datasets.</p>
 <span><span class="fu">chemo_model_cea</span><span class="op">(</span></span>
 <span>  <span class="va">p_side_effects_t1</span>,</span>
 <span>  <span class="va">p_side_effects_t2</span>,</span>
+<span>  <span class="va">p_home_home</span>,</span>
+<span>  <span class="va">p_home_hospital</span>,</span>
+<span>  <span class="va">p_home_recover</span>,</span>
+<span>  <span class="va">p_hospital_hospital</span>,</span>
+<span>  <span class="va">p_hospital_recover</span>,</span>
+<span>  <span class="va">p_hospital_dead</span>,</span>
+<span>  <span class="va">c_home_care</span>,</span>
+<span>  <span class="va">c_hospital</span>,</span>
+<span>  <span class="va">c_death</span>,</span>
+<span>  <span class="va">u_recovery</span>,</span>
+<span>  <span class="va">u_home_care</span>,</span>
+<span>  <span class="va">u_hospital</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">chemo_model_lor_nb</span><span class="op">(</span></span>
+<span>  <span class="va">p_side_effects_t1</span>,</span>
+<span>  <span class="va">logor_side_effects</span>,</span>
+<span>  <span class="va">p_home_home</span>,</span>
+<span>  <span class="va">p_home_hospital</span>,</span>
+<span>  <span class="va">p_home_recover</span>,</span>
+<span>  <span class="va">p_hospital_hospital</span>,</span>
+<span>  <span class="va">p_hospital_recover</span>,</span>
+<span>  <span class="va">p_hospital_dead</span>,</span>
+<span>  <span class="va">c_home_care</span>,</span>
+<span>  <span class="va">c_hospital</span>,</span>
+<span>  <span class="va">c_death</span>,</span>
+<span>  <span class="va">u_recovery</span>,</span>
+<span>  <span class="va">u_home_care</span>,</span>
+<span>  <span class="va">u_hospital</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">chemo_model_lor_cea</span><span class="op">(</span></span>
+<span>  <span class="va">p_side_effects_t1</span>,</span>
+<span>  <span class="va">logor_side_effects</span>,</span>
 <span>  <span class="va">p_home_home</span>,</span>
 <span>  <span class="va">p_home_hospital</span>,</span>
 <span>  <span class="va">p_home_recover</span>,</span>
@@ -166,12 +210,16 @@ at a willingness-to-pay of 20000 pounds.</p>
 <dt>u_hospital</dt>
 <dd><p>Utility of hospital state</p></dd>
 
+
+<dt>logor_side_effects</dt>
+<dd><p>Log odds ratio for side effects between treatment 1 and treatment 2</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>Three functions are provided for the model.</p>
+<p>Two alternative functions are provided to evaluate the decision model for given parameters.</p>
 
 
 <p><code>chemo_model_nb</code> returns a vector with elements giving the net monetary benefit for standard of care
@@ -181,7 +229,14 @@ and novel treatment, respectively, at a willingness-to-pay of 20,000 pounds per 
 <p><code>chemo_model_cea</code> returns a matrix with:</p><ul><li><p>two rows, the first for expected costs and the second for expected effects (QALYs) over the fifty year time horizon, and</p></li>
 <li><p>two columns, the first for the "standard of care" decision option, and the second for the novel
 treatment.</p></li>
-</ul><p><code>chemo_pars_fn</code> generates a sample from the uncertainty distribution of the parameters in the chemotherapy model . This returns a data frame with parameters matching the arguments of
+</ul><p><code>chemo_model_lor_nb</code> and <code>chemo_model_lor_cea</code> are the same model, but parameterised in terms of
+the probability of side effects for the standard of care <code>p_side_effects_t1</code> and the log odds ratio
+of side effects between treatment groups <code>logor_side_effects</code>, rather than in terms of
+<code>p_side_effects_t1</code> and <code>p_side_effects_t2</code></p>
+
+
+
+<p><code>chemo_pars_fn</code> generates a sample from the uncertainty distribution of the parameters in the chemotherapy model . This returns a data frame with parameters matching the arguments of
 <code>chemo_model_nb</code>, and the following additional derived parameters:</p><ul><li><p><code>logor_side_effects</code>: log odds ratio of side effects for treatment 2 compared to 1</p></li>
 <li><p><code>p_hospitalised_total</code>: probability of hospitalisation over the 50 year time horizon</p></li>
 <li><p><code>p_died</code>: probability of death over the time horizon, given hospitalisation</p></li>

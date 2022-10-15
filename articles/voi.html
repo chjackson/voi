@@ -45,6 +45,18 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/book.html">Value of Information for Health Economic Evaluations: book code resources</a>
+    </li>
+  </ul>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right"></ul>
 </div>
@@ -62,7 +74,7 @@
       <h1 data-toc-skip>voi for Value of Information calculation: package overview</h1>
                         <h4 data-toc-skip class="author">Christopher Jackson</h4>
             
-            <h4 data-toc-skip class="date">2022-10-11</h4>
+            <h4 data-toc-skip class="date">2022-10-15</h4>
       
       
       <div class="hidden name"><code>voi.Rmd</code></div>
@@ -476,8 +488,8 @@ A challenge of estimating EVPPI using GAMs is to define a GAM that is sufficient
 <span>     analysis_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>prior_mean<span class="op">=</span><span class="fl">1</span>, prior_sd<span class="op">=</span><span class="fl">1</span>, sampling_sd<span class="op">=</span><span class="fl">1</span>, niter<span class="op">=</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in evsi_mm_nb(outputs, inputs = inputs, pars = pars, datagen_fn =</span></span>
 <span><span class="co">## datagen_fn, : EVSI &gt; EVPPI may result from approximation error</span></span></code></pre>
-<pre><code><span><span class="co">##       n     evsi      evppi</span></span>
-<span><span class="co">## 1 10000 0.130057 0.08210074</span></span></code></pre>
+<pre><code><span><span class="co">##       n     evsi</span></span>
+<span><span class="co">## 1 10000 0.130057</span></span></code></pre>
 <p>The estimate of the EVSI is fairly close to the result from the regression method. The moment matching method also computes the regression-based estimate of the EVPPI, so this is returned alongside the EVSI estimate.</p>
 <p>A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by changing <span class="math inline">\(Q\)</span> (default 30) in the call to <code>evsi</code>, the number of posterior samples (default 1000) through the <code>niter</code> component of <code>analysis_args</code>, and the size of <code>outputs</code> and <code>inputs</code> (as in most VoI calculation methods).</p>
 </div>

@@ -28,6 +28,16 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="articles/book.html">Value of Information for Health Economic Evaluations: book code resources</a>
+    </li>
+  </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -53,22 +63,20 @@
 </ul></div>
 <div class="section level2">
 <h2 id="todo">TODO<a class="anchor" aria-label="anchor" href="#todo"></a></h2>
-<p>EVPPI</p>
+<ul><li>A test model with more than two decision options</li></ul><p>EVPPI</p>
 <ul><li><p>Different regression methods and options for effects and costs</p></li>
 <li><p>INLA: check plots work</p></li>
 <li><p>Test earth gam method more, compare against other methods to suggest advantages, while developing book material.</p></li>
-<li><p>Standard errors for GP, earth. INLA too?</p></li>
-<li><p>Diagnostics for fit of nonparametric regression models</p></li>
-<li><p>MLMC and QMC methods</p></li>
-<li><p>Parallel processing for standard 2 level Monte Carlo, and partial results for convergence checking</p></li>
+<li><p>Standard errors for earth. INLA too?</p></li>
 <li><p>Anything to facilitate algebraic methods?</p></li>
 <li><p>Any other plots for communication?</p></li>
 <li><p>Use “wtp” or “k”?</p></li>
+<li><p>MLMC and QMC methods</p></li>
+<li><p>Parallel processing for standard 2 level Monte Carlo, and partial results for convergence checking</p></li>
 </ul><p>EVSI</p>
 <ul><li><p>More built-in study designs - which ones?</p></li>
 <li><p>Any need to handle designs controlled by more than one sample size? If so, make sure multiple arguments to datagen_fn are handled nicely</p></li>
 <li><p>Guidance for users to specify appropriate GAM formulae for their applications when the default formula is too intensive. Relatedly, appropriate number of PSA samples to use.</p></li>
-<li><p>Add Heath EVSI method: Tricky bit is updating the parameters given new data and rerunning the model - code this more abstractly than is currently done.</p></li>
 <li><p>Add Jalal EVSI method</p></li>
 <li><p>2-level Monte Carlo again</p></li>
 <li><p>Output analysis material from Anna’s EVSI package.</p></li>

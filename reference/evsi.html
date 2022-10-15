@@ -31,6 +31,16 @@ model"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/book.html">Value of Information for Health Economic Evaluations: book code resources</a>
+    </li>
+  </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -136,7 +146,7 @@ component of the <code>aux_pars</code> argument, e.g.
 <li><p>the function should return a data frame.</p></li>
 <li><p>the returned data frame should have number of rows equal to the number of parameter simulations in <code>inputs</code>.</p></li>
 <li><p>if <code>inputs</code> is considered as a sample from the posterior, then <code>datagen_fn(inputs)</code> returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.</p></li>
-<li><p>the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of <code>datagen_fn</code>.  These arguments might be used to define sample sizes for a proposed study.</p></li>
+<li><p>the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of <code>datagen_fn</code>.  If there is an argument called <code>n</code>, then it is interpreted as the sample size for the proposed study.</p></li>
 </ol></dd>
 
 
@@ -147,7 +157,11 @@ component of the <code>aux_pars</code> argument, e.g.
 
 
 <dt>n</dt>
-<dd><p>Sample size of future study - optional argument to datagen_fn - facilitates calculating EVSI for multiple sample sizes.  If more than one quantity is required to describe the sample size (e.g. trials with unbalanced arms) currently you will have to write a different <code>datagen_fn</code> for each different sample size that you want the EVSI for.</p></dd>
+<dd><p>Sample size of future study, or vector of alternative sample sizes.  This is understood by the built-in study designs.  For studies specified by the user with <code>datagen_fn</code>, if <code>datagen_fn</code> has an argument <code>n</code>, then this is interpreted as the sample size.
+Currently this shortcut is not supported if more than one quantity is required to describe the sample size, for example, trials with unbalanced arms.  In that case, you will have to hard-code the required sample sizes into <code>datagen_fn</code>.</p>
+<p>For the nonparametric regression and importance sampling methods, the computation is simply repeated for each sample size supplied here.</p>
+<p>The moment matching method uses a regression model to estimate the dependency of the EVSI on the sample size,
+hence to enable EVSI to be calculated efficiently for any number of sample sizes (Heath et al. 2019).</p></dd>
 
 
 <dt>aux_pars</dt>
@@ -174,14 +188,16 @@ fixed standard deviation in the <code>"normal_known"</code> model.</p></dd>
 <dt>analysis_fn</dt>
 <dd><p>Function which fits a Bayesian model to the generated data.   Required for <code>method="mm"</code> if a study design other than one of the built-in ones is used.  This should be a function that takes the following arguments:</p>
 <p><code>data</code>: A data frame with names matching the output of <code>datagen_fn</code></p>
-<p><code>args</code>: A list with constants required in the Bayesian analysis, e.g. prior parameters, or options for the analysis, e.g. number of MCMC simulations.</p>
+<p><code>args</code>: A list with constants required in the Bayesian analysis, e.g. prior parameters, or options for the analysis, e.g. number of MCMC simulations.
+The component of this list called <code>n</code> is assumed to contain the sample size of the study.</p>
 <p><code>pars</code> Names of the parameters whose posterior is being sampled.</p>
 <p>The function should return a data frame with names matching <code>pars</code>, containing a sample from the posterior distribution of the parameters given data supplied through <code>data</code>, and prior supplied through <code>args</code>.</p></dd>
 
 
 <dt>analysis_args</dt>
 <dd><p>List of arguments required for the Bayesian analysis of the predicted data, e.g. definitions of the prior and options to control sampling.  Only used in <code>method="mm"</code>.  This is required if the study design is one of the built-in ones specified in <code>study</code>.  If a custom design is specifed through <code>analysis_fn</code>, then any constants needed in <code>analysis_fn</code> can either be supplied in <code>analysis_args</code>, or hard-coded in <code>analysis_fn</code> itself.</p>
-<p>For the built-in designs, the lists should have the following named components.  In addition for each study, to a component named <code>n</code> (the study sample size) should be supplied (TODO can't we read this from the evsi arg??).  An optional component <code>niter</code> in each case defines the posterior sample size (default 1000).</p>
+<p>For the built-in designs, the lists should have the following named components.
+An optional component <code>niter</code> in each case defines the posterior sample size (default 1000).</p>
 <p><code>study="binary"</code>: <code>a</code> and <code>b</code>: Beta shape parameters</p>
 <p><code>study="trial_binary"</code>: <code>a1</code> and <code>b1</code>: Beta shape parameters for the prior for the first arm,  <code>a2</code> and <code>b2</code>: Beta shape parameters for the prior for the second arm.</p>
 <p><code>study="normal_known"</code>: <code>prior_mean</code>, <code>prior_sd</code> (prior mean and standard deviation) and <code>sampling_sd</code> (SD of an individual-level normal observation, so that the sampling SD of the mean outcome over the study is <code>sampling_sd/sqrt(n)</code>.</p></dd>
@@ -231,6 +247,7 @@ diagnostic checks of the regression models.</p></dd>
     <p>Strong, M., Oakley, J. E., Brennan, A., &amp; Breeze, P. (2015). Estimating the expected value of sample information using the probabilistic sensitivity analysis sample: a fast, nonparametric regression-based method. Medical Decision Making, 35(5), 570-583.</p>
 <p>Menzies, N. A. (2016). An efficient estimator for the expected value of sample information. Medical Decision Making, 36(3), 308-320.</p>
 <p>Heath, A., Manolopoulou, I., &amp; Baio, G. (2018). Efficient Monte Carlo estimation of the expected value of sample information using moment matching. Medical Decision Making, 38(2), 163-173.</p>
+<p>Heath, A., Manolopoulou, I., &amp; Baio, G. (2019). Estimating the expected value of sample information across different sample sizes using moment matching and nonlinear regression. Medical Decision Making, 39(4), 347-359.</p>
     </div>
 
   </div>
