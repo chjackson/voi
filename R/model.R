@@ -26,11 +26,10 @@ check_model_fn <- function(model_fn, par_fn, mfargs=NULL, outputs_class=NULL, ve
     }  else if (is.matrix(res) || is.data.frame(res)) {
         class(model_fn) <- c("cea", attr(model_fn, "class"))
         attr(model_fn, "nopt") <- ncol(res)
-        if (nrow(res) != 2) {
-            stop("If `model_fn` returns a matrix or data frame it should have two rows, one for effects and one for costs")
+        if (nrow(res) != 2)
+          stop("If `model_fn` returns a matrix or data frame it should have two rows, one for effects and one for costs")
         if (identical(outputs_class, "nb"))
           stop("output of model_fn should be a vector if `outputs` is in cost-effectiveness format")
-        }
     } else stop("`model_fn` should return a vector, matrix or data frame")
     if (verbose) 
         describe_modelfn(model_fn)
