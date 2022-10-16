@@ -1,6 +1,7 @@
 evsi_mm <- function(outputs, 
                     inputs,
                     pars,
+                    pars_datagen,
                     datagen_fn,
                     study, 
                     analysis_fn,
@@ -13,13 +14,15 @@ evsi_mm <- function(outputs,
                     verbose, ...){
   model_fn <- check_model_fn(model_fn, par_fn, mfargs=NULL, class(outputs)[1], verbose=verbose)
   check_pars_in_modelfn(pars, model_fn)
-  analysis_args <- form_analysis_args(analysis_args, study)
-  analysis_fn <- form_analysis_fn(study, analysis_fn, analysis_args, datagen_fn, inputs, n, pars) 
+  analysis_args <- form_analysis_args(analysis_args, study, n)
+  analysis_fn <- form_analysis_fn(study, analysis_fn, analysis_args, datagen_fn, inputs, n, pars, pars_datagen) 
     
   ## Get quantiles of input parameters from PSA sample 
-  quants <- mm_gen_quantiles(pars, inputs, Q)
+  quants <- mm_gen_quantiles(pars_datagen, inputs, Q)
   if (inherits(outputs,"nb")){
-    evsi_mm_nb(outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+    evsi_mm_nb(outputs, inputs=inputs,
+               pars=pars, pars_datagen=pars_datagen,
+               datagen_fn=datagen_fn, n=n,
                quants=quants, Q=Q, 
                analysis_fn=analysis_fn,
                analysis_args=analysis_args,
@@ -29,7 +32,9 @@ evsi_mm <- function(outputs,
                verbose=verbose, ...)
   }
   else if (inherits(outputs,"cea")) {
-    evsi_mm_cea(outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+    evsi_mm_cea(outputs, inputs=inputs,
+                pars=pars, pars_datagen=pars_datagen,
+                datagen_fn=datagen_fn, n=n,
                 quants=quants, Q=Q, 
                 analysis_fn=analysis_fn,
                 analysis_args=analysis_args,
@@ -40,7 +45,7 @@ evsi_mm <- function(outputs,
   }
 }
 
-evsi_mm_nb <- function(outputs, inputs, pars, datagen_fn, n,
+evsi_mm_nb <- function(outputs, inputs, pars, pars_datagen, datagen_fn, n,
                        quants, Q, 
                        analysis_fn,
                        analysis_args,
@@ -48,7 +53,7 @@ evsi_mm_nb <- function(outputs, inputs, pars, datagen_fn, n,
                        par_fn,
                        npreg_method="gam",
                        verbose=FALSE, ...){
-  fits <- evsi_mm_core(nb=outputs, inputs, pars, datagen_fn, n, quants, Q,
+  fits <- evsi_mm_core(nb=outputs, inputs, pars, pars_datagen, datagen_fn, n, quants, Q,
                        analysis_fn, analysis_args,
                        model_fn, par_fn, output_row=NULL, npreg_method, verbose, ...)
 
@@ -63,7 +68,9 @@ evsi_mm_nb <- function(outputs, inputs, pars, datagen_fn, n,
   res
 }
 
-evsi_mm_cea <- function(outputs, inputs, pars, datagen_fn, n,
+evsi_mm_cea <- function(outputs, inputs, pars,
+                        pars_datagen,
+                        datagen_fn, n,
                         quants, Q, 
                         analysis_fn,
                         analysis_args,
@@ -71,12 +78,12 @@ evsi_mm_cea <- function(outputs, inputs, pars, datagen_fn, n,
                         par_fn,
                         npreg_method="gam",
                         verbose=FALSE, ...){
-  cfits <- evsi_mm_core(outputs$c, inputs, pars, datagen_fn, n, quants, Q,
+  cfits <- evsi_mm_core(outputs$c, inputs, pars, pars_datagen, datagen_fn, n, quants, Q,
                         analysis_fn, analysis_args,
                         model_fn, par_fn,
                         output_row = "c",
                         npreg_method, verbose, ...)
-  efits <- evsi_mm_core(outputs$e, inputs, pars, datagen_fn, n, quants, Q,
+  efits <- evsi_mm_core(outputs$e, inputs, pars, pars_datagen, datagen_fn, n, quants, Q,
                         analysis_fn, analysis_args,
                         model_fn, par_fn,
                         output_row = "e",
@@ -94,7 +101,11 @@ evsi_mm_cea <- function(outputs, inputs, pars, datagen_fn, n,
 }
 
 evsi_mm_core <- function(nb, # could actually be nb, or c, or e
-                         inputs, pars, datagen_fn, n,
+                         inputs, 
+                         pars, 
+                         pars_datagen, 
+                         datagen_fn, 
+                         n,
                          quants, Q, 
                          analysis_fn,
                          analysis_args,
@@ -113,10 +124,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
 
   for(i in 1:Q){
     ## Generate one dataset given parameters equal to a specific prior quantile
-    inputsQ <- inputs
-    for (j in names(quants)) 
-      inputsQ[[j]] <- quants[i,j]
-    simdata <- datagen_fn(inputs = inputsQ, n = nfit[i], pars=pars)
+    simdata <- datagen_fn(inputs = quants[i,,drop=FALSE], n = nfit[i], pars=pars_datagen)
 
     ## Fit Bayesian model to future data to get a sample from posterior(pars|simdata)
     analysis_args$n <- nfit[i]
@@ -182,7 +190,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
   list(fit=fit, fit_rescaled=fit_rescaled, p_shrink=p_shrink)
 }
 
-#' @param pars Character vector of parameters of interest 
+#' @param pars Character vector of parameters required to generate the study data
 #'
 #' @param inputs Data frame with sampled values from current distribution of `pars`
 #'
@@ -198,13 +206,13 @@ mm_gen_quantiles <- function(pars,
                              inputs,
                              Q,
                              N.size = NULL){
-    quantiles.parameters <- array(NA, dim = c(Q, length(pars)))
-    colnames(quantiles.parameters) <- pars
+    quants <- array(NA, dim = c(Q, length(pars)))
+    colnames(quants) <- pars
     for(i in 1:length(pars)){
-        quantiles.parameters[,i] <- sample(quantile(inputs[,pars[i]],
+        quants[,i] <- sample(quantile(inputs[,pars[i]],
                                                     probs = 1:Q / (Q + 1), type = 4))
     }
-    as.data.frame(quantiles.parameters)
+    as.data.frame(quants)
 }
 
 

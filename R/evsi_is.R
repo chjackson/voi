@@ -1,42 +1,51 @@
 
 ## Importance sampling method for calculating EVSI (Menzies)
 
-evsi_is <- function(outputs, inputs, pars, datagen_fn, n=100, aux_pars=aux_pars, likelihood, npreg_method="gam", verbose, ...){
+evsi_is <- function(outputs, inputs, pars, pars_datagen,
+                    datagen_fn, n=100, aux_pars=aux_pars,
+                    likelihood, npreg_method="gam", verbose, ...){
     nn <- length(n)
     res <- vector(nn, mode="list")
     for (i in seq_along(n)){
         res[[i]] <- data.frame(
             n = n[i], 
-            evsi = evsi_is_singlen(outputs, inputs, pars, datagen_fn=datagen_fn, n=100, aux_pars=aux_pars,
-                                    likelihood=likelihood, npreg_method=npreg_method, verbose=verbose,
-                                    ...)
+          evsi = evsi_is_singlen(outputs, inputs, pars, pars_datagen,
+                                 datagen_fn=datagen_fn, n=100, aux_pars=aux_pars,
+                                 likelihood=likelihood, npreg_method=npreg_method, verbose=verbose,
+                                 ...)
         )
         if (inherits(outputs, "cea")) res[[i]] <- cbind(k = outputs$k, res[[i]])
     }
     do.call("rbind", res)
 }
 
-evsi_is_singlen <- function(outputs, inputs, pars, datagen_fn, n=100, aux_pars=aux_pars, likelihood, npreg_method="gam", verbose, ...){
+evsi_is_singlen <- function(outputs, inputs, pars, pars_datagen,
+                            datagen_fn, n=100, aux_pars=aux_pars, likelihood, npreg_method="gam", verbose, ...){
     UseMethod("evsi_is", outputs)    
 }
     
-evsi_is.nb <- function(outputs, inputs, pars, datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){
-    nbfit <- prepost_evsi_is(outputs, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
-                             aux_pars=aux_pars, 
-                             likelihood=likelihood, npreg_method=npreg_method,
-                             verbose=verbose, ...)
+evsi_is.nb <- function(outputs, inputs, pars, pars_datagen,
+                       datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){
+  nbfit <- prepost_evsi_is(outputs, inputs=inputs, pars=pars, pars_datagen=pars_datagen,
+                           datagen_fn=datagen_fn, n=n,
+                           aux_pars=aux_pars, 
+                           likelihood=likelihood, npreg_method=npreg_method,
+                           verbose=verbose, ...)
     calc_evppi(nbfit)
 }
 
-evsi_is.cea <- function(outputs, inputs, pars, datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){ 
+evsi_is.cea <- function(outputs, inputs, pars, pars_datagen,
+                        datagen_fn, n, aux_pars, likelihood, npreg_method, verbose, ...){ 
     wtp <- outputs$k 
     nwtp <- length(wtp)
     res <- numeric(nwtp)
-    cfit <- prepost_evsi_is(outputs$c, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
+    cfit <- prepost_evsi_is(outputs$c, inputs=inputs, pars=pars, pars_datagen=pars_datagen,
+                            datagen_fn=datagen_fn, n=n,
                              aux_pars=aux_pars, 
                             likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
-    efit <- prepost_evsi_is(outputs$e, inputs=inputs, pars=pars, datagen_fn=datagen_fn, n=n,
-                             aux_pars=aux_pars, 
+    efit <- prepost_evsi_is(outputs$e, inputs=inputs, pars=pars, pars_datagen=pars_datagen,
+                            datagen_fn=datagen_fn, n=n,
+                            aux_pars=aux_pars, 
                             likelihood=likelihood, npreg_method=npreg_method, verbose=verbose, ...)
     for (i in 1:nwtp){
         nbfit <- efit*wtp[i] - cfit
@@ -45,10 +54,11 @@ evsi_is.cea <- function(outputs, inputs, pars, datagen_fn, n, aux_pars, likeliho
     res
 }
 
-prepost_evsi_is <- function(nb, inputs, pars, datagen_fn, n=100, 
+prepost_evsi_is <- function(nb, inputs, pars, pars_datagen,
+                            datagen_fn, n=100, 
                              aux_pars=aux_pars, 
                             likelihood, npreg_method="gam", verbose, ...){
-    simdat <- generate_data(inputs, datagen_fn=datagen_fn, n=n, pars=pars, aux_pars=aux_pars)
+    simdat <- generate_data(inputs, datagen_fn=datagen_fn, n=n, pars=pars_datagen, aux_pars=aux_pars)
     ## nb or ce? 
     if (is.null(npreg_method))
         npreg_method <- default_evppi_method(pars)

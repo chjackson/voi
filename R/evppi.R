@@ -345,8 +345,6 @@ check_outputs <- function(outputs, inputs=NULL){
 }
 
 
-## TODO which of these are needed for EVSI 
-
 check_pars <- function(pars, inputs, evppi=TRUE){
     if (is.null(pars) && evppi){
         if (ncol(inputs)==1)

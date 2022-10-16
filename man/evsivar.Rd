@@ -36,56 +36,84 @@ should be identified in \code{pars}.
 Current built-in studies are
 
 \code{"binary"} A study with a binary outcome observed on one sample of
-individuals.   Requires one parameter: the probability of the outcome.
-The sample size is specifed in the \code{n} argument to \code{evsi()}, and
-the binomially-distributed outcome is named \code{X1}.
+individuals.   Requires one parameter: the probability of the outcome. The
+sample size is specifed in the \code{n} argument to \code{evsi()}, and the
+binomially-distributed outcome is named \code{X1}.
 
 \code{"trial_binary"} Two-arm trial with a binary outcome.   Requires two
-parameters: the probability of the outcome in arm 1 and 2 respectively.  The
-sample size is the same in each arm, specifed in the \code{n} argument to
-\code{evsi()}, and the binomial outcomes are named \code{X1} and \code{X2}
-respectively.
+parameters: the probability of the outcome in arm 1 and 2 respectively.
+The sample size is the same in each arm, specifed in the \code{n} argument
+to \code{evsi()}, and the binomial outcomes are named \code{X1} and
+\code{X2} respectively.
 
 \code{"normal_known"} A study of a normally-distributed outcome, with a
-known standard deviation, on one sample of individuals.  Likewise the sample
-size is specified in the \code{n} argument to \code{evsi()}.  The standard
-deviation defaults to 1, and can be changed by specifying \code{sd} as a
-component of the \code{aux_pars} argument, e.g.
+known standard deviation, on one sample of individuals.  Likewise the
+sample size is specified in the \code{n} argument to \code{evsi()}.  The
+standard deviation defaults to 1, and can be changed by specifying
+\code{sd} as a component of the \code{aux_pars} argument, e.g.
 \code{evsi(..., aux_pars=list(sd=2))}.
 
-Either \code{study} or \code{datagen_fn} should be supplied to \code{evsi()}.}
+Either \code{study} or \code{datagen_fn} should be supplied to
+\code{evsi()}.}
 
-\item{datagen_fn}{If the proposed study is not one of the built-in types supported, it can be specified in this argument as an R function to sample predicted data from the study.  This function should have the following specification:
+\item{datagen_fn}{If the proposed study is not one of the built-in types
+supported, it can be specified in this argument as an R function to sample
+predicted data from the study.  This function should have the following
+specification:
 \enumerate{
-\item the function's first argument should be a data frame of parameter simulations, with one row per simulation and one column per parameter.  The parameters in this data frame must all be found in \code{inputs}.
+\item the function's first argument should be a data frame of parameter
+simulations, with one row per simulation and one column per parameter.
+The parameters in this data frame must all be found in \code{inputs}.
 \item the function should return a data frame.
-\item the returned data frame should have number of rows equal to the number of parameter simulations in \code{inputs}.
-\item if \code{inputs} is considered as a sample from the posterior, then \code{datagen_fn(inputs)} returns a corresponding sample from the posterior predictive distribution, which includes two sources of uncertainty: (a) uncertainty about the parameters and (b) sampling variation in observed data given fixed parameter values.
-\item the function can optionally have more than one argument. If so, these additional arguments should be given default values in the definition of \code{datagen_fn}.  If there is an argument called \code{n}, then it is interpreted as the sample size for the proposed study.
+\item the returned data frame should have number of rows equal to the number
+of parameter simulations in \code{inputs}.
+\item if \code{inputs} is considered as a sample from the posterior, then
+\code{datagen_fn(inputs)} returns a corresponding sample from the
+posterior predictive distribution, which includes two sources of
+uncertainty: (a) uncertainty about the parameters and (b) sampling
+variation in observed data given fixed parameter values.
+\item the function can optionally have more than one argument. If so, these
+additional arguments should be given default values in the definition of
+\code{datagen_fn}.  If there is an argument called \code{n}, then it is
+interpreted as the sample size for the proposed study.
 }}
 
-\item{pars}{Character vector identifying which columns of \code{inputs} are the parameters required to generate data from the proposed study.  Required if the proposed study is specified through the \code{study} argument, but not if it is specified through the \code{datagen_fn} argument.
+\item{pars}{Character vector identifying which parameters are learned from the proposed study.
+These should be columns of \code{inputs}.
 
-For example, if \code{study = "trial_binary"} is specified, then \code{pars} should be a vector of two elements naming the probability of the outcome in arm 1 and arm 2 respectively.
+This is required for the methods which involve an
+intermediate EVPPI calculation, that is, \code{method="is"} and
+\code{method="mm"}.  It should consist of the variables used in the
+definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn}
+and \code{model_fn}, if these are used) and only these variables.}
 
-The \code{pars} argument is also required for the methods which involve an intermediate EVPPI calculation, that is, \code{method="is"} and \code{method="mm"}.  It should consist of the variables used in the definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn} and \code{model_fn}, if these are used) and only these variables.}
+\item{n}{Sample size of future study, or vector of alternative sample sizes.
+This is understood by the built-in study designs.  For studies specified
+by the user with \code{datagen_fn}, if \code{datagen_fn} has an argument
+\code{n}, then this is interpreted as the sample size. Currently this
+shortcut is not supported if more than one quantity is required to
+describe the sample size, for example, trials with unbalanced arms.  In
+that case, you will have to hard-code the required sample sizes into
+\code{datagen_fn}.
 
-\item{n}{Sample size of future study, or vector of alternative sample sizes.  This is understood by the built-in study designs.  For studies specified by the user with \code{datagen_fn}, if \code{datagen_fn} has an argument \code{n}, then this is interpreted as the sample size.
-Currently this shortcut is not supported if more than one quantity is required to describe the sample size, for example, trials with unbalanced arms.  In that case, you will have to hard-code the required sample sizes into \code{datagen_fn}.
+For the nonparametric regression and importance sampling methods, the
+computation is simply repeated for each sample size supplied here.
 
-For the nonparametric regression and importance sampling methods, the computation is simply repeated for each sample size supplied here.
+The moment matching method uses a regression model to estimate the
+dependency of the EVSI on the sample size, hence to enable EVSI to be
+calculated efficiently for any number of sample sizes (Heath et al. 2019).}
 
-The moment matching method uses a regression model to estimate the dependency of the EVSI on the sample size,
-hence to enable EVSI to be calculated efficiently for any number of sample sizes (Heath et al. 2019).}
-
-\item{aux_pars}{A list of additional fixed arguments to supply to the function to generate the data,
-whether that is a built-in or user-defined function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the
-fixed standard deviation in the \code{"normal_known"} model.}
+\item{aux_pars}{A list of additional fixed arguments to supply to the
+function to generate the data, whether that is a built-in or user-defined
+function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the fixed
+standard deviation in the \code{"normal_known"} model.}
 
 \item{method}{See \code{\link{evsi}}, only nonparametric regression methods are
 currently supported in \code{\link{evsivar}}.}
 
-\item{nsim}{Number of simulations from the model to use for calculating EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and \code{outputs} are used.}
+\item{nsim}{Number of simulations from the model to use for calculating
+EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
+\code{outputs} are used.}
 
 \item{verbose}{If \code{TRUE}, then messages are printed describing each step of
 the calculation, if the method supplies these.  Useful to see the progress
