@@ -10,10 +10,8 @@
 
 ## Installation
 
-```{r eval=FALSE}
-install.packages("devtools") # if devtools not already installed
-library(devtools)
-install_github("chjackson/voi")
+```
+remotes::install_github("chjackson/voi")
  ```
 
 ## User guide 
