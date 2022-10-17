@@ -18,3 +18,4 @@ Imports: mgcv, earth, mvtnorm, progress, dbarts, posterior, ggplot2, gridExtra
 Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown, rjags
 RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
+URL: https://chjackson.github.io/voi/
