@@ -166,8 +166,7 @@ predicted data (Strong et al 2015).   Defaults to \code{"gam"}.
 
 \code{"is"} for importance sampling (Menzies 2016)
 
-\code{"mm"} for moment matching (Heath et al 2018) (experimental and only
-partially implemented)
+\code{"mm"} for moment matching (Heath et al 2018) (experimental)
 
 Note that the  \code{"is"} and \code{"mm"} methods are used in conjunction
 with nonparametric regression, thus the \code{gam_formula} argument can be
