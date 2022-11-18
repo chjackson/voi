@@ -739,13 +739,11 @@ function, <code>evsi</code> can also be invoked with
 <h3 id="moment-matching-method">Moment matching method<a class="anchor" aria-label="anchor" href="#moment-matching-method"></a>
 </h3>
 <p>The momemt matching method from <a href="https://journals.sagepub.com/doi/10.1177/0272989X17738515" class="external-link">Heath
-et al.</a> is available as <code>evsi(..., method="mm")</code>. The
+et al.</a> is available as <code>evsi(..., method="mm")</code>. This
+includes the extension of this method to efficiently estimate the EVSI
+for the same design but with many different sample sizes (from <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>). The
 implementation in the <code>voi</code> package is experimental and has
 not been fully tested - note there is another implementation at <a href="https://github.com/annaheath/EVSI" class="external-link">https://github.com/annaheath/EVSI</a>.</p>
-<p>The generalisation of this method to efficiently estimate the EVSI
-for the same design but with many different sample sizes (from <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>) has not
-been implemented yet, so currently <code>evsi(..., method="mm")</code>
-can only handle one sample size at a time.</p>
 <p>Roughly, this method works as follows (see <a href="https://journals.sagepub.com/doi/10.1177/0272989X17738515" class="external-link">Heath
 et al.</a> for full details)</p>
 <ul>
