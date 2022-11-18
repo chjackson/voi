@@ -478,15 +478,16 @@ To use the moment matching method, `evsi` needs to know some information that is
     * `data` a data frame with names matching the output of `datagen_fn`
 
     * `args` a list of required constants, e.g. prior parameters or options for posterior computation
+    TODO they can also be hard-coded.  Only needed if ??? 
   
     * `pars` names of the parameters whose posterior is being sampled.
 
-    and return a data frame with each row containing a draw from the posterior distribution of the parameters named in the columns.    If specialised Bayesian analysis software such as JAGS or Stan is needed, then this function should wrap around a complete call to this software.
+    and return a data frame with each row containing a draw from the posterior distribution of the parameters named in the columns.    If specialised Bayesian analysis software such as JAGS or Stan is needed, then this function should wrap around a complete call to this software.  An example is given below. 
 
 * `analysis_args`: a list of constants that the data analysis function needs to know.   This is needed whether or not a built-in design is used.   This would typically include parameters that define the prior distributions, and settings to control posterior computation (e.g. number of MCMC iterations).  The specific components that are needed in this list depends on the study design, as specified by `analysis_fn` or `study`. 
 
 
-#### Moment matching method: example
+#### Moment matching method: example using a built-in study design
 
 This is the first EVSI example computation [shown above](#evsibuiltin), implemented using the moment matching method with a study sample size of 1000. 
 
@@ -503,6 +504,96 @@ evsi(outputs_nb, inputs, study = "normal_known", n=10000, pars = "p1", method="m
 The estimate of the EVSI is fairly close to the result from the regression method.  The moment matching method also computes the regression-based estimate of the EVPPI, so this is returned alongside the EVSI estimate.
 
 A lot of randomness is involved in the computation for this method, thus there is some Monte Carlo error and it is not reproducible unless the seed is set. This error can be controlled somewhat by changing $Q$ (default 30) in the call to `evsi`, the number of posterior samples (default 1000) through the `niter` component of `analysis_args`, and the size of `outputs` and `inputs` (as in most VoI calculation methods).
+
+
+#### Moment matching method: example using a custom study design
+
+A more complex decision model is included with the `voi` package, see  `help(chemo_model)`.  In this model, the key uncertain parameters describe the probabilities of an adverse outcome (risk of side-effects), $p_1$ and $p_2$, under the standard of care and some novel treatment respectively.  We want to design a study that informs only the _relative_ effect of the new treatment on the risk of that outcome.  The _baseline_ risk $p_1$ would be informed by some other source.  This might be because we believe that the decision population has the same relative risk as the population in the designed study, but the baseline risk may be different.
+
+To calculate the EVSI for the proposed study, we define two R functions: 
+
+(a) a function to simulate study data
+
+(b) a function defining a Bayesian model to analyse the potential study data.
+
+**Analysis function**. First we show the function to analyse the data.  We parameterise the relative treatment effect as a log odds ratio $log(p_1/(1-p_1)) - log(p_2/(1-p_2))$, supposing that there is previous information about the likely size of this quantity that can be expressed as a Normal$(\mu,\sigma^2)$ prior.   The baseline risk $p_1$ is given a Beta$(a_1,b_1)$ prior.  These priors match the current uncertainty distributions used in `par_fn` and used to produce the parameter sample `inputs` supplied to `evsi`.
+
+Since this model does not have an analytic posterior distribution, we use JAGS (via the `rjags` R package) to implement MCMC sampling.  It is not necessary to use JAGS however - the analysis function may call any Bayesian modelling software.  
+
+The following R function encapsulates how the posterior is obtained from the data in this analysis.
+
+```{r}
+analysis_fn <- function(data, args, pars){
+  dat <- list(y=c(data[,"y1"], data[,"y2"]))
+  design <- list(n = rep(args$n, 2))
+  priors <- list(a1=53, b1=60, mu=log(0.54), sigma=0.3)
+  jagsdat <- c(dat, design, priors)
+  or_jagsmod <- "
+  model {
+    y[1] ~ dbinom(p[1], n[1])
+    y[2] ~ dbinom(p[2], n[2])
+    p[1] <- p1
+    p[2] <- odds[2] / (1 + odds[2])
+    p1 ~ dbeta(a1, b1)
+    odds[1] <- p[1] / (1 - p[1])
+    odds[2] <- odds[1] * exp(logor)
+    logor ~ dnorm(mu, 1/sigma^2)
+  }
+  "
+  or.jag <- rjags::jags.model(textConnection(or_jagsmod), 
+                              data=jagsdat, inits=list(logor=0, p1=0.5), quiet = TRUE)
+  update(or.jag, 100, progress.bar="none")
+  sam <- rjags::coda.samples(or.jag, c("logor"), 500, progress.bar="none")
+  data.frame(logor_side_effects = as.numeric(sam[[1]][,"logor"]))
+}
+```
+
+A full understanding of JAGS model specification and sampling syntax is beyond the scope of this vignette - we just explain what the `voi` package is expecting.   The inputs and outputs of `analysis_fn` take the following form.
+  
+*  The return value is a data frame with a sample from the posterior of the parameters "learnt" from the study to inform the decision model.  There should be one column per parameter learnt.  Here we will only be using the information gained about `logor_side_effects`, so there is only column.  The names of the data frame (here `logor_side_effects`) should match the names of arguments to the decision model function supplied as the `model_fn` argument to `evsi` (here this function is `chemo_model_lor_nb`). 
+
+* The `data` input argument is a data frame with the outcome data from the study to be analysed.  In this example, the study is a trial with two arms, and the study results are `"y1"` and `"y2"`, the number of people experiencing the outcome in each arm.  One row of data is sufficient here, but in other cases (e.g. with individual-level data) we might need multiple rows to define the study data.
+
+    The names (`"y1"` and `"y2"` here) should match the names of the data frame returned by the function to simulate the study data (`datagen_fn` below). 
+
+* The `args` input argument is a list of constants that are needed in the analysis.  The sample size of the proposed study, supplied as the `n` argument to `evsi()` is automatically added to this list.
+
+    In this example, `n` is the the size of each trial arm, and is available to the analysis code as `args$n`. The sample size could also have been hard-coded into the analysis code, but supplying it through `args` is advisable as it allows the EVSI calculation to be defined transparently in the call to `evsi()`, and allows multiple calculations to be easily done for different sample sizes by supplying a vector as the `n` argument to `evsi()`.
+
+    Any other constants can be supplied through the `analysis_args` argument to `evsi()`.  This might be used for constants that define prior distributions.  In this example, these are instead hard-coded inside `analysis_fn`.
+
+* The `pars` argument is not used in this example, but this is a more general way of setting the names of the returned data frame.  The names supplied in the `pars` argument to the `evsi()` function will be automatically passed to this argument, so they can be used in naming the returned data frame.   We might do this if we wanted to write a generic function to fit a particular Bayesian model, that we could use in different decision models or EVSI calculations.  Here we simply hard-coded the names as `logor_side_effects` for clarity. 
+
+**Data generation function** As in previous examples, this takes an input data frame `inputs` with parameter values sampled from the current uncertainty distribution, and outputs a data frame with a corresponding sample from the predictive distribution of the data.  An additional argument `n` defines the sample size of the study.  Note in this example how `inputs` is parameterised in terms of a baseline risk and a log odds ratio, and we combine these to obtain the absolute risk in group 2.
+
+```{r}
+datagen_fn <- function(inputs, n=100){
+  p1 <- inputs[,"p_side_effects_t1"]
+  logor <- inputs[,"logor_side_effects"]
+  odds1 <- p1 / (1 - p1)
+  odds2 <- odds1 * exp(logor)
+  p2 <- odds2 / (1 + odds2)
+  nsim <- nrow(inputs)
+  data.frame(y1 = rbinom(nsim, n, p1),
+             y2 = rbinom(nsim, n, p2))
+}
+```
+
+Finally `evsi` is called to perform the EVSI calculation using the moment matching method.
+
+```{r,cache=TRUE,message=FALSE}
+ev <- evsi(outputs=chemo_nb, inputs=chemo_pars, 
+           method="mm",
+           pars="logor_side_effects", 
+           pars_datagen = c("p_side_effects_t1", "logor_side_effects"), 
+           datagen_fn = datagen_fn, analysis_fn = analysis_fn, 
+           n = 100, Q = 10, 
+           model_fn = chemo_model_lor_nb, par_fn = chemo_pars_fn)
+```
+
+One aspect of the syntax of the `evsi` call is new for this example.  `pars_datagen` identifies which parameters (columns of `inputs`) are required to generate data from the proposed study, and `pars` identifies which parameters are _learned_ from the study.  These are different in this example.   We need to know the baseline risk `"p_side_effects_t1"` to be able to generate study data, but we then choose to _ignore_ the data that the study provides about this parameter when measuring the value of the study.
+
+(In theory, these names need not be supplied to `evsi` if they are hard-coded into the analysis and data-generating functions, but it is safer in general to supply them, as they are required when using built-in study designs, and it allows the analysis and data-generating functions to be written in an abstract manner that can be re-used for different analyses).
 
 
 ## Value of Information in models for estimation
