@@ -166,7 +166,10 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
     var_red_n <- matrix(nrow=length(n), ncol=5, dimnames=list(NULL, quants))
     for (d in 1:ncomp){
       var_red <- prior_var[d] - var_sim[,d] 
-      beta <- regression_on_sample_size(var_red, nfit, var_fit[d])
+      if (sd(var_red)==0)
+        beta <- 0
+      else 
+        beta <- regression_on_sample_size(var_red, nfit, var_fit[d])
       for (j in 1:length(n)){
         var_red_n[j,] <- quantile(var_fit[d] * n[j] / (n[j] + beta), quants)
         var_prep_mean[j,d] <- var_red_n[j,"0.5"] # TODO return uncertainty in these
