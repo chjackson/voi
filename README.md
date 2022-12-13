@@ -26,4 +26,5 @@ remotes::install_github("chjackson/voi")
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/chjackson/voi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/chjackson/voi/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/chjackson/voi/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/chjackson/voi/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
