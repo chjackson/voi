@@ -274,7 +274,9 @@ where the fitted regression model objects are saved.  This allows use
 of the \code{\link{check_regression}} function, which produces some
 diagnostic checks of the regression models.}
 
-\item{...}{Other arguments required by specific methods}
+\item{...}{Other arguments understood by specific methods, e.g. \code{gam_formula}
+and other controlling options (see \code{\link{evppi}}) can be passed to the
+nonparametric regression used inside the moment matching method.}
 }
 \description{
 Calculate the expected value of sample information from a decision-analytic

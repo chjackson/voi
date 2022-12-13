@@ -211,7 +211,9 @@
 ##'   EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 ##'   \code{outputs} are used.
 ##'
-##' @param ... Other arguments required by specific methods
+##' @param ... Other arguments understood by specific methods, e.g. \code{gam_formula}
+##' and other controlling options (see \code{\link{evppi}}) can be passed to the
+##' nonparametric regression used inside the moment matching method. 
 ##'
 ##' @references
 ##'

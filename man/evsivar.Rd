@@ -119,7 +119,9 @@ EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 the calculation, if the method supplies these.  Useful to see the progress
 of slow calculations.}
 
-\item{...}{Other arguments required by specific methods}
+\item{...}{Other arguments understood by specific methods, e.g. \code{gam_formula}
+and other controlling options (see \code{\link{evppi}}) can be passed to the
+nonparametric regression used inside the moment matching method.}
 }
 \description{
 Calculate the expected value of sample information for an estimation problem.  This computes the expected reduction in variance in some quantity of interest from a study of a certain design that informs the parameters of interest.
