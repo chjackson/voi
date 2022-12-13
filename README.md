@@ -23,3 +23,7 @@ remotes::install_github("chjackson/voi")
 
 [Github repository](http://github.com/chjackson/voi)
 
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/chjackson/voi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/chjackson/voi/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
