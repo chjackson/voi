@@ -13,7 +13,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-This is a guide to the code and software resources for the book _Value of Information for Health Economic Evaluations_ (eds. Heath, Jackson, Kunst)
+This is a guide to the code and software resources for the book _Value of Information for Health Economic Evaluations_ (eds. Heath, Jackson, Kunst).  The book is under development, and when published, these resources will be linked from here.
 
 Chapters 1 and 2: no example code
 

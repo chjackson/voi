@@ -1,4 +1,31 @@
 url: https://chjackson.github.io/voi/
 template:
   bootstrap: 5
-
+reference:
+- title: Package overview
+- contents:
+  - voi-package
+- title: Calculating EVPPI
+- contents:
+  - evppi
+  - evppi_mc
+  - evppivar
+  - plot.evppi
+- title: Calculating EVSI
+- contents:
+  - evsi
+  - evsivar
+- title: Utilities
+- contents:
+  - all_interactions
+  - check_regression
+- title: Example decision models
+- contents:
+  - chemo_cea
+  - chemo_nb
+  - chemo_pars
+  - chemo_pars_fn
+  - chemo_model_nb
+  - chemo_model_cea
+  - chemo_model_lor_nb
+  - chemo_model_lor_cea
