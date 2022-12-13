@@ -5,14 +5,13 @@ reference:
 - title: Package overview
 - contents:
   - voi-package
-- title: Calculating EVPPI
+- title: Calculating the expected value of information 
 - contents:
+  - evpi
   - evppi
   - evppi_mc
   - evppivar
   - plot.evppi
-- title: Calculating EVSI
-- contents:
   - evsi
   - evsivar
 - title: Utilities
