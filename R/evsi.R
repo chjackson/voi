@@ -22,17 +22,23 @@
 ##'   parameters: the probability of the outcome in arm 1 and 2 respectively.
 ##'   The sample size is the same in each arm, specifed in the \code{n} argument
 ##'   to \code{evsi()}, and the binomial outcomes are named \code{X1} and
-##'   \code{X2} respectively.
+##'   \code{X2} respectively.  
 ##'
 ##'   \code{"normal_known"} A study of a normally-distributed outcome, with a
 ##'   known standard deviation, on one sample of individuals.  Likewise the
 ##'   sample size is specified in the \code{n} argument to \code{evsi()}.  The
 ##'   standard deviation defaults to 1, and can be changed by specifying
 ##'   \code{sd} as a component of the \code{aux_pars} argument, e.g.
-##'   \code{evsi(..., aux_pars=list(sd=2))}.
+##'   \code{evsi(..., aux_pars=list(sd=2))}.   
 ##'
 ##'   Either \code{study} or \code{datagen_fn} should be supplied to
 ##'   \code{evsi()}.
+##'
+##'   For the EVSI calculation methods where explicit Bayesian analyses of the
+##'  simulated data are performed, the prior parameters for these built-in studies
+##'  are supplied in the \code{analysis_args} argument to \code{evsi()}.  These
+##'   assume Beta priors for probabilities, and Normal priors for the mean of a
+##' normal outcome. . 
 ##'
 ##'
 ##' @param datagen_fn If the proposed study is not one of the built-in types
@@ -186,8 +192,8 @@
 ##'   for the first arm,  `a2` and `b2`: Beta shape parameters for the prior for
 ##'   the second arm.
 ##'
-##'   `study="normal_known"`: `prior_mean`, `prior_sd` (prior mean and standard
-##'   deviation) and `sampling_sd` (SD of an individual-level normal
+##'   `study="normal_known"`: `prior_mean`, `prior_sd` (mean and standard deviation 
+##'   deviation of the Normal prior) and `sampling_sd` (SD of an individual-level normal
 ##'   observation, so that the sampling SD of the mean outcome over the study is
 ##'   `sampling_sd/sqrt(n)`.
 ##'
@@ -312,7 +318,7 @@ evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FAL
         rownames(res[[i]]) <- NULL
     }
     resall <- do.call("rbind", res)
-    resall <- cbind(n=n, resall)
+    resall <- cbind(n=rep(n,each=nrow(res[[1]])), resall)
     if (check){
       attr(resall, "models") <- lapply(res, function(x)attr(x, "models"))
       names(attr(resall,"models")) <- as.character(resall$n)

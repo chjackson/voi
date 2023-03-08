@@ -77,11 +77,19 @@ test_that("EVSI with built-in study designs", {
 
 test_that("EVSI with built-in study designs: IS method", {
     set.seed(1)
-    expect_equal(
-        evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c(pi1, pi2), 
-             method="is", nsim=1000, verbose=FALSE)$evsi
-      , 
-        789.1255, tol=0.01)
+  expect_equal(
+    evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c(pi1, pi2), 
+         method="is", nsim=1000, verbose=FALSE)$evsi
+    , 
+    789.1255, tol=0.01)
+  
+  ## can we include extra cols 
+  chemo_pars$xextra <- 1 
+  expect_equal(
+    evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c(pi1, pi2), 
+         method="is", nsim=1000, verbose=FALSE)$evsi
+    , 
+    789.1255, tol=0.01)
 })
 
 test_that("EVSI with multiple sample sizes", { 
@@ -103,4 +111,14 @@ test_that("EVSI with multiple sample sizes", {
   e2 <- evsi(chemo_nb, chemo_pars, study="binary", n=c(100,1000), pars=c(pi2), 
              verbose=FALSE, method="is", nsim=1000) 
   expect_equal(e2$evsi[1], 571.2093, tol=1e-04)
+})
+
+test_that("EVSI with multiple sample sizes and CEA output", { 
+  set.seed(1)
+  e1 <- evsi(chemo_cea, chemo_pars, study="binary", n=100, pars=c(pi2), verbose=FALSE)
+  e2 <- evsi(chemo_cea, chemo_pars, study="binary", n=1000, pars=c(pi2), verbose=FALSE) 
+  set.seed(1)
+  e12 <- evsi(chemo_cea, chemo_pars, study="binary", n=c(100,1000), pars=c(pi2), verbose=FALSE) 
+  expect_equal(e12$evsi, c(e1$evsi,e2$evsi), tol=1e-03)
+  expect_equal(e12$n, c(e1$n,e2$n))
 })
