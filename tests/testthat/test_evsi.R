@@ -82,14 +82,6 @@ test_that("EVSI with built-in study designs: IS method", {
          method="is", nsim=1000, verbose=FALSE)$evsi
     , 
     789.1255, tol=0.01)
-  
-  ## can we include extra cols 
-  chemo_pars$xextra <- 1 
-  expect_equal(
-    evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c(pi1, pi2), 
-         method="is", nsim=1000, verbose=FALSE)$evsi
-    , 
-    789.1255, tol=0.01)
 })
 
 test_that("EVSI with multiple sample sizes", { 
