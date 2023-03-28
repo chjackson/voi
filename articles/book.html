@@ -86,7 +86,7 @@ available from CRAN.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"voi"</span><span class="op">)</span></span></code></pre></div>
 <p>Then you should set the working directory as follows</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"Chemotherapy_Book"</span>,package<span class="op">=</span><span class="st">"voi"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"Chemotherapy_Book"</span>,package<span class="op">=</span><span class="st">"voi"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>then your working directory should contain subdirectories that
 include <code>01_data_raw</code>, <code>02_data</code>, etc. You can
 check this by running the command <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> in your R
@@ -109,20 +109,20 @@ of code by hand.</p>
 <div class="section level2">
 <h2 id="chapter-4-value-of-perfect-information">Chapter 4: Value of Perfect Information<a class="anchor" aria-label="anchor" href="#chapter-4-value-of-perfect-information"></a>
 </h2>
-<div class="section level3">
-<h3 id="evpi-analysis-for-the-chemotherapy-model-ref-section">EVPI analysis for the Chemotherapy model (REF section)<a class="anchor" aria-label="anchor" href="#evpi-analysis-for-the-chemotherapy-model-ref-section"></a>
-</h3>
+<div class="section level5">
+<h5 id="evpi-analysis-for-the-chemotherapy-model-ref-section">EVPI analysis for the Chemotherapy model (REF section)<a class="anchor" aria-label="anchor" href="#evpi-analysis-for-the-chemotherapy-model-ref-section"></a>
+</h5>
 <p><code>04_analysis/03_Expected_Value_of_Perfect_Information.R</code>
 (<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/03_Expected_Value_of_Perfect_Information.R" class="external-link">link
 to GitHub source</a>)</p>
 </div>
-<div class="section level3">
-<h3 id="nonparametric-regression-examples">Nonparametric regression examples<a class="anchor" aria-label="anchor" href="#nonparametric-regression-examples"></a>
-</h3>
+<div class="section level5">
+<h5 id="nonparametric-regression-examples">Nonparametric regression examples<a class="anchor" aria-label="anchor" href="#nonparametric-regression-examples"></a>
+</h5>
 </div>
-<div class="section level3">
-<h3 id="evppi-analysis-for-the-chemotherapy-model-ref-section">EVPPI analysis for the Chemotherapy model (REF section)<a class="anchor" aria-label="anchor" href="#evppi-analysis-for-the-chemotherapy-model-ref-section"></a>
-</h3>
+<div class="section level5">
+<h5 id="evppi-analysis-for-the-chemotherapy-model-ref-section">EVPPI analysis for the Chemotherapy model (REF section)<a class="anchor" aria-label="anchor" href="#evppi-analysis-for-the-chemotherapy-model-ref-section"></a>
+</h5>
 <p><code>04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R</code>
 (<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R" class="external-link">link
 to GitHub source</a>)</p>
@@ -131,16 +131,16 @@ to GitHub source</a>)</p>
 <div class="section level2">
 <h2 id="chapter-5-value-of-sample-information">Chapter 5: Value of Sample Information<a class="anchor" aria-label="anchor" href="#chapter-5-value-of-sample-information"></a>
 </h2>
-<div class="section level3">
-<h3 id="moment-matching-methods">Moment matching methods<a class="anchor" aria-label="anchor" href="#moment-matching-methods"></a>
-</h3>
+<div class="section level5">
+<h5 id="moment-matching-methods">Moment matching methods<a class="anchor" aria-label="anchor" href="#moment-matching-methods"></a>
+</h5>
 <p><code>04_analysis/05_Expected_Value_of_Sample_Information_MM.R</code>
 (<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_MM.R" class="external-link">link
 to GitHub source</a>)</p>
 </div>
-<div class="section level3">
-<h3 id="regression-based-methods">Regression-based methods<a class="anchor" aria-label="anchor" href="#regression-based-methods"></a>
-</h3>
+<div class="section level5">
+<h5 id="regression-based-methods">Regression-based methods<a class="anchor" aria-label="anchor" href="#regression-based-methods"></a>
+</h5>
 <p><code>04_analysis/05_Expected_Value_of_Sample_Information_RB.R</code>
 (<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_RB.R" class="external-link">link
 to GitHub source</a>)</p>
