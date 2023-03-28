@@ -1,0 +1,3 @@
+[submodule "inst/Chemotherapy_Book"]
+	path = inst/Chemotherapy_Book
+	url = https://github.com/convoigroup/Chemotherapy_Book

@@ -12,3 +12,4 @@ data-raw
 vignettes/book.Rmd
 inst/Chemotherapy_Book/05_output/01_model_output.RDS
 ^_pkgdown2\.yml$
+git_notes.md
