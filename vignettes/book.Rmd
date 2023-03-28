@@ -1,32 +1,76 @@
 ---
 title: 'Value of Information for Health Economic Evaluations: book code resources'
-author: "Christopher Jackson"
+author: ""
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: true
 vignette: >
  \usepackage[utf8]{inputenc}
- %\VignetteIndexEntry{VoI Book: guide to code by chapter}
+ %\VignetteIndexEntry{Value of Information for Health Economic Evaluations: book code resources}
  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
 ---
 
+```{r,echo=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
 This is a guide to the code and software resources for the book _Value of Information for Health Economic Evaluations_ (eds. Heath, Jackson, Kunst).  The book is under development, and when published, these resources will be linked from here.
 
-Chapters 1 and 2: no example code
+Before running any of this code, you should install the `voi` package, which when the book is published will be available from CRAN. 
 
-For all: set current directory to
+```{r}
+install.packages("voi")
+```
 
-```system.file("Chemotherapy_Book",package="voi")```
+Then you should set the working directory as follows 
 
-or change commands in book to read files from this directory
+```{r}
+system.file("Chemotherapy_Book",package="voi")
+```
+
+then your working directory should contain subdirectories that include `01_data_raw`, `02_data`, etc.  You can check this by running the command `list.files()` in your R console.
+
+Alternatively, you can copy the contents of the `Chemotherapy_Book` directory to your preferred working directory, and work there instead. 
 
 # Chapter 3: Chemotherapy case study 
 
+The code to run the baseline cost-effectiveness analysis (TODO REF SECTION NUMBERS) is in the `04_analysis/02_baseline_model_output.R` subdirectory ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/02_baseline_model_output.R)).  This can be run all at once using 
+
+```{r}
+source("04_analysis/02_baseline_model_output.R")
+```
+
+Or alternatively, open this file in R, and examine and run each line of code by hand. 
+
+
 # Chapter 4: Value of Perfect Information
+
+## EVPI analysis for the Chemotherapy model (REF section)
+
+`04_analysis/03_Expected_Value_of_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/03_Expected_Value_of_Perfect_Information.R))
+
+## Nonparametric regression examples
+
+
+## EVPPI analysis for the Chemotherapy model  (REF section) 
+
+
+`04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R))
+
 
 # Chapter 5: Value of Sample Information
 
-# Chapter 6: Other topics
+
+## Moment matching methods 
+
+`04_analysis/05_Expected_Value_of_Sample_Information_MM.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_MM.R))
+
+
+## Regression-based methods
+
+`04_analysis/05_Expected_Value_of_Sample_Information_RB.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_RB.R))
+
