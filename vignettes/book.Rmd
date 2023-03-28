@@ -29,7 +29,7 @@ install.packages("voi")
 Then you should set the working directory as follows 
 
 ```{r}
-system.file("Chemotherapy_Book",package="voi")
+setwd(system.file("Chemotherapy_Book",package="voi"))
 ```
 
 then your working directory should contain subdirectories that include `01_data_raw`, `02_data`, etc.  You can check this by running the command `list.files()` in your R console.
@@ -49,14 +49,14 @@ Or alternatively, open this file in R, and examine and run each line of code by 
 
 # Chapter 4: Value of Perfect Information
 
-## EVPI analysis for the Chemotherapy model (REF section)
+#### EVPI analysis for the Chemotherapy model (REF section)
 
 `04_analysis/03_Expected_Value_of_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/03_Expected_Value_of_Perfect_Information.R))
 
-## Nonparametric regression examples
+#### Nonparametric regression examples
 
 
-## EVPPI analysis for the Chemotherapy model  (REF section) 
+#### EVPPI analysis for the Chemotherapy model  (REF section) 
 
 
 `04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R))
@@ -65,12 +65,12 @@ Or alternatively, open this file in R, and examine and run each line of code by 
 # Chapter 5: Value of Sample Information
 
 
-## Moment matching methods 
+#### Moment matching methods 
 
 `04_analysis/05_Expected_Value_of_Sample_Information_MM.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_MM.R))
 
 
-## Regression-based methods
+#### Regression-based methods
 
 `04_analysis/05_Expected_Value_of_Sample_Information_RB.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_RB.R))
 
