@@ -53,13 +53,27 @@ Or alternatively, open this file in R, and examine and run each line of code by 
 
 `04_analysis/03_Expected_Value_of_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/03_Expected_Value_of_Perfect_Information.R))
 
-#### Nonparametric regression examples
-
-
 #### EVPPI analysis for the Chemotherapy model  (REF section) 
 
-
 `04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R))
+
+
+#### Nonparametric regression examples
+
+Code to draw illustrations of GAM regression (REF FIG NOS)
+```{r}
+misc_dir <- setwd(system.file("book_misc",package="voi"))
+```
+
+Code to draw illustrations of Gaussian process regression (REF FIG NO)
+```{r}
+file.path("misc_dir", "gp_graphs.R")
+```
+
+Code to calculate EVPPI using nonparametric regression (REF SECTION NO)
+```{r}
+file.path("misc_dir", "evppi_reg.Rmd")
+```
 
 
 # Chapter 5: Value of Sample Information

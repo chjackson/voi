@@ -1,0 +1,134 @@
+---
+output: 
+  pdf_document:
+    keep_tex: TRUE
+title: "VoI book code: Case study and guidelines for estimating EVPPI using regression in R"
+editor_options: 
+  chunk_output_type: console
+---
+
+Change this path to reflect where you downloaded the Chemotherapy_Book repository
+
+```{r,echo=FALSE}
+chemo_dir <- setwd(system.file("Chemotherapy_Book",package="voi"))
+```
+
+This block of code is only needed if you want to compile this `Rmd` source file into a document. 
+```{r,echo=FALSE,message=FALSE}
+library(knitr)
+library(voi)
+opts_knit$set(root.dir = chemo_dir)
+options(digits=3, scipen = 1e+05)
+```
+
+
+Draw a sample from probabilistic analysis of the model. 
+
+```{r}
+source("04_analysis/01_model_run.R")
+nb <- as.data.frame(m_costs_effects[,1,]*20000 - m_costs_effects[,2,])
+```
+
+## Calculating single-parameter EVPPI. 
+
+Calculate the single-parameter EVPPI for all the parameters in the model.  This returns a data frame containing the EVPPI estimates.  
+
+```{r}
+library(voi)
+pars_all <- as.list(names(m_params))
+ev_single <- evppi(outputs=nb, inputs=m_params, pars=pars_all)
+ev_single
+```
+
+Dot-plot of the estimates, sorted with the highest values at the top.
+```{r,dotplot,fig.width=7}
+plot(ev_single, order = TRUE)
+```
+
+Single-parameter EVPPIs for a specified subset of parameters.
+
+```{r,results="hide"}
+evppi(outputs=nb, inputs=m_params, 
+      pars=list("logor_side_effects", "p_side_effects_t1", "u_hospital"))
+```
+
+Multi-parameter EVPPI for four groups of parameters: those associated with 
+side effects, transition probabilites, costs and utilities respectively.
+
+```{r}
+par_groups <- list(
+  "side_effects" = c("p_side_effects_t1","logor_side_effects"),
+  "trans_probs" = c("p_hospitalised_total","p_died","lambda_home","lambda_hosp"),
+  "costs" = c("c_home_care","c_hospital","c_death"),
+  "utilities" = c("u_recovery","u_home_care","u_hospital")
+)
+ev_grouped <- evppi(outputs=nb, inputs=m_params, pars=par_groups)
+ev_grouped
+```
+
+In this example, it is clear that the parameters associated with the risk of side effects
+have the greatest EVPPI.
+
+
+## Checking regression models for EVPPI calculation 
+
+Figure shown in the book 
+
+```{r,results='hide',fig.keep='all',fig.height=3,regression_diagnostics}
+ev_single <- evppi(outputs=nb, inputs=m_params, pars=pars_all, check=TRUE)
+check_regression(ev_single, pars = "logor_side_effects")
+```
+
+Additional analysis with standard errors: 
+
+```{r,eval=FALSE}
+evppi(outputs=nb, inputs=m_params, pars=list("p_side_effects_t2","u_hospital"), se=TRUE)
+```
+
+Alternative regression models:
+
+```{r,eval=FALSE}
+evppi(outputs=nb, inputs=m_params, pars=list("p_side_effects_t2","u_hospital"))
+evppi(outputs=nb, inputs=m_params, pars=list("p_side_effects_t2","u_hospital"), method="earth")
+```
+
+
+## Comparing different regression specifications: single-parameter EVPPI 
+
+
+```{r}
+(e1 <- evppi(outputs=nb, inputs=m_params, pars=par_groups[1], check=TRUE))
+(e2 <- evppi(outputs=nb, inputs=m_params, pars=par_groups[1], 
+             gam_formula="s(p_side_effects_t1) + s(logor_side_effects)", check=TRUE))
+check_regression(e1, plot=FALSE)
+check_regression(e2, plot=FALSE)
+```
+
+`earth` models with two-way versus three-way interactions
+
+```{r}
+(e1 <- evppi(outputs=nb, inputs=m_params, pars=par_groups[1], method = "earth", check=TRUE))
+(e2 <- evppi(outputs=nb, inputs=m_params, pars=par_groups[1], method = "earth", 
+             degree=3, check=TRUE))
+check_regression(e1,plot=FALSE)
+check_regression(e2,plot=FALSE)
+```
+
+
+## Comparing different regression specifications: multi-parameter EVPPI 
+
+```{r,eval=FALSE}
+costs_utilities <- c(par_groups$costs, par_groups$utilities)
+ev1 <- evppi(outputs=nb, inputs=m_params, pars=costs_utilities, method="gam", 
+             gam_formula = "s(c_home_care) + s(c_hospital) + s(c_death) + 
+                            s(u_recovery) + s(u_home_care) + s(u_hospital)",
+             check=TRUE)
+ev2 <- evppi(outputs=nb, inputs=m_params, pars=costs_utilities, method="gam", 
+             gam_formula = all_interactions(costs_utilities, 2), check=TRUE) 
+ev3 <- evppi(outputs=nb, inputs=m_params, pars=costs_utilities, method="earth", check=TRUE)
+ev4 <- evppi(outputs=nb, inputs=m_params, pars=costs_utilities, method="earth", 
+             degree=2, check=TRUE)
+ev5 <- evppi(outputs=nb, inputs=m_params, pars=costs_utilities, method="gp") 
+ev6 <- evppi(outputs=nb, inputs=m_params, pars=costs_utilities, method="inla") 
+```
+
