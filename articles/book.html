@@ -65,10 +65,9 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Value of Information for Health Economic Evaluations: book code resources</h1>
-                        <h4 data-toc-skip class="author">Christopher
-Jackson</h4>
+                        <h4 data-toc-skip class="author"></h4>
             
-            <h4 data-toc-skip class="date">2023-03-12</h4>
+            <h4 data-toc-skip class="date">2023-03-28</h4>
       
       
       <div class="d-none name"><code>book.Rmd</code></div>
@@ -80,25 +79,72 @@ Jackson</h4>
 <em>Value of Information for Health Economic Evaluations</em>
 (eds. Heath, Jackson, Kunst). The book is under development, and when
 published, these resources will be linked from here.</p>
-<p>Chapters 1 and 2: no example code</p>
-<p>For all: set current directory to</p>
-<p><code>system.file("Chemotherapy_Book",package="voi")</code></p>
-<p>or change commands in book to read files from this directory</p>
+<p>Before running any of this code, you should install the
+<code>voi</code> package, which when the book is published will be
+available from CRAN.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"voi"</span><span class="op">)</span></span></code></pre></div>
+<p>Then you should set the working directory as follows</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"Chemotherapy_Book"</span>,package<span class="op">=</span><span class="st">"voi"</span><span class="op">)</span></span></code></pre></div>
+<p>then your working directory should contain subdirectories that
+include <code>01_data_raw</code>, <code>02_data</code>, etc. You can
+check this by running the command <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> in your R
+console.</p>
+<p>Alternatively, you can copy the contents of the
+<code>Chemotherapy_Book</code> directory to your preferred working
+directory, and work there instead.</p>
 <div class="section level2">
 <h2 id="chapter-3-chemotherapy-case-study">Chapter 3: Chemotherapy case study<a class="anchor" aria-label="anchor" href="#chapter-3-chemotherapy-case-study"></a>
 </h2>
+<p>The code to run the baseline cost-effectiveness analysis (TODO REF
+SECTION NUMBERS) is in the
+<code>04_analysis/02_baseline_model_output.R</code> subdirectory (<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/02_baseline_model_output.R" class="external-link">link
+to GitHub source</a>). This can be run all at once using</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"04_analysis/02_baseline_model_output.R"</span><span class="op">)</span></span></code></pre></div>
+<p>Or alternatively, open this file in R, and examine and run each line
+of code by hand.</p>
 </div>
 <div class="section level2">
 <h2 id="chapter-4-value-of-perfect-information">Chapter 4: Value of Perfect Information<a class="anchor" aria-label="anchor" href="#chapter-4-value-of-perfect-information"></a>
 </h2>
+<div class="section level3">
+<h3 id="evpi-analysis-for-the-chemotherapy-model-ref-section">EVPI analysis for the Chemotherapy model (REF section)<a class="anchor" aria-label="anchor" href="#evpi-analysis-for-the-chemotherapy-model-ref-section"></a>
+</h3>
+<p><code>04_analysis/03_Expected_Value_of_Perfect_Information.R</code>
+(<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/03_Expected_Value_of_Perfect_Information.R" class="external-link">link
+to GitHub source</a>)</p>
+</div>
+<div class="section level3">
+<h3 id="nonparametric-regression-examples">Nonparametric regression examples<a class="anchor" aria-label="anchor" href="#nonparametric-regression-examples"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="evppi-analysis-for-the-chemotherapy-model-ref-section">EVPPI analysis for the Chemotherapy model (REF section)<a class="anchor" aria-label="anchor" href="#evppi-analysis-for-the-chemotherapy-model-ref-section"></a>
+</h3>
+<p><code>04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R</code>
+(<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R" class="external-link">link
+to GitHub source</a>)</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="chapter-5-value-of-sample-information">Chapter 5: Value of Sample Information<a class="anchor" aria-label="anchor" href="#chapter-5-value-of-sample-information"></a>
 </h2>
+<div class="section level3">
+<h3 id="moment-matching-methods">Moment matching methods<a class="anchor" aria-label="anchor" href="#moment-matching-methods"></a>
+</h3>
+<p><code>04_analysis/05_Expected_Value_of_Sample_Information_MM.R</code>
+(<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_MM.R" class="external-link">link
+to GitHub source</a>)</p>
 </div>
-<div class="section level2">
-<h2 id="chapter-6-other-topics">Chapter 6: Other topics<a class="anchor" aria-label="anchor" href="#chapter-6-other-topics"></a>
-</h2>
+<div class="section level3">
+<h3 id="regression-based-methods">Regression-based methods<a class="anchor" aria-label="anchor" href="#regression-based-methods"></a>
+</h3>
+<p><code>04_analysis/05_Expected_Value_of_Sample_Information_RB.R</code>
+(<a href="https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_RB.R" class="external-link">link
+to GitHub source</a>)</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
