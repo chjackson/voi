@@ -64,7 +64,7 @@ evsi_mm_nb <- function(outputs, inputs, pars, pars_datagen, datagen_fn, n,
   res <- data.frame(n=n, evsi=evsis)
   attr(res, "evppi") <- calc_evppi(fits$fit)
   if (any(attr(res,"evppi") < res$evsi))
-    warning("EVSI > EVPPI may result from approximation error")
+    message("EVSI > EVPPI may result from approximation error")
   res
 }
 
@@ -125,9 +125,10 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
   for(i in 1:Q){
     ## Generate one dataset given parameters equal to a specific prior quantile
     simdata <- datagen_fn(inputs = quants[i,,drop=FALSE], n = nfit[i], pars=pars_datagen)
-
+    
     ## Fit Bayesian model to future data to get a sample from posterior(pars|simdata)
     analysis_args$n <- nfit[i]
+    if (verbose) message("Running Bayesian analysis function...")
     postpars <- analysis_fn(simdata, analysis_args, pars)
     niter <- nrow(postpars)
     if (i==1)
@@ -140,6 +141,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
     
     ## Run the decision model, giving a sample from posterior(INB|simdata)
     inbpost <- matrix(nrow=niter, ncol=ncomp)
+    if (verbose) message("Evaluating decision model at updated parameters...")
     for (j in 1:niter){
       nbpost <- do.call(model_fn, modelpars[j,,drop=FALSE])
       if (!is.null(output_row)) nbpost <- nbpost[mfi(nbpost)[[output_row]],]
@@ -153,7 +155,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
   inbprior <- nb[,-1,drop=FALSE] - nb[,1]
   prior_var <- apply(inbprior, 2, var)
   
-  ## Calculate fitted values for EVPPI
+  if (verbose) message("Calculating fitted values for EVPPI...")
   fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
   fitn1 <- fit[,-1,drop=FALSE]
   var_fit <- apply(fitn1, 2, var)
@@ -164,6 +166,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
     ## do regression to relate variance reduction to sample size 
     quants <- c(0.025, 0.125, 0.5, 0.875, 0.975)
     var_red_n <- matrix(nrow=length(n), ncol=5, dimnames=list(NULL, quants))
+    if (verbose) message("Running regression on sample size...")
     for (d in 1:ncomp){
       var_red <- prior_var[d] - var_sim[,d] 
       if (sd(var_red)==0)

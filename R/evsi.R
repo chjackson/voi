@@ -48,7 +48,8 @@
 ##'
 ##'   1. the function's first argument should be a data frame of parameter
 ##'   simulations, with one row per simulation and one column per parameter.
-##'   The parameters in this data frame must all be found in \code{inputs}.
+##'   The parameters in this data frame must all be found in \code{inputs},
+##'   but need not necessarily be in the same order or include all of them. 
 ##'
 ##'   2. the function should return a data frame.
 ##'
@@ -93,7 +94,12 @@
 ##' @param n Sample size of future study, or vector of alternative sample sizes.
 ##'   This is understood by the built-in study designs.  For studies specified
 ##'   by the user with \code{datagen_fn}, if \code{datagen_fn} has an argument
-##'   \code{n}, then this is interpreted as the sample size. Currently this
+##'   \code{n}, then this is interpreted as the sample size.  However if
+##'   calling \code{evsi} for a user-specified design where 
+##'   \code{datagen_fn} does not have an \code{n} argument, then any \code{n}
+##'   argument supplied to \code{evsi} will be ignored. 
+##'
+##'   Currently this
 ##'   shortcut is not supported if more than one quantity is required to
 ##'   describe the sample size, for example, trials with unbalanced arms.  In
 ##'   that case, you will have to hard-code the required sample sizes into
@@ -129,20 +135,29 @@
 ##'
 ##' @param likelihood Likelihood function, required (and only required) for the
 ##'   importance sampling method when a study design other than one of the
-##'   built-in ones is used.  This should have two arguments as follows:
+##'   built-in ones is used.  This should have two arguments, named as follows:
 ##'
-##'   1. a data frame of predicted data. Columns are defined by the number of
-##'   outcomes in the data, and names matching the data frame returned by
-##'   \code{datagen_fn}.
+##'   \code{Y}: a one-row data frame of predicted data. Columns are defined by different
+##'   outcomes in the data, with names matching the names of the data frame returned by
+##'   \code{datagen_fn}.  
 ##'
-##'   2. a data frame of parameter values, whose names should all correspond to
-##'   variables in \code{inputs}.
+##'   \code{inputs}. a data frame of simulated parameter values. Columns should correspond
+##'   to different variables in \code{inputs}.  The column names should all be
+##'   found in the names of \code{inputs}, though they do not have to be in the same
+##'   order, or include everything in \code{inputs}. The number or rows should be the same as
+##'   the number of rows in \code{inputs}.
 ##'
 ##'   The function should return a vector whose length matches the number of
 ##'   rows of the parameters data frame given as the second argument.   Each
 ##'   element of the vector gives the likelihood of the corresponding set of
 ##'   parameters, given the data in the first argument.  An example is given in
 ##'   the vignette.
+##' 
+##'   The likelihood can optionally have a \code{n} argument, which is interpreted
+##'   as the sample size of the study.   If the \code{n} 
+##'   argument to \code{evsi} is used then this is passed to the likelihod function.
+##'   Conversely any \code{n} argument to \code{evsi} will be ignored by a likelihood
+##'   function that does not have its own \code{n} argument.
 ##'
 ##'   Note the definition of the likelihood should agree with the definition of
 ##'   \code{datagen_fn} to define a consistent sampling distribution for the
@@ -282,7 +297,9 @@ evsi <- function(outputs,
                    method=method, verbose=verbose, check=check, 
                    aux_pars = aux_pars, ...)
     } else if (method=="is") {
+        if (verbose) message("Processing likelihood...")
         likelihood <- form_likelihood(study, likelihood, inputs, datagen_fn, pars_datagen)
+        if (verbose) message("Entering evsi_is...")
         res <- evsi_is(outputs=outputs, inputs=inputs, 
                        pars=pars, pars_datagen=pars_datagen,
                        datagen_fn=datagen_fn, n=n,
@@ -326,7 +343,7 @@ evsi_npreg <- function(outputs, inputs, datagen_fn, pars, n, method=NULL, se=FAL
     resall
 }
 
-generate_data <- function(inputs, datagen_fn, n=150, pars, aux_pars=NULL){
+generate_data <- function(inputs, datagen_fn, n=100, pars, aux_pars=NULL){
     check_datagen_fn(datagen_fn, inputs, pars)
     args <- list(inputs=inputs, n=n, pars=pars)
     args <- c(args, aux_pars)
@@ -345,10 +362,14 @@ check_study <- function(study) {
 form_datagen_fn <- function(study, datagen_fn, inputs, aux_pars=NULL){
   if (!is.null(study)) {
     check_study(study)
+    if (!is.null(datagen_fn))
+      warning("Ignoring `datagen_fn`, since a built-in study design was requested")
     datagen_fn <- get(sprintf("datagen_%s", study))
   } else {
     if (is.null(datagen_fn)) stop("`datagen_fn` should be supplied if `study` is not supplied")
     if (!is.function(datagen_fn)) stop("`datagen_fn` should be a function")
+    if (!("n" %in% names(formals(datagen_fn))))
+      formals(datagen_fn) <- c(formals(datagen_fn), list(n=100))
     formals(datagen_fn) <- c(formals(datagen_fn), list(pars=NULL))
     check_datagen_fn(datagen_fn, inputs, aux_pars)
   }
