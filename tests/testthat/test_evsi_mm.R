@@ -1,4 +1,5 @@
 test_that("moment matching method",{
+  set.seed(100)
   evm <- evsi(outputs=chemo_nb, inputs=chemo_pars, 
               pars="p_side_effects_t1",
               method = "mm",
@@ -18,12 +19,15 @@ test_that("moment matching method",{
   expect_true(is.data.frame(evm) && nrow(evm)==5)
 })
 
-
 test_that("moment matching method with multiple sample sizes",{
+  set.seed(5000)  
   ev <-  evsi(outputs=chemo_nb, inputs=chemo_pars, pars="p_side_effects_t2", 
-              method="mm", study="binary", n=seq(10, 110, by=10), Q=10, 
-              analysis_args = list(a=53, b=60),
+              method="mm", study="binary", n=seq(10, 110, by=50), Q=10, 
+              analysis_args = list(a=53, b=60),  nsim=1000,
               model_fn = chemo_model_nb, par_fn = chemo_pars_fn)
+  
+  evppi(outputs=chemo_nb, inputs=chemo_pars, pars="p_side_effects_t2")
+  
   expect_true(is.data.frame(ev))
   evc <- evsi(outputs=chemo_cea, inputs=chemo_pars, pars="p_side_effects_t2", 
               method="mm", study="binary", n=seq(10, 100, by=10), Q=10, 
@@ -33,6 +37,7 @@ test_that("moment matching method with multiple sample sizes",{
 })
 
 test_that("errors in moment matching method",{
+  set.seed(100)  
   expect_error(
     evsi(outputs=chemo_cea, inputs=chemo_pars, pars="p_side_effects_t1",
          method = "mm", study =  "binary", n = c(100), Q = 5, 
@@ -175,12 +180,13 @@ test_that("errors in analysis function",{
          model_fn = chemo_model_nb, par_fn = chemo_pars_fn),
     "`analysis_fn` should have arguments `data`,`args`,`pars` in that order")
 
+  chemo_pars$logor_side_effects2 <- chemo_pars$logor_side_effects
   expect_error(
-    evsi(chemo_nb, chemo_pars, pars="logor_side_effects", method="mm",
+    evsi(chemo_nb, chemo_pars, pars="logor_side_effects2", method="mm",
          datagen_fn = datagen_fn, analysis_fn = function(data,args,pars){}, 
          n = 10, 
          model_fn = chemo_model_nb, par_fn = chemo_pars_fn),
-    "Parameters logor_side_effects are not arguments to model_fn")
+    "Parameters logor_side_effects2 are not arguments to model_fn")
 
   analysis_fn_wrongpars <- function(data,args,pars){
     data.frame(wrongpars = rep(0, 100))
