@@ -7,10 +7,11 @@ editor_options:
   chunk_output_type: console
 ---
 
-Change this path to reflect where you downloaded the Chemotherapy_Book repository
+Change this path to reflect where you downloaded the Chemotherapy_Book repository.
 
 ```{r,echo=FALSE}
-chemo_dir <- setwd(system.file("Chemotherapy_Book",package="voi"))
+chemo_dir <- system.file("Chemotherapy_Book",package="voi")
+# setwd(chemo_dir) # only if running interactively
 ```
 
 This block of code is only needed if you want to compile this `Rmd` source file into a document. 
@@ -58,7 +59,8 @@ side effects, transition probabilites, costs and utilities respectively.
 ```{r}
 par_groups <- list(
   "side_effects" = c("p_side_effects_t1","logor_side_effects"),
-  "trans_probs" = c("p_hospitalised_total","p_died","lambda_home","lambda_hosp"),
+  "trans_probs" = c("p_hospitalised_total","p_died",
+                    "lambda_home","lambda_hosp"),
   "costs" = c("c_home_care","c_hospital","c_death"),
   "utilities" = c("u_recovery","u_home_care","u_hospital")
 )
@@ -82,14 +84,18 @@ check_regression(ev_single, pars = "logor_side_effects")
 Additional analysis with standard errors: 
 
 ```{r,eval=FALSE}
-evppi(outputs=nb, inputs=m_params, pars=list("p_side_effects_t2","u_hospital"), se=TRUE)
+evppi(outputs=nb, inputs=m_params,
+      pars = list("p_side_effects_t2","u_hospital"), se=TRUE)
 ```
 
 Alternative regression models:
 
 ```{r,eval=FALSE}
-evppi(outputs=nb, inputs=m_params, pars=list("p_side_effects_t2","u_hospital"))
-evppi(outputs=nb, inputs=m_params, pars=list("p_side_effects_t2","u_hospital"), method="earth")
+evppi(outputs=nb, inputs=m_params,
+      pars = list("p_side_effects_t2","u_hospital"))
+evppi(outputs=nb, inputs=m_params,
+      pars = list("p_side_effects_t2","u_hospital"),
+      method="earth")
 ```
 
 

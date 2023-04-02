@@ -26,7 +26,7 @@ Before running any of this code, you should install the `voi` package, which whe
 install.packages("voi")
 ```
 
-Then you should set the working directory as follows 
+Then you can set the working directory as follows 
 
 ```{r}
 setwd(system.file("Chemotherapy_Book",package="voi"))
@@ -34,7 +34,7 @@ setwd(system.file("Chemotherapy_Book",package="voi"))
 
 then your working directory should contain subdirectories that include `01_data_raw`, `02_data`, etc.  You can check this by running the command `list.files()` in your R console.
 
-Alternatively, you can copy the contents of the `Chemotherapy_Book` directory to your preferred working directory, and work there instead. 
+Alternatively, you can copy the contents of the `Chemotherapy_Book` directory to your preferred working directory, and work there instead.  If you work in RStudio then it is recommended to use a "project".  You could create a project for this work by going to `File`,`New Project`,`Version Control`,`Git`, then selecting [https://github.com/convoigroup/Chemotherapy_Book](https://github.com/convoigroup/Chemotherapy_Book) as the `Repository URL`, and changing the project name and save location according to your preference.
 
 # Chapter 3: Chemotherapy case study 
 

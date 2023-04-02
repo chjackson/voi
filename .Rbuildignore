@@ -11,5 +11,7 @@ data-raw
 ^\.github$
 vignettes/book.Rmd
 inst/Chemotherapy_Book/05_output/01_model_output.RDS
+inst/Chemotherapy_Book/.RData
+inst/Chemotherapy_Book/.git
 ^_pkgdown2\.yml$
 git_notes.md

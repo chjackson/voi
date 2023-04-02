@@ -11,6 +11,7 @@
 \alias{chemo_model_cea}
 \alias{chemo_model_lor_nb}
 \alias{chemo_model_lor_cea}
+\alias{chemo_constants}
 \title{Chemotherapy cost-effectiveness model}
 \format{
 Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
@@ -24,6 +25,8 @@ with two columns, one for each decision option.
 
 \code{chemo_nb}: Data frame with two columns, giving the net monetary benefit for each decision option,
 at a willingness-to-pay of 20000 pounds.
+
+An object of class \code{list} of length 33.
 }
 \usage{
 chemo_cea
@@ -37,89 +40,83 @@ chemo_pars_fn(n)
 chemo_model_nb(
   p_side_effects_t1,
   p_side_effects_t2,
-  p_home_home,
-  p_home_hospital,
-  p_home_recover,
-  p_hospital_hospital,
-  p_hospital_recover,
-  p_hospital_dead,
+  p_hospitalised_total,
+  p_died,
+  lambda_home,
+  lambda_hosp,
   c_home_care,
   c_hospital,
   c_death,
   u_recovery,
   u_home_care,
-  u_hospital
+  u_hospital,
+  rate_longterm
 )
 
 chemo_model_cea(
   p_side_effects_t1,
   p_side_effects_t2,
-  p_home_home,
-  p_home_hospital,
-  p_home_recover,
-  p_hospital_hospital,
-  p_hospital_recover,
-  p_hospital_dead,
+  p_hospitalised_total,
+  p_died,
+  lambda_home,
+  lambda_hosp,
   c_home_care,
   c_hospital,
   c_death,
   u_recovery,
   u_home_care,
-  u_hospital
+  u_hospital,
+  rate_longterm
 )
 
 chemo_model_lor_nb(
   p_side_effects_t1,
   logor_side_effects,
-  p_home_home,
-  p_home_hospital,
-  p_home_recover,
-  p_hospital_hospital,
-  p_hospital_recover,
-  p_hospital_dead,
+  p_hospitalised_total,
+  p_died,
+  lambda_home,
+  lambda_hosp,
   c_home_care,
   c_hospital,
   c_death,
   u_recovery,
   u_home_care,
-  u_hospital
+  u_hospital,
+  rate_longterm
 )
 
 chemo_model_lor_cea(
   p_side_effects_t1,
   logor_side_effects,
-  p_home_home,
-  p_home_hospital,
-  p_home_recover,
-  p_hospital_hospital,
-  p_hospital_recover,
-  p_hospital_dead,
+  p_hospitalised_total,
+  p_died,
+  lambda_home,
+  lambda_hosp,
   c_home_care,
   c_hospital,
   c_death,
   u_recovery,
   u_home_care,
-  u_hospital
+  u_hospital,
+  rate_longterm
 )
+
+chemo_constants
 }
 \arguments{
 \item{n}{Number of samples to generate from the uncertainty distribution of the parameters in \code{chemo_pars_fn}.}
 
 \item{p_side_effects_t1}{Probability of side effects under treatment 1}
 
-\item{p_side_effects_t2}{Probability of side effects under treatment 2}
+\item{p_side_effects_t2}{Probability of side effects under treatment 2. (this is unused - TODO remove it)}
 
-\item{p_home_home}{Annual transition probability from home to home}
+\item{p_hospitalised_total}{Probability of hospitalisation in the year after receiving treatment}
 
-\item{p_home_hospital}{Transition probability from home to hospital}
+\item{p_died}{Probability of death in the year after receiving treatment}
 
-\item{p_home_recover}{Transition probability from home to recovery}
+\item{lambda_home}{Recovery probability for someone treated at home}
 
-\item{p_hospital_hospital}{Transition probability from hospital to hospital}
-
-\item{p_hospital_recover}{Transition probability from hospital to recovery}
-
-\item{p_hospital_dead}{Transition probability from hospital to death}
+\item{lambda_hosp}{Recovery probability for someone treated in hospital who does not die}
 
 \item{c_home_care}{Cost of a yearly period under treatment at home}
 
@@ -133,7 +130,9 @@ chemo_model_lor_cea(
 
 \item{u_hospital}{Utility of hospital state}
 
-\item{logor_side_effects}{Log odds ratio for side effects between treatment 1 and treatment 2}
+\item{rate_longterm}{Long term mortality rate}
+
+\item{logor_side_effects}{Log odds ratio of side effects for treatment 2 compared to 1}
 }
 \value{
 Two alternative functions are provided to evaluate the decision model for given parameters.
@@ -156,16 +155,21 @@ of side effects between treatment groups \code{logor_side_effects}, rather than 
 \code{chemo_pars_fn} generates a sample from the uncertainty distribution of the parameters in the chemotherapy model . This returns a data frame with parameters matching the arguments of
 \code{\link{chemo_model_nb}}, and the following additional derived parameters:
 \itemize{
-\item \code{logor_side_effects}: log odds ratio of side effects for treatment 2 compared to 1
+\item \code{p_side_effects_t2}:
 \item \code{p_hospitalised_total}: probability of hospitalisation over the 50 year time horizon
 \item \code{p_died}: probability of death over the time horizon, given hospitalisation
 \item \code{lambda_home}: conditional probability that a patient recovers given they are not hospitalised
 \item \code{lambda_hosp}: conditional probability that a patient in hospital recovers given they do not die
 }
+
+\code{chemo_constants} includes various constants required by the code.
 }
 \description{
 An artificial health economic decision model with a typical Markov model structure, used for illustrating Value of Information methods.
 Functions are provided to generate model parameters and evaluate the model, and samples from probabilistic analysis of the model are
 provided as built-in datasets.
+}
+\details{
+TODO refer to VoI book for more details
 }
 \keyword{datasets}

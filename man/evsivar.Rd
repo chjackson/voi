@@ -54,7 +54,13 @@ standard deviation defaults to 1, and can be changed by specifying
 \code{evsi(..., aux_pars=list(sd=2))}.
 
 Either \code{study} or \code{datagen_fn} should be supplied to
-\code{evsi()}.}
+\code{evsi()}.
+
+For the EVSI calculation methods where explicit Bayesian analyses of the
+simulated data are performed, the prior parameters for these built-in studies
+are supplied in the \code{analysis_args} argument to \code{evsi()}.  These
+assume Beta priors for probabilities, and Normal priors for the mean of a
+normal outcome. .}
 
 \item{datagen_fn}{If the proposed study is not one of the built-in types
 supported, it can be specified in this argument as an R function to sample
@@ -63,7 +69,8 @@ specification:
 \enumerate{
 \item the function's first argument should be a data frame of parameter
 simulations, with one row per simulation and one column per parameter.
-The parameters in this data frame must all be found in \code{inputs}.
+The parameters in this data frame must all be found in \code{inputs},
+but need not necessarily be in the same order or include all of them.
 \item the function should return a data frame.
 \item the returned data frame should have number of rows equal to the number
 of parameter simulations in \code{inputs}.
@@ -90,7 +97,12 @@ and \code{model_fn}, if these are used) and only these variables.}
 \item{n}{Sample size of future study, or vector of alternative sample sizes.
 This is understood by the built-in study designs.  For studies specified
 by the user with \code{datagen_fn}, if \code{datagen_fn} has an argument
-\code{n}, then this is interpreted as the sample size. Currently this
+\code{n}, then this is interpreted as the sample size.  However if
+calling \code{evsi} for a user-specified design where
+\code{datagen_fn} does not have an \code{n} argument, then any \code{n}
+argument supplied to \code{evsi} will be ignored.
+
+Currently this
 shortcut is not supported if more than one quantity is required to
 describe the sample size, for example, trials with unbalanced arms.  In
 that case, you will have to hard-code the required sample sizes into
