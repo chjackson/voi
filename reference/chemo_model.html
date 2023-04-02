@@ -68,70 +68,68 @@ provided as built-in datasets.</p>
 <span><span class="fu">chemo_model_nb</span><span class="op">(</span></span>
 <span>  <span class="va">p_side_effects_t1</span>,</span>
 <span>  <span class="va">p_side_effects_t2</span>,</span>
-<span>  <span class="va">p_home_home</span>,</span>
-<span>  <span class="va">p_home_hospital</span>,</span>
-<span>  <span class="va">p_home_recover</span>,</span>
-<span>  <span class="va">p_hospital_hospital</span>,</span>
-<span>  <span class="va">p_hospital_recover</span>,</span>
-<span>  <span class="va">p_hospital_dead</span>,</span>
+<span>  <span class="va">p_hospitalised_total</span>,</span>
+<span>  <span class="va">p_died</span>,</span>
+<span>  <span class="va">lambda_home</span>,</span>
+<span>  <span class="va">lambda_hosp</span>,</span>
 <span>  <span class="va">c_home_care</span>,</span>
 <span>  <span class="va">c_hospital</span>,</span>
 <span>  <span class="va">c_death</span>,</span>
 <span>  <span class="va">u_recovery</span>,</span>
 <span>  <span class="va">u_home_care</span>,</span>
-<span>  <span class="va">u_hospital</span></span>
+<span>  <span class="va">u_hospital</span>,</span>
+<span>  <span class="va">rate_longterm</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">chemo_model_cea</span><span class="op">(</span></span>
 <span>  <span class="va">p_side_effects_t1</span>,</span>
 <span>  <span class="va">p_side_effects_t2</span>,</span>
-<span>  <span class="va">p_home_home</span>,</span>
-<span>  <span class="va">p_home_hospital</span>,</span>
-<span>  <span class="va">p_home_recover</span>,</span>
-<span>  <span class="va">p_hospital_hospital</span>,</span>
-<span>  <span class="va">p_hospital_recover</span>,</span>
-<span>  <span class="va">p_hospital_dead</span>,</span>
+<span>  <span class="va">p_hospitalised_total</span>,</span>
+<span>  <span class="va">p_died</span>,</span>
+<span>  <span class="va">lambda_home</span>,</span>
+<span>  <span class="va">lambda_hosp</span>,</span>
 <span>  <span class="va">c_home_care</span>,</span>
 <span>  <span class="va">c_hospital</span>,</span>
 <span>  <span class="va">c_death</span>,</span>
 <span>  <span class="va">u_recovery</span>,</span>
 <span>  <span class="va">u_home_care</span>,</span>
-<span>  <span class="va">u_hospital</span></span>
+<span>  <span class="va">u_hospital</span>,</span>
+<span>  <span class="va">rate_longterm</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">chemo_model_lor_nb</span><span class="op">(</span></span>
 <span>  <span class="va">p_side_effects_t1</span>,</span>
 <span>  <span class="va">logor_side_effects</span>,</span>
-<span>  <span class="va">p_home_home</span>,</span>
-<span>  <span class="va">p_home_hospital</span>,</span>
-<span>  <span class="va">p_home_recover</span>,</span>
-<span>  <span class="va">p_hospital_hospital</span>,</span>
-<span>  <span class="va">p_hospital_recover</span>,</span>
-<span>  <span class="va">p_hospital_dead</span>,</span>
+<span>  <span class="va">p_hospitalised_total</span>,</span>
+<span>  <span class="va">p_died</span>,</span>
+<span>  <span class="va">lambda_home</span>,</span>
+<span>  <span class="va">lambda_hosp</span>,</span>
 <span>  <span class="va">c_home_care</span>,</span>
 <span>  <span class="va">c_hospital</span>,</span>
 <span>  <span class="va">c_death</span>,</span>
 <span>  <span class="va">u_recovery</span>,</span>
 <span>  <span class="va">u_home_care</span>,</span>
-<span>  <span class="va">u_hospital</span></span>
+<span>  <span class="va">u_hospital</span>,</span>
+<span>  <span class="va">rate_longterm</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">chemo_model_lor_cea</span><span class="op">(</span></span>
 <span>  <span class="va">p_side_effects_t1</span>,</span>
 <span>  <span class="va">logor_side_effects</span>,</span>
-<span>  <span class="va">p_home_home</span>,</span>
-<span>  <span class="va">p_home_hospital</span>,</span>
-<span>  <span class="va">p_home_recover</span>,</span>
-<span>  <span class="va">p_hospital_hospital</span>,</span>
-<span>  <span class="va">p_hospital_recover</span>,</span>
-<span>  <span class="va">p_hospital_dead</span>,</span>
+<span>  <span class="va">p_hospitalised_total</span>,</span>
+<span>  <span class="va">p_died</span>,</span>
+<span>  <span class="va">lambda_home</span>,</span>
+<span>  <span class="va">lambda_hosp</span>,</span>
 <span>  <span class="va">c_home_care</span>,</span>
 <span>  <span class="va">c_hospital</span>,</span>
 <span>  <span class="va">c_death</span>,</span>
 <span>  <span class="va">u_recovery</span>,</span>
 <span>  <span class="va">u_home_care</span>,</span>
-<span>  <span class="va">u_hospital</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="va">u_hospital</span>,</span>
+<span>  <span class="va">rate_longterm</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chemo_constants</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -144,6 +142,7 @@ equally-spaced willingess-to-pay values from 10000 to 50000 pounds).   The effec
 with two columns, one for each decision option.</p>
 <p><code>chemo_nb</code>: Data frame with two columns, giving the net monetary benefit for each decision option,
 at a willingness-to-pay of 20000 pounds.</p>
+<p>An object of class <code>list</code> of length 33.</p>
     </div>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
@@ -156,31 +155,23 @@ at a willingness-to-pay of 20000 pounds.</p>
 
 
 <dt>p_side_effects_t2</dt>
-<dd><p>Probability of side effects under treatment 2</p></dd>
+<dd><p>Probability of side effects under treatment 2. (this is unused - TODO remove it)</p></dd>
 
 
-<dt>p_home_home</dt>
-<dd><p>Annual transition probability from home to home</p></dd>
+<dt>p_hospitalised_total</dt>
+<dd><p>Probability of hospitalisation in the year after receiving treatment</p></dd>
 
 
-<dt>p_home_hospital</dt>
-<dd><p>Transition probability from home to hospital</p></dd>
+<dt>p_died</dt>
+<dd><p>Probability of death in the year after receiving treatment</p></dd>
 
 
-<dt>p_home_recover</dt>
-<dd><p>Transition probability from home to recovery</p></dd>
+<dt>lambda_home</dt>
+<dd><p>Recovery probability for someone treated at home</p></dd>
 
 
-<dt>p_hospital_hospital</dt>
-<dd><p>Transition probability from hospital to hospital</p></dd>
-
-
-<dt>p_hospital_recover</dt>
-<dd><p>Transition probability from hospital to recovery</p></dd>
-
-
-<dt>p_hospital_dead</dt>
-<dd><p>Transition probability from hospital to death</p></dd>
+<dt>lambda_hosp</dt>
+<dd><p>Recovery probability for someone treated in hospital who does not die</p></dd>
 
 
 <dt>c_home_care</dt>
@@ -207,8 +198,12 @@ at a willingness-to-pay of 20000 pounds.</p>
 <dd><p>Utility of hospital state</p></dd>
 
 
+<dt>rate_longterm</dt>
+<dd><p>Long term mortality rate</p></dd>
+
+
 <dt>logor_side_effects</dt>
-<dd><p>Log odds ratio for side effects between treatment 1 and treatment 2</p></dd>
+<dd><p>Log odds ratio of side effects for treatment 2 compared to 1</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -233,12 +228,17 @@ of side effects between treatment groups <code>logor_side_effects</code>, rather
 
 
 <p><code>chemo_pars_fn</code> generates a sample from the uncertainty distribution of the parameters in the chemotherapy model . This returns a data frame with parameters matching the arguments of
-<code>chemo_model_nb</code>, and the following additional derived parameters:</p><ul><li><p><code>logor_side_effects</code>: log odds ratio of side effects for treatment 2 compared to 1</p></li>
+<code>chemo_model_nb</code>, and the following additional derived parameters:</p><ul><li><p><code>p_side_effects_t2</code>:</p></li>
 <li><p><code>p_hospitalised_total</code>: probability of hospitalisation over the 50 year time horizon</p></li>
 <li><p><code>p_died</code>: probability of death over the time horizon, given hospitalisation</p></li>
 <li><p><code>lambda_home</code>: conditional probability that a patient recovers given they are not hospitalised</p></li>
 <li><p><code>lambda_hosp</code>: conditional probability that a patient in hospital recovers given they do not die</p></li>
-</ul></div>
+</ul><p><code>chemo_constants</code> includes various constants required by the code.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>TODO refer to VoI book for more details</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

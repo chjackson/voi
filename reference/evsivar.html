@@ -103,7 +103,12 @@ standard deviation defaults to 1, and can be changed by specifying
 <code>sd</code> as a component of the <code>aux_pars</code> argument, e.g.
 <code>evsi(..., aux_pars=list(sd=2))</code>.</p>
 <p>Either <code>study</code> or <code>datagen_fn</code> should be supplied to
-<code><a href="evsi.html">evsi()</a></code>.</p></dd>
+<code><a href="evsi.html">evsi()</a></code>.</p>
+<p>For the EVSI calculation methods where explicit Bayesian analyses of the
+simulated data are performed, the prior parameters for these built-in studies
+are supplied in the <code>analysis_args</code> argument to <code><a href="evsi.html">evsi()</a></code>.  These
+assume Beta priors for probabilities, and Normal priors for the mean of a
+normal outcome. .</p></dd>
 
 
 <dt>datagen_fn</dt>
@@ -112,7 +117,8 @@ supported, it can be specified in this argument as an R function to sample
 predicted data from the study.  This function should have the following
 specification:</p><ol><li><p>the function's first argument should be a data frame of parameter
 simulations, with one row per simulation and one column per parameter.
-The parameters in this data frame must all be found in <code>inputs</code>.</p></li>
+The parameters in this data frame must all be found in <code>inputs</code>,
+but need not necessarily be in the same order or include all of them.</p></li>
 <li><p>the function should return a data frame.</p></li>
 <li><p>the returned data frame should have number of rows equal to the number
 of parameter simulations in <code>inputs</code>.</p></li>
@@ -142,7 +148,11 @@ and <code>model_fn</code>, if these are used) and only these variables.</p></dd>
 <dd><p>Sample size of future study, or vector of alternative sample sizes.
 This is understood by the built-in study designs.  For studies specified
 by the user with <code>datagen_fn</code>, if <code>datagen_fn</code> has an argument
-<code>n</code>, then this is interpreted as the sample size. Currently this
+<code>n</code>, then this is interpreted as the sample size.  However if
+calling <code>evsi</code> for a user-specified design where
+<code>datagen_fn</code> does not have an <code>n</code> argument, then any <code>n</code>
+argument supplied to <code>evsi</code> will be ignored.</p>
+<p>Currently this
 shortcut is not supported if more than one quantity is required to
 describe the sample size, for example, trials with unbalanced arms.  In
 that case, you will have to hard-code the required sample sizes into

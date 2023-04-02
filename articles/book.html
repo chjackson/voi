@@ -67,7 +67,7 @@
       <img src="" class="logo" alt=""><h1>Value of Information for Health Economic Evaluations: book code resources</h1>
                         <h4 data-toc-skip class="author"></h4>
             
-            <h4 data-toc-skip class="date">2023-03-28</h4>
+            <h4 data-toc-skip class="date">2023-04-02</h4>
       
       
       <div class="d-none name"><code>book.Rmd</code></div>
@@ -84,7 +84,7 @@ published, these resources will be linked from here.</p>
 available from CRAN.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"voi"</span><span class="op">)</span></span></code></pre></div>
-<p>Then you should set the working directory as follows</p>
+<p>Then you can set the working directory as follows</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"Chemotherapy_Book"</span>,package<span class="op">=</span><span class="st">"voi"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>then your working directory should contain subdirectories that
@@ -93,7 +93,13 @@ check this by running the command <code><a href="https://rdrr.io/r/base/list.fil
 console.</p>
 <p>Alternatively, you can copy the contents of the
 <code>Chemotherapy_Book</code> directory to your preferred working
-directory, and work there instead.</p>
+directory, and work there instead. If you work in RStudio then it is
+recommended to use a “project”. You could create a project for this work
+by going to
+<code>File</code>,<code>New Project</code>,<code>Version Control</code>,<code>Git</code>,
+then selecting <a href="https://github.com/convoigroup/Chemotherapy_Book" class="external-link">https://github.com/convoigroup/Chemotherapy_Book</a>
+as the <code>Repository URL</code>, and changing the project name and
+save location according to your preference.</p>
 <div class="section level2">
 <h2 id="chapter-3-chemotherapy-case-study">Chapter 3: Chemotherapy case study<a class="anchor" aria-label="anchor" href="#chapter-3-chemotherapy-case-study"></a>
 </h2>

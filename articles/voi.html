@@ -68,7 +68,7 @@
                         <h4 data-toc-skip class="author">Christopher
 Jackson</h4>
             
-            <h4 data-toc-skip class="date">2023-03-28</h4>
+            <h4 data-toc-skip class="date">2023-04-02</h4>
       
       
       <div class="d-none name"><code>voi.Rmd</code></div>
@@ -1061,7 +1061,7 @@ the variance under current information, which we can compute from the
 sample as</p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.003511378</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.003436631</span></span></code></pre>
 <p>A more interesting quantity is the EVPPI for a parameter. It
 describes the expected reduction in variance given perfect knowledge of
 a particular parameter. In this example, we compute the EVPPI for <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>, respectively, defined as</p>
@@ -1076,11 +1076,11 @@ in the <code>voi</code> package.</p>
 <code class="sourceCode R"><span><span class="va">inputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">beta</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">evppi_beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evppivar.html">evppivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, par<span class="op">=</span><span class="st">"beta"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   pars       evppi</span></span>
-<span><span class="co">## 1 beta 0.001471421</span></span></code></pre>
+<span><span class="co">## 1 beta 0.001432078</span></span></code></pre>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">evppi_p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evppivar.html">evppivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, par<span class="op">=</span><span class="st">"p1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   pars       evppi</span></span>
-<span><span class="co">## 1   p1 0.001881491</span></span></code></pre>
+<span><span class="co">## 1   p1 0.001800679</span></span></code></pre>
 <p>Hence a slightly greater improvement in variance is expected from
 knowing the true risk in the biased sample, compared to knowing the
 relative odds of infection.</p>
@@ -1095,13 +1095,13 @@ exactly the <em>expected</em> SD remaining, since we cannot swap the
 order of the square root and expectation operators).</p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span><span class="op">)</span> <span class="co"># or sd(p2)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.05925688</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.05862279</span></span></code></pre>
 <div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_beta</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.04516587</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.04477224</span></span></code></pre>
 <div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_p1</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.04037186</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.04044691</span></span></code></pre>
 <p>Hence we would expect to reduce the SD of <span class="math inline">\(p_1\)</span> to around 2/3 of its original value
 by learning <span class="math inline">\(p_1\)</span> or <span class="math inline">\(\beta\)</span>.</p>
 </div>
@@ -1132,7 +1132,7 @@ EVPPI.</p>
 <div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p1res</span> <span class="op">&lt;-</span> <span class="va">p2</span> <span class="op">-</span> <span class="va">p1fit</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p1res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.001882405</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.001801982</span></span></code></pre>
 <p>This agrees (up to Monte Carlo error) with the value produced by
 <code>evppivar</code>, which is obtained by a closely-related method, as
 the variance of the fitted values from this regression. This is equal to
@@ -1142,7 +1142,7 @@ of total variance”:</p>
 |X)\right] = var_{X} \left[E_{Y|X}(Y|X)\right]\]</span></p>
 <div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p1fit</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 0.001881491</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 0.001800679</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="evsi-for-estimation">EVSI for estimation<a class="anchor" aria-label="anchor" href="#evsi-for-estimation"></a>
@@ -1169,9 +1169,9 @@ generate the study data.</p></li>
 <div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">inputs</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p1"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1000</span>,<span class="fl">10000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       n         evsi</span></span>
-<span><span class="co">## 1   100 0.0009280376</span></span>
-<span><span class="co">## 2  1000 0.0017212072</span></span>
-<span><span class="co">## 3 10000 0.0018644478</span></span></code></pre>
+<span><span class="co">## 1   100 0.0009216481</span></span>
+<span><span class="co">## 2  1000 0.0016288014</span></span>
+<span><span class="co">## 3 10000 0.0017851702</span></span></code></pre>
 <p>As the proposed sample sizes increase, the expected value of sample
 information informing <span class="math inline">\(p_1\)</span> converges
 to the EVPPI, the expected value of perfect information about <span class="math inline">\(p_1\)</span>.</p>
@@ -1184,9 +1184,9 @@ can compute the EVSI by using <code>evsivar</code> with the model
 <code class="sourceCode R"><span><span class="va">inputs_p2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p2 <span class="op">=</span> <span class="va">p2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/evsivar.html">evsivar</a></span><span class="op">(</span><span class="va">p2</span>, inputs<span class="op">=</span><span class="va">inputs_p2</span>, study <span class="op">=</span> <span class="st">"binary"</span>, pars<span class="op">=</span><span class="st">"p2"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">1000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##       n        evsi</span></span>
-<span><span class="co">## 1   100 0.002771045</span></span>
-<span><span class="co">## 2  1000 0.003419475</span></span>
-<span><span class="co">## 3 10000 0.003502008</span></span></code></pre>
+<span><span class="co">## 1   100 0.002718628</span></span>
+<span><span class="co">## 2  1000 0.003343779</span></span>
+<span><span class="co">## 3 10000 0.003427483</span></span></code></pre>
 <p>The unbiased data is clearly more valuable than the biased data, with
 double the variance reductions from biased data of the same sample size.
 As the sample size increases, the value converges to the EVPI, hence (in
