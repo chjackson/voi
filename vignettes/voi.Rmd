@@ -41,7 +41,7 @@ Suppose that the net benefit is simply defined as the difference between two unc
 
 To make a decision under parameter uncertainty, one option is preferred to another if the _expectation_ of its net benefit, with respect to the uncertainty, is greater.   In this case, we choose treatment 2, because the net benefit is distributed as $N(1, \sqrt{1^2+2^2}) = N(1, \sqrt{5})$ which has an expectation of 1, whereas treatment 1 has a known net benefit of zero. 
 
-Most of the functions in the `voi` package work with a _random sample_ of model inputs and outputs, generated from "uncertainty analysis", also known as "probabilistic sensitivity analysis".   For the example model, these are simple to generate, as follows.  
+Most of the functions in the `voi` package work with a _random sample_ of model inputs and outputs, generated from "uncertainty analysis", also known as "probabilistic sensitivity analysis" or "probabilistic analysis".  For the example model, these are simple to generate, as follows.  
 
 ### Specifying model inputs
 
@@ -87,7 +87,7 @@ outputs_cea <- list(
 Note that objects returned by the `bcea` function in the [BCEA](https://CRAN.R-project.org/package=BCEA) package satisfy this "cost-effectiveness analysis" format. 
 
 
-## Expected value of perfect information 
+## Expected value of perfect information {#evpi}
 
 The _expected value of perfect information_ is the expected net benefit given perfect information minus the expected net benefit given current information.  
 
@@ -152,7 +152,7 @@ This is the exact value of the EVPI in this example, which differs slightly from
 
 
 
-## Expected value of partial perfect information 
+## Expected value of partial perfect information {#evppi}
 
 The _expected value of partial perfect information_ (EVPPI) for a parameter $\phi$ in a decision-analytic model is the expected value of learning the exact value of that parameter, while the other parameters remain uncertain.  $\phi$ can comprise a single scalar parameter, or multiple parameters.  If $\phi$ refers to multiple parameters then the EVPPI describes the expected value of learning _all_ of these parameters, often referred to as the _multiparameter_ EVPPI.  
 
@@ -346,7 +346,7 @@ evppi_mc(model_fn_nb, par_fn_corr, pars="p1", ninner=1000, nouter=100)
 
 
 
-## Expected value of sample information 
+## Expected value of sample information {#evsi}
 
 The _expected value of sample information_ is the expected value of collecting a specific amount of data from a study
 designed to give information about some model parameter or parameters.    It is defined as the expected net benefit given the study data, minus the expected net benefit with current information. 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.evppi}
 \alias{plot.evppi}
-\title{Plot EVPPI estimates as simple dot or curve plots.}
+\title{Plot EVPPI estimates}
 \usage{
 \method{plot}{evppi}(x, type = NULL, order = FALSE, top = NULL, ...)
 }
@@ -28,10 +28,12 @@ values by parameter.}
 A \code{ggplot2} object.
 }
 \description{
-These plotting functions are intended for quick interactive exploration of
-EVPPI results, so they deliberately have limited options for customising them.
+Plot EVPPI estimates as simple dot or curve plots.
 }
 \details{
+These plotting functions are intended for quick interactive exploration of
+EVPPI results, so they deliberately have limited options for customising them.
+
 For publication quality graphics, it is advised to use \code{ggplot2} by hand
 on the data returned by \code{evppi}.   Examine the code for \code{plot_evppi_dots}
 and \code{plot_evppi_curves} to see how these plots might be constructed.

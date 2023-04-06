@@ -35,13 +35,13 @@
 ##'   in \code{outputs}, and each row of the samples in \code{outputs} should
 ##'   give the model output evaluated at the corresponding parameters.
 ##'
-##' @param pars A character vector giving the parameters of interest, for which
-##'   a single EVPPI calculation is required.  If the vector has multiple
-##'   elements, then the joint expected value of perfect information on all these
-##'   parameters together is calculated.
+##' @param pars Either a character vector, or a list of character vectors. 
 ##'
-##'   Alternatively, \code{pars} may be a list.  Multiple EVPPI calculations are
-##'   then performed, one for each component of \code{pars} defined in the above
+##'   If a character vector is supplied, then a single, joint EVPPI calculation is done with
+##'   for the parameters named in this vector. 
+##'
+##'   If a list of character vectors is supplied,  then multiple EVPPI calculations are
+##'   performed, one for each list component defined in the above
 ##'   vector form.
 ##'
 ##'   \code{pars} must be specified if \code{inputs} is a matrix or data frame.
@@ -91,13 +91,13 @@
 ##' the \code{ndpost} argument to \code{\link[dbarts]{bart}}, which can be
 ##' passed as an argument to \code{\link{evppi}}. 
 ##'   
-##' @param nsim Number of simulations from the model to use for calculating
-##'   EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
-##'   \code{outputs} are used.
+##' @param nsim Number of simulations from the decision model to use
+##'   for calculating EVPPI.  The first \code{nsim} rows of the
+##'   objects in \code{inputs} and \code{outputs} are used.
 ##'
-##' @param verbose If \code{TRUE}, then messages are printed describing each step of
-##'   the calculation, if the method supplies these.  Useful to see the progress
-##'   of slow calculations.
+##' @param verbose If \code{TRUE}, then messages are printed
+##'   describing each step of the calculation, if the method supplies
+##'   these.  Can be useful to see the progress of slow calculations.
 ##'
 ##' @param check If \code{TRUE}, then extra information about the estimation
 ##' is saved inside the object that this function returns.  This currently
@@ -108,7 +108,7 @@
 ##'
 ##' @param ... Other arguments to control specific methods.
 ##'
-##'   For \code{method="gam"}:
+##'   For \code{method="gam"}, the following arguments can be supplied:
 ##'   
 ##' * \code{gam_formula}: a character string giving the right hand side of the
 ##' formula supplied to the \code{gam()} function. By default, this is a tensor
@@ -121,11 +121,11 @@
 ##' four-dimensional basis, which is currently the default in the SAVI package
 ##' (\url{http://savi.shef.ac.uk/SAVI/}).
 ##' 
-##' If there are spaces in the variable names in \code{inputs}, then these should
+##'     If there are spaces in the variable names in \code{inputs}, then these should
 ##' be converted to underscores before forming an explicit \code{gam_formula}.
 ##' 
 ##'
-##' For \code{method="gp"}:
+##' For \code{method="gp"}, the following arguments can be supplied:
 ##'
 ##' * \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters
 ##' in the Gaussian process regression method.  By default, this is the minimum
@@ -137,8 +137,7 @@
 ##' increase this from the default 5000 if your computer has sufficent memory to
 ##' invert square matrices with this dimension.
 ##'
-##' For \code{method="inla"}, as described in detail in Baio, Berardi and Heath
-##' (2017):
+##' For \code{method="inla"}, the following arguments can be supplied, as described in detail in Baio, Berardi and Heath (2017):
 ##'
 ##' * \code{int.ord} (integer) maximum order of interaction terms to include in
 ##' the regression predictor, e.g. if \code{int.ord=k} then all k-way
@@ -157,7 +156,7 @@
 #' computational time.
 #'
 #' * \code{robust}. if \code{TRUE} then INLA will use a t prior distribution for
-#' the coefficients of the linear predictor, rather than the default normal.
+#' the coefficients of the linear predictor, rather than the default normal distribution.
 #'
 #' * \code{h.value} (default=0.00005) controls the accuracy of the INLA
 #' grid-search for the estimation of the hyperparameters. Lower values imply a
@@ -182,10 +181,10 @@
 ##'
 ##' * \code{n.seps} Number of separators (default 1). 
 #'
-#' @return A data frame with a column \code{pars} indicating the parameter(s)
-#'   and a column \code{evppi} giving the corresponding EVPPI. 
+#' @return A data frame with a column \code{pars}, indicating the parameter(s),
+#'   and a column \code{evppi}, giving the corresponding EVPPI. 
 #'
-#'   If \code{outputs} is of "cost-effectiveness analysis" form so that there is
+#'   If \code{outputs} is of "cost-effectiveness analysis" form, so that there is
 #'   one EVPPI per willingness-to-pay value, then a column \code{k} identifies the 
 #'   willingness-to-pay.
 #'   
@@ -201,7 +200,7 @@
 ##'
 ##' Heath, A., Manolopoulou, I., & Baio, G. (2016). Estimating the expected
 ##' value of partial perfect information in health economic evaluations using
-##' integrated nested Laplace approximation. Statistics in medicine, 35(23),
+##' integrated nested Laplace approximation. Statistics in Medicine, 35(23),
 ##' 4264-4280.
 ##'
 ##' Baio, G., Berardi, A., & Heath, A. (2017). Bayesian cost-effectiveness

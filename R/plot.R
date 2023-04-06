@@ -1,3 +1,5 @@
+#' Plot EVPPI estimates
+#' 
 #' Plot EVPPI estimates as simple dot or curve plots.
 #'
 #' These plotting functions are intended for quick interactive exploration of

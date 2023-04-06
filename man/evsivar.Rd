@@ -60,7 +60,7 @@ For the EVSI calculation methods where explicit Bayesian analyses of the
 simulated data are performed, the prior parameters for these built-in studies
 are supplied in the \code{analysis_args} argument to \code{evsi()}.  These
 assume Beta priors for probabilities, and Normal priors for the mean of a
-normal outcome. .}
+normal outcome.}
 
 \item{datagen_fn}{If the proposed study is not one of the built-in types
 supported, it can be specified in this argument as an R function to sample
@@ -116,8 +116,8 @@ dependency of the EVSI on the sample size, hence to enable EVSI to be
 calculated efficiently for any number of sample sizes (Heath et al. 2019).}
 
 \item{aux_pars}{A list of additional fixed arguments to supply to the
-function to generate the data, whether that is a built-in or user-defined
-function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the fixed
+function to generate the data, whether that is a built-in study design or user-defined
+function supplied in \code{datagen_fn}.  For example, \code{evsi(..., aux_pars = list(sd=2))} defines the fixed
 standard deviation in the \code{"normal_known"} model.}
 
 \item{method}{See \code{\link{evsi}}, only nonparametric regression methods are
@@ -127,9 +127,9 @@ currently supported in \code{\link{evsivar}}.}
 EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 \code{outputs} are used.}
 
-\item{verbose}{If \code{TRUE}, then messages are printed describing each step of
-the calculation, if the method supplies these.  Useful to see the progress
-of slow calculations.}
+\item{verbose}{If \code{TRUE}, then messages are printed
+describing each step of the calculation, if the method supplies
+these.  Can be useful to see the progress of slow calculations.}
 
 \item{...}{Other arguments understood by specific methods, e.g. \code{gam_formula}
 and other controlling options (see \code{\link{evppi}}) can be passed to the
@@ -139,7 +139,6 @@ nonparametric regression used inside the moment matching method.}
 Calculate the expected value of sample information for an estimation problem.  This computes the expected reduction in variance in some quantity of interest from a study of a certain design that informs the parameters of interest.
 }
 \references{
-Jackson,
 Jackson, C., Presanis, A., Conti, S., & De Angelis, D. (2019). Value of information:
 Sensitivity analysis and research design in Bayesian evidence synthesis.
 Journal of the American Statistical Association, 114(528), 1436-1449.

@@ -80,5 +80,9 @@ help with debugging.}
 Traditional two-level Monte Carlo estimator of the expected value of partial
 perfect information from a decision-analytic model.  Only useful in the
 simplest of examples.  For realistically complex examples, the methods
-implemented in the \code{\link{evppi}} function will usually be preferred.
+implemented in the \code{\link{evppi}} function, based on regression,
+will usually be much more computationally efficient.
+}
+\details{
+See the \href{https://chjackson.github.io/voi/articles/voi.html#evppimc}{package overview / Get Started vignette} for an example of using this function.
 }

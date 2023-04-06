@@ -94,7 +94,7 @@ For the EVSI calculation methods where explicit Bayesian analyses of the
 simulated data are performed, the prior parameters for these built-in studies
 are supplied in the \code{analysis_args} argument to \code{evsi()}.  These
 assume Beta priors for probabilities, and Normal priors for the mean of a
-normal outcome. .}
+normal outcome.}
 
 \item{datagen_fn}{If the proposed study is not one of the built-in types
 supported, it can be specified in this argument as an R function to sample
@@ -165,25 +165,25 @@ dependency of the EVSI on the sample size, hence to enable EVSI to be
 calculated efficiently for any number of sample sizes (Heath et al. 2019).}
 
 \item{aux_pars}{A list of additional fixed arguments to supply to the
-function to generate the data, whether that is a built-in or user-defined
-function, e.g. \code{evsi(..., aux_pars = list(sd=2))} to change the fixed
+function to generate the data, whether that is a built-in study design or user-defined
+function supplied in \code{datagen_fn}.  For example, \code{evsi(..., aux_pars = list(sd=2))} defines the fixed
 standard deviation in the \code{"normal_known"} model.}
 
-\item{method}{Character string indicating the calculation method.
+\item{method}{Character string indicating the calculation method.  Defaults to \code{"gam"}.
 
 All the nonparametric regression methods supported for
 \code{\link{evppi}}, that is \code{"gam","gp","earth","inla"}, can also be
 used for EVSI calculation by regressing on a summary statistic of the
-predicted data (Strong et al 2015).   Defaults to \code{"gam"}.
+predicted data (Strong et al 2015).
 
 \code{"is"} for importance sampling (Menzies 2016)
 
-\code{"mm"} for moment matching (Heath et al 2018) (experimental)
+\code{"mm"} for moment matching (Heath et al 2018)
 
 Note that the  \code{"is"} and \code{"mm"} methods are used in conjunction
-with nonparametric regression, thus the \code{gam_formula} argument can be
+with nonparametric regression, and the \code{gam_formula} argument can be
 supplied to \code{evsi} to specify this regression - see
-\code{\link{evppi}}.}
+\code{\link{evppi}} for documentation of this argument.}
 
 \item{likelihood}{Likelihood function, required (and only required) for the
 importance sampling method when a study design other than one of the
@@ -207,13 +207,13 @@ the vignette.
 
 The likelihood can optionally have a \code{n} argument, which is interpreted
 as the sample size of the study.   If the \code{n}
-argument to \code{evsi} is used then this is passed to the likelihod function.
+argument to \code{evsi} is used then this is passed to the likelihood function.
 Conversely any \code{n} argument to \code{evsi} will be ignored by a likelihood
 function that does not have its own \code{n} argument.
 
 Note the definition of the likelihood should agree with the definition of
 \code{datagen_fn} to define a consistent sampling distribution for the
-data.}
+data. No automatic check is performed for this.}
 
 \item{analysis_fn}{Function which fits a Bayesian model to the generated
 data.   Required for \code{method="mm"} if a study design other than one
@@ -236,7 +236,7 @@ given data supplied through \code{data}.
 \code{analysis_fn} is required to have all three of these arguments, but you do
 not need to use any elements of \code{args} or \code{pars} in the body of
 \code{analysis_fn}.  Instead, sample sizes, prior parameters, MCMC options and
-parameter names can be hard-coded inside \code{analysis_fn}. Passing these
+parameter names can alternatively be hard-coded inside \code{analysis_fn}. Passing these
 through the function arguments (via the \code{analysis_args} argument to
 \code{evsi}) is only necessary if we want to use the same \code{analysis_fn} to
 do EVSI calculations with different sample sizes or other settings.}
@@ -266,7 +266,8 @@ observation, so that the sampling SD of the mean outcome over the study is
 
 \item{model_fn}{Function which evaluates the decision-analytic model, given
 parameter values.  Required for \code{method="mm"}.  See
-\code{\link{evppi_mc}} for full specification.}
+\code{\link{evppi_mc}} for full documentation of the required specification
+of this function.}
 
 \item{par_fn}{Function to simulate values from the uncertainty distributions
 of parameters needed by the decision-analytic model.  Should take one
@@ -284,9 +285,9 @@ that require it.  This is passed to \code{\link{evppi}} as the
 EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
 \code{outputs} are used.}
 
-\item{verbose}{If \code{TRUE}, then messages are printed describing each step of
-the calculation, if the method supplies these.  Useful to see the progress
-of slow calculations.}
+\item{verbose}{If \code{TRUE}, then messages are printed
+describing each step of the calculation, if the method supplies
+these.  Can be useful to see the progress of slow calculations.}
 
 \item{check}{If \code{TRUE}, then extra information about the estimation
 is saved inside the object that this function returns.  This currently
@@ -302,6 +303,9 @@ nonparametric regression used inside the moment matching method.}
 \description{
 Calculate the expected value of sample information from a decision-analytic
 model
+}
+\details{
+See the \href{https://chjackson.github.io/voi/articles/voi.html#evsi}{package overview / Get Started vignette} for some examples of using this function.
 }
 \references{
 Strong, M., Oakley, J. E., Brennan, A., & Breeze, P. (2015). Estimating the

@@ -9,7 +9,7 @@
 ##'
 ##' @inheritParams evsi
 ##'
-##' @references Jackson, 
+##' @references  
 ##' Jackson, C., Presanis, A., Conti, S., & De Angelis, D. (2019). Value of information:
 ##' Sensitivity analysis and research design in Bayesian evidence synthesis.
 ##' Journal of the American Statistical Association, 114(528), 1436-1449.

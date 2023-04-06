@@ -14,6 +14,15 @@
 ##' Sensitivity analysis and research design in Bayesian evidence synthesis.
 ##' Journal of the American Statistical Association, 114(528), 1436-1449.
 ##'
+##' Jackson, C., Johnson, R., de Nazelle, A., Goel, R., de Sa, T. H.,
+##' Tainio, M., & Woodcock, J. (2021). A guide to value of information
+##' methods for prioritising research in health impact
+##' modelling. Epidemiologic Methods, 10(1).
+##'
+##' Jackson, C. H., Baio, G., Heath, A., Strong, M., Welton, N. J., &
+##' Wilson, E. C. (2022). Value of Information analysis in models to
+##' inform health policy. Annual Review of Statistics and its
+##' Application, 9, 95-118.
 ##' 
 ##' @export
 evppivar <- function(outputs,

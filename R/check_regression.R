@@ -8,9 +8,9 @@
 ##' regression function of the model input parameters.  It should not matter if the 
 ##' variance of the residuals is non-constant, or non-normally distributed.
 ##'
-##' Models produced with `method="gam"` are summarised using \code{\link{gam.check}}
+##' Models produced with `method="gam"` are summarised using \code{\link{gam.check}}.
 ##'
-##' Models produced `method="earth"` are summarised using \code{\link{plot.earth}}
+##' Models produced `method="earth"` are summarised using \code{\link{plot.earth}}.
 ##' 
 ##' For any regression model, if `fitted()` and `residuals()` methods are defined for those models,
 ##' then a histogram of the residuals and a scatterplot of residuals against fitted values is produced.
@@ -42,13 +42,27 @@
 ##' @param plot If \code{FALSE}, only numerical statistics are returned, and a plot is not made.
 ##'
 ##' @return Where possible, an appropriate statistic is returned that allows the regression
-##' model to be compared with other regression models implemented using the same \code{method} 
-##' but with different assumptions.   For \code{method=="gam"},
+##' model to be compared with other regression models implemented using the same \code{method}
+##' but with different assumptions.   For \code{method="gam"},
 ##' this is Akaike's information criterion (AIC).    
-##' For \code{method=="earth"}, this is the generalised cross-validation statistic
+##' For \code{method="earth"}, this is the generalised cross-validation statistic
 ##' \code{gcv}.    Currently not implemented for other methods. 
 ##'
-##' @examples # TODO and refer in vignette
+##' @examples
+##' pars <- c("p_side_effects_t1", "p_side_effects_t2")
+##' evtest <- evppi(chemo_nb, chemo_pars, pars=pars, check=TRUE)
+##' evtest
+##' check_regression(evtest)
+##' 
+##' ## with no interaction term 
+##' evtest2 <- evppi(chemo_nb, chemo_pars, pars=pars, 
+##'                 gam_formula="s(p_side_effects_t1)+s(p_side_effects_t2)",
+##'                 check=TRUE)
+##' evtest2
+##' check_regression(evtest2)
+##'
+##' ## doesn't make much difference to the estimate
+##' ## fit is OK in either case
 ##' 
 ##' @export
 check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs", plot=TRUE){

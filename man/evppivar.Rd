@@ -26,13 +26,13 @@ be named.    This should have the same number of rows as there are samples
 in \code{outputs}, and each row of the samples in \code{outputs} should
 give the model output evaluated at the corresponding parameters.}
 
-\item{pars}{A character vector giving the parameters of interest, for which
-a single EVPPI calculation is required.  If the vector has multiple
-elements, then the joint expected value of perfect information on all these
-parameters together is calculated.
+\item{pars}{Either a character vector, or a list of character vectors.
 
-Alternatively, \code{pars} may be a list.  Multiple EVPPI calculations are
-then performed, one for each component of \code{pars} defined in the above
+If a character vector is supplied, then a single, joint EVPPI calculation is done with
+for the parameters named in this vector.
+
+If a list of character vectors is supplied,  then multiple EVPPI calculations are
+performed, one for each list component defined in the above
 vector form.
 
 \code{pars} must be specified if \code{inputs} is a matrix or data frame.
@@ -71,17 +71,17 @@ for single parameter EVPPI.
 \code{"sal"} for the method of Sadatsafavi et al. (2013).  Only supported
 for single parameter EVPPI.}
 
-\item{nsim}{Number of simulations from the model to use for calculating
-EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
-\code{outputs} are used.}
+\item{nsim}{Number of simulations from the decision model to use
+for calculating EVPPI.  The first \code{nsim} rows of the
+objects in \code{inputs} and \code{outputs} are used.}
 
-\item{verbose}{If \code{TRUE}, then messages are printed describing each step of
-the calculation, if the method supplies these.  Useful to see the progress
-of slow calculations.}
+\item{verbose}{If \code{TRUE}, then messages are printed
+describing each step of the calculation, if the method supplies
+these.  Can be useful to see the progress of slow calculations.}
 
 \item{...}{Other arguments to control specific methods.
 
-For \code{method="gam"}:
+For \code{method="gam"}, the following arguments can be supplied:
 \itemize{
 \item \code{gam_formula}: a character string giving the right hand side of the
 formula supplied to the \code{gam()} function. By default, this is a tensor
@@ -93,12 +93,12 @@ basis.  If there are four or more parameters of interest, then the
 additional argument \code{k=4} is supplied to \code{te()}, specifying a
 four-dimensional basis, which is currently the default in the SAVI package
 (\url{http://savi.shef.ac.uk/SAVI/}).
-}
 
 If there are spaces in the variable names in \code{inputs}, then these should
 be converted to underscores before forming an explicit \code{gam_formula}.
+}
 
-For \code{method="gp"}:
+For \code{method="gp"}, the following arguments can be supplied:
 \itemize{
 \item \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters
 in the Gaussian process regression method.  By default, this is the minimum
@@ -110,8 +110,7 @@ increase this from the default 5000 if your computer has sufficent memory to
 invert square matrices with this dimension.
 }
 
-For \code{method="inla"}, as described in detail in Baio, Berardi and Heath
-(2017):
+For \code{method="inla"}, the following arguments can be supplied, as described in detail in Baio, Berardi and Heath (2017):
 \itemize{
 \item \code{int.ord} (integer) maximum order of interaction terms to include in
 the regression predictor, e.g. if \code{int.ord=k} then all k-way
@@ -127,7 +126,7 @@ be decreased (say to -0.7 and -1, respectively) to increase the distance
 between the points and the outer boundary, which also increases precision and
 computational time.
 \item \code{robust}. if \code{TRUE} then INLA will use a t prior distribution for
-the coefficients of the linear predictor, rather than the default normal.
+the coefficients of the linear predictor, rather than the default normal distribution.
 \item \code{h.value} (default=0.00005) controls the accuracy of the INLA
 grid-search for the estimation of the hyperparameters. Lower values imply a
 more refined search (and hence better accuracy), at the expense of
@@ -158,4 +157,14 @@ Calculate the expected value of partial perfect information for an estimation pr
 Jackson, C., Presanis, A., Conti, S., & De Angelis, D. (2019). Value of information:
 Sensitivity analysis and research design in Bayesian evidence synthesis.
 Journal of the American Statistical Association, 114(528), 1436-1449.
+
+Jackson, C., Johnson, R., de Nazelle, A., Goel, R., de Sa, T. H.,
+Tainio, M., & Woodcock, J. (2021). A guide to value of information
+methods for prioritising research in health impact
+modelling. Epidemiologic Methods, 10(1).
+
+Jackson, C. H., Baio, G., Heath, A., Strong, M., Welton, N. J., &
+Wilson, E. C. (2022). Value of Information analysis in models to
+inform health policy. Annual Review of Statistics and its
+Application, 9, 95-118.
 }

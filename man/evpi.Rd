@@ -33,9 +33,9 @@ If \code{outputs} is a matrix or data frame, it is assumed to be of "net
 benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 effectiveness analysis" form.}
 
-\item{nsim}{Number of simulations from the model to use for calculating
-EVPPI.  The first \code{nsim} rows of the objects in \code{inputs} and
-\code{outputs} are used.}
+\item{nsim}{Number of simulations from the decision model to use
+for calculating EVPPI.  The first \code{nsim} rows of the
+objects in \code{inputs} and \code{outputs} are used.}
 }
 \value{
 The expected value of perfect information, either as a single value, or a data frame indicating the value for each willingness-to-pay.
