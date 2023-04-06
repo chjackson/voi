@@ -140,7 +140,7 @@ standard deviation defaults to 1, and can be changed by specifying
 simulated data are performed, the prior parameters for these built-in studies
 are supplied in the <code>analysis_args</code> argument to <code>evsi()</code>.  These
 assume Beta priors for probabilities, and Normal priors for the mean of a
-normal outcome. .</p></dd>
+normal outcome.</p></dd>
 
 
 <dt>datagen_fn</dt>
@@ -213,23 +213,23 @@ calculated efficiently for any number of sample sizes (Heath et al. 2019).</p></
 
 <dt>aux_pars</dt>
 <dd><p>A list of additional fixed arguments to supply to the
-function to generate the data, whether that is a built-in or user-defined
-function, e.g. <code>evsi(..., aux_pars = list(sd=2))</code> to change the fixed
+function to generate the data, whether that is a built-in study design or user-defined
+function supplied in <code>datagen_fn</code>.  For example, <code>evsi(..., aux_pars = list(sd=2))</code> defines the fixed
 standard deviation in the <code>"normal_known"</code> model.</p></dd>
 
 
 <dt>method</dt>
-<dd><p>Character string indicating the calculation method.</p>
+<dd><p>Character string indicating the calculation method.  Defaults to <code>"gam"</code>.</p>
 <p>All the nonparametric regression methods supported for
 <code><a href="evppi.html">evppi</a></code>, that is <code>"gam","gp","earth","inla"</code>, can also be
 used for EVSI calculation by regressing on a summary statistic of the
-predicted data (Strong et al 2015).   Defaults to <code>"gam"</code>.</p>
+predicted data (Strong et al 2015).</p>
 <p><code>"is"</code> for importance sampling (Menzies 2016)</p>
-<p><code>"mm"</code> for moment matching (Heath et al 2018) (experimental)</p>
+<p><code>"mm"</code> for moment matching (Heath et al 2018)</p>
 <p>Note that the  <code>"is"</code> and <code>"mm"</code> methods are used in conjunction
-with nonparametric regression, thus the <code>gam_formula</code> argument can be
+with nonparametric regression, and the <code>gam_formula</code> argument can be
 supplied to <code>evsi</code> to specify this regression - see
-<code><a href="evppi.html">evppi</a></code>.</p></dd>
+<code><a href="evppi.html">evppi</a></code> for documentation of this argument.</p></dd>
 
 
 <dt>likelihood</dt>
@@ -251,12 +251,12 @@ parameters, given the data in the first argument.  An example is given in
 the vignette.</p>
 <p>The likelihood can optionally have a <code>n</code> argument, which is interpreted
 as the sample size of the study.   If the <code>n</code>
-argument to <code>evsi</code> is used then this is passed to the likelihod function.
+argument to <code>evsi</code> is used then this is passed to the likelihood function.
 Conversely any <code>n</code> argument to <code>evsi</code> will be ignored by a likelihood
 function that does not have its own <code>n</code> argument.</p>
 <p>Note the definition of the likelihood should agree with the definition of
 <code>datagen_fn</code> to define a consistent sampling distribution for the
-data.</p></dd>
+data. No automatic check is performed for this.</p></dd>
 
 
 <dt>analysis_fn</dt>
@@ -276,7 +276,7 @@ given data supplied through <code>data</code>.</p>
 <p><code>analysis_fn</code> is required to have all three of these arguments, but you do
 not need to use any elements of <code>args</code> or <code>pars</code> in the body of
 <code>analysis_fn</code>.  Instead, sample sizes, prior parameters, MCMC options and
-parameter names can be hard-coded inside <code>analysis_fn</code>. Passing these
+parameter names can alternatively be hard-coded inside <code>analysis_fn</code>. Passing these
 through the function arguments (via the <code>analysis_args</code> argument to
 <code>evsi</code>) is only necessary if we want to use the same <code>analysis_fn</code> to
 do EVSI calculations with different sample sizes or other settings.</p></dd>
@@ -306,7 +306,8 @@ observation, so that the sampling SD of the mean outcome over the study is
 <dt>model_fn</dt>
 <dd><p>Function which evaluates the decision-analytic model, given
 parameter values.  Required for <code>method="mm"</code>.  See
-<code><a href="evppi_mc.html">evppi_mc</a></code> for full specification.</p></dd>
+<code><a href="evppi_mc.html">evppi_mc</a></code> for full documentation of the required specification
+of this function.</p></dd>
 
 
 <dt>par_fn</dt>
@@ -334,9 +335,9 @@ EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> a
 
 
 <dt>verbose</dt>
-<dd><p>If <code>TRUE</code>, then messages are printed describing each step of
-the calculation, if the method supplies these.  Useful to see the progress
-of slow calculations.</p></dd>
+<dd><p>If <code>TRUE</code>, then messages are printed
+describing each step of the calculation, if the method supplies
+these.  Can be useful to see the progress of slow calculations.</p></dd>
 
 
 <dt>check</dt>
@@ -354,6 +355,10 @@ and other controlling options (see <code><a href="evppi.html">evppi</a></code>) 
 nonparametric regression used inside the moment matching method.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>See the <a href="https://chjackson.github.io/voi/articles/voi.html#evsi">package overview / Get Started vignette</a> for some examples of using this function.</p>
+    </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Strong, M., Oakley, J. E., Brennan, A., &amp; Breeze, P. (2015). Estimating the

@@ -108,7 +108,7 @@ standard deviation defaults to 1, and can be changed by specifying
 simulated data are performed, the prior parameters for these built-in studies
 are supplied in the <code>analysis_args</code> argument to <code><a href="evsi.html">evsi()</a></code>.  These
 assume Beta priors for probabilities, and Normal priors for the mean of a
-normal outcome. .</p></dd>
+normal outcome.</p></dd>
 
 
 <dt>datagen_fn</dt>
@@ -166,8 +166,8 @@ calculated efficiently for any number of sample sizes (Heath et al. 2019).</p></
 
 <dt>aux_pars</dt>
 <dd><p>A list of additional fixed arguments to supply to the
-function to generate the data, whether that is a built-in or user-defined
-function, e.g. <code>evsi(..., aux_pars = list(sd=2))</code> to change the fixed
+function to generate the data, whether that is a built-in study design or user-defined
+function supplied in <code>datagen_fn</code>.  For example, <code>evsi(..., aux_pars = list(sd=2))</code> defines the fixed
 standard deviation in the <code>"normal_known"</code> model.</p></dd>
 
 
@@ -183,9 +183,9 @@ EVPPI.  The first <code>nsim</code> rows of the objects in <code>inputs</code> a
 
 
 <dt>verbose</dt>
-<dd><p>If <code>TRUE</code>, then messages are printed describing each step of
-the calculation, if the method supplies these.  Useful to see the progress
-of slow calculations.</p></dd>
+<dd><p>If <code>TRUE</code>, then messages are printed
+describing each step of the calculation, if the method supplies
+these.  Can be useful to see the progress of slow calculations.</p></dd>
 
 
 <dt>...</dt>
@@ -196,8 +196,7 @@ nonparametric regression used inside the moment matching method.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Jackson,
-Jackson, C., Presanis, A., Conti, S., &amp; De Angelis, D. (2019). Value of information:
+    <p>Jackson, C., Presanis, A., Conti, S., &amp; De Angelis, D. (2019). Value of information:
 Sensitivity analysis and research design in Bayesian evidence synthesis.
 Journal of the American Statistical Association, 114(528), 1436-1449.</p>
     </div>
