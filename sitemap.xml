@@ -13,6 +13,9 @@
     <loc>https://chjackson.github.io/voi/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://chjackson.github.io/voi/articles/plots.html</loc>
+  </url>
+  <url>
     <loc>https://chjackson.github.io/voi/articles/voi.html</loc>
   </url>
   <url>
@@ -32,6 +35,12 @@
   </url>
   <url>
     <loc>https://chjackson.github.io/voi/reference/chemo_model.html</loc>
+  </url>
+  <url>
+    <loc>https://chjackson.github.io/voi/reference/enbs.html</loc>
+  </url>
+  <url>
+    <loc>https://chjackson.github.io/voi/reference/enbs_opt.html</loc>
   </url>
   <url>
     <loc>https://chjackson.github.io/voi/reference/evpi.html</loc>
@@ -56,6 +65,9 @@
   </url>
   <url>
     <loc>https://chjackson.github.io/voi/reference/plot.evppi.html</loc>
+  </url>
+  <url>
+    <loc>https://chjackson.github.io/voi/reference/pop_voi.html</loc>
   </url>
   <url>
     <loc>https://chjackson.github.io/voi/reference/voi-package.html</loc>

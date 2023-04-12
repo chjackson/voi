@@ -32,6 +32,7 @@ provided as built-in datasets."><!-- mathjax --><script src="https://cdnjs.cloud
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/book.html">Value of Information for Health Economic Evaluations: book code resources</a>
+    <a class="dropdown-item" href="../articles/plots.html">Plots of Value of Information measures</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -62,6 +63,12 @@ provided as built-in datasets.</p>
 <span><span class="va">chemo_nb</span></span>
 <span></span>
 <span><span class="va">chemo_pars</span></span>
+<span></span>
+<span><span class="va">chemo_cea_501</span></span>
+<span></span>
+<span><span class="va">chemo_constants</span></span>
+<span></span>
+<span><span class="va">chemo_evsi_or</span></span>
 <span></span>
 <span><span class="fu">chemo_pars_fn</span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
 <span></span>
@@ -127,14 +134,14 @@ provided as built-in datasets.</p>
 <span>  <span class="va">u_home_care</span>,</span>
 <span>  <span class="va">u_hospital</span>,</span>
 <span>  <span class="va">rate_longterm</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">chemo_constants</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
+    <p>An object of class <code>list</code> of length 33.</p>
+<p>An object of class <code>evsi</code> (inherits from <code>data.frame</code>) with 15030 rows and 3 columns.</p>
+<p>Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
 following data objects:</p>
 <p><code>chemo_pars</code>: Sample from the distributions of the parameters, as a data frame with names as documented above.</p>
 <p><code>chemo_cea</code>: List with components <code>e</code> (sampled effects), <code>c</code> (sampled costs), and <code>k</code> (a set of five
@@ -142,7 +149,12 @@ equally-spaced willingess-to-pay values from 10000 to 50000 pounds).   The effec
 with two columns, one for each decision option.</p>
 <p><code>chemo_nb</code>: Data frame with two columns, giving the net monetary benefit for each decision option,
 at a willingness-to-pay of 20000 pounds.</p>
-<p>An object of class <code>list</code> of length 33.</p>
+<p><code>chemo_cea_501</code>: List with components <code>e</code> (sampled effects), <code>c</code> (sampled costs), and <code>k</code> (a set of 501
+willlingess-to-pay values from 10000 to 50000)  This is provided to facilitate illustrations of plots of
+VoI measures against willingness-to-pay.</p>
+<p>The following additional data objects are supplied:</p>
+<p><code>chemo_constants</code> includes various constants required by the code. TODO DOC</p>
+<p><code>chemo_evsi_or</code> is the result of an EVSI analysis to estimate the expected value of a two-arm trial, with a binary outcome, to estimate the log odds ratio of side effects.  This object is a data frame with three columns, giving the sample size per arm (<code>n</code>), willingness-to-pay (<code>k</code>) and the corresponding EVSI (<code>evsi</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
@@ -155,7 +167,7 @@ at a willingness-to-pay of 20000 pounds.</p>
 
 
 <dt>p_side_effects_t2</dt>
-<dd><p>Probability of side effects under treatment 2. (this is unused - TODO remove it)</p></dd>
+<dd><p>Probability of side effects under treatment 2</p></dd>
 
 
 <dt>p_hospitalised_total</dt>
@@ -233,8 +245,7 @@ of side effects between treatment groups <code>logor_side_effects</code>, rather
 <li><p><code>p_died</code>: probability of death over the time horizon, given hospitalisation</p></li>
 <li><p><code>lambda_home</code>: conditional probability that a patient recovers given they are not hospitalised</p></li>
 <li><p><code>lambda_hosp</code>: conditional probability that a patient in hospital recovers given they do not die</p></li>
-</ul><p><code>chemo_constants</code> includes various constants required by the code.</p>
-    </div>
+</ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>TODO refer to VoI book for more details</p>
@@ -245,7 +256,7 @@ of side effects between treatment groups <code>logor_side_effects</code>, rather
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Christopher Jackson, Anna Heath.</p>
+  <p></p>
 </div>
 
 <div class="pkgdown-footer-right">
