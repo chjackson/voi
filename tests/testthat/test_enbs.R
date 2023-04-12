@@ -1,3 +1,4 @@
+library(dplyr)
 
 test_that("enbs",{
   nbs <- enbs(chemo_evsi_or, costs_setup = c(5e6, 1e7), costs_pp = c(28000,42000), 
