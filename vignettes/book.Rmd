@@ -38,7 +38,7 @@ Alternatively, you can copy the contents of the `Chemotherapy_Book` directory to
 
 # Chapter 3: Chemotherapy case study 
 
-The code to run the baseline cost-effectiveness analysis (TODO REF SECTION NUMBERS) is in the `04_analysis/02_baseline_model_output.R` subdirectory ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/02_baseline_model_output.R)).  This can be run all at once using 
+The code to run the baseline cost-effectiveness analysis (Section 2.4) is in the `04_analysis/02_baseline_model_output.R` subdirectory ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/02_baseline_model_output.R)).  This can be run all at once using 
 
 ```{r}
 source("04_analysis/02_baseline_model_output.R")
@@ -49,28 +49,28 @@ Or alternatively, open this file in R, and examine and run each line of code by 
 
 # Chapter 4: Value of Perfect Information
 
-#### EVPI analysis for the Chemotherapy model (REF section)
+#### EVPI analysis for the Chemotherapy model (Section 3.2)
 
 `04_analysis/03_Expected_Value_of_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/03_Expected_Value_of_Perfect_Information.R))
 
-#### EVPPI analysis for the Chemotherapy model  (REF section) 
+#### EVPPI analysis for the Chemotherapy model  (Section 3.4) 
 
 `04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R))
 
 
 #### Nonparametric regression examples
 
-Code to draw illustrations of GAM regression (REF FIG NOS)
+Code to draw illustrations of GAM regression (Figure 3.3)
 ```{r}
 misc_dir <- setwd(system.file("book_misc",package="voi"))
 ```
 
-Code to draw illustrations of Gaussian process regression (REF FIG NO)
+Code to draw illustrations of Gaussian process regression (Figure 3.4)
 ```{r}
 file.path("misc_dir", "gp_graphs.R")
 ```
 
-Code to calculate EVPPI using nonparametric regression (REF SECTION NO)
+Code to calculate EVPPI using nonparametric regression (Section 3.3.5)
 ```{r}
 file.path("misc_dir", "evppi_reg.Rmd")
 ```
@@ -93,4 +93,4 @@ file.path("misc_dir", "evppi_reg.Rmd")
 
 For base R functions to reproduce the plots in the book, see the [source on GitHub](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/06_Plotting_Book.R)
 
-For ggplot2 plotting functions, see the [voi package vignette](plots.html) about ENBS and plotting. 
+For functions to calculate and optimise ENBS, and `ggplot2` recipes to reproduce similar plots, see the [voi package vignette](plots.html).

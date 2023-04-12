@@ -1,16 +1,18 @@
 ##' Expected net benefit of sampling
 ##'
-##' Calculate the expected net benefit of sampling for a typical study to inform
+##' Calculates the expected net benefit of sampling for a typical study to inform
 ##' a health economic evaluation, given estimates of the per-person expected
 ##' value of sample information, decision population size and study setup and
-##' per-participant costs.
+##' per-participant costs.   The optimal sample size for each willingness-to-pay,
+##' population size and time horizon is also determined.
 ##'
 ##' \code{pop},\code{time} and \code{dis} may be supplied as vectors
 ##' of different lengths.  In that case, the ENBS is calculated for all
 ##' possible combinations of the values in these vectors. 
 ##'
 ##' @param evsi Data frame giving estimates of the expected value of sample
-##'   information, as returned by \code{\link{evsi}}.
+##'   information, as returned by \code{\link{evsi}}.  This may contain
+##'   multiple estimates, one for each sample size and willingness to pay.
 ##'
 ##' @param costs_setup Setup costs of the study.  This can either be a constant,
 ##'   or a vector of two elements giving a 95% credible interval (with mean
@@ -22,7 +24,7 @@
 ##'
 ##' @param pcut Cut-off probability which defines a "near-optimal" sample size.
 ##'   The minimum and maximum sample size for which the ENBS is within
-##'   \code{pcut} of its maximum value (by default 5%) will be determined.
+##'   \code{pcut} (by default 5%) of its maximum value will be determined.
 ##'
 ##' @param smooth If \code{TRUE}, then the maximum ENBS is determined after
 ##'   fitting a nonparametric regression to the data frame \code{x}, which
@@ -128,10 +130,10 @@ enbs <- function(evsi, costs_setup, costs_pp, pop, time, dis=0.035,
 ##' by a simple search over the supplied ENBS estimates for different sample
 ##' sizes, or by a regression and interpolation method.
 ##'
-##' @param x Data frame containing a set of ENBS estimates for a common
-##'   willingness-to-pay, which will be optimised over.  Usually this is for a
-##'   common willingness-to-pay. The required components are \code{enbs},
-##'   \code{n} and \code{k}.
+##' @param x Data frame containing a set of ENBS estimates for
+##'   different sample sizes, which will be optimised over.  Usually
+##'   this is for a common willingness-to-pay. The required components
+##'   are \code{enbs} and \code{n}.
 ##'
 ##' @param keep_preds If \code{TRUE} and \code{smooth=TRUE} then the data frame of
 ##' predictions from the smooth regression model is stored in the \code{"preds"}
@@ -140,11 +142,17 @@ enbs <- function(evsi, costs_setup, costs_pp, pop, time, dis=0.035,
 ##' @inheritParams enbs
 ##' 
 ##' @return A data frame with one row, and the following columns:
+##' 
 ##' \code{ind}: An integer index identifying, e.g. the willingness to pay and other common characteristics of the ENBS estimates (e.g. incident population size, decision time horizon). This is copied from \code{x$ind}.
+##' 
 ##' \code{enbsmax}: the maximum ENBS
+##' 
 ##' \code{nmax}: the sample size at which this maximum is achieved
+##' 
 ##' \code{nlower}: the lowest sample size for which the ENBS is within
+##' 
 ##' \code{pcut} (default 5%) of its maximum value
+##' 
 ##' \code{nupper}: the corresponding highest ENBS
 ##'
 ##' @export
@@ -176,7 +184,11 @@ enbs_opt <- function(x, pcut=0.05, smooth=FALSE, smooth_df=NULL, keep_preds=FALS
 ##' expected value of information, given a discount rate over some
 ##' time horizon.
 ##'
-##' Calculated as \code{voi*pop/dis*(1 - exp(-dis*time))}.
+##' Calculated as \code{voi*pop/dis*(1 - exp(-dis*time))}, or \code{voi*pop}
+##' if the discount rate is zero.
+##'
+##' Any arguments may be supplied as vectors, in which case, all
+##' arguments are replicated to the length of the longest argument.
 ##'
 ##' @param voi Vector of estimates of any per-person value of information
 ##' measure, e.g. the \code{evsi} column of the data frame returned by

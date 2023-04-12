@@ -52,7 +52,7 @@ relation of ENBS to sample size accurately enough.}
 
 \item{pcut}{Cut-off probability which defines a "near-optimal" sample size.
 The minimum and maximum sample size for which the ENBS is within
-\code{pcut} of its maximum value (by default 5\%) will be determined.}
+\code{pcut} (by default 5\%) of its maximum value will be determined.}
 }
 \value{
 Data frame with components \code{enbs} giving the ENBS, and

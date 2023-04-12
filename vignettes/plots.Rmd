@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 The `voi` package functions `evppi()`, `evpi()` and `evsi()` all return data frames in a "tidy" format with one row per VoI estimate.  This allows plots to be produced and customised with little further effort using `ggplot2`.
 
-This vignette gives some demonstrations of how to illustrate VoI analyses graphically, using an example EVSI results dataset `chemo_evsi_or` supplied with the `voi` package. 
+This vignette demonstrates how to illustrate VoI analyses graphically, using an example EVSI results dataset `chemo_evsi_or` supplied with the `voi` package. 
 
 We also explain the use of the `enbs()` function to calculate and optimise the expected net benefit of sampling for a simple study design.
 
@@ -147,7 +147,7 @@ nbs %>%
   scale_y_continuous(labels = scales::dollar_format(prefix="£")) 
 ```
 
-Note the `scales::dollar_format` trick here for showing large currency values tidily in the axis labels.
+> Note the `scales::dollar_format` trick for showing large currency values tidily in the axis labels.
 
 The same colouring techniques used above (using a `group` aesthetic, with `scale_colour_gradient`) might also be used to illustrate the 
 dependence of the ENBS curve on the willingness-to-pay. 
@@ -180,8 +180,8 @@ The `enbs()` function also estimates the optimal sample size for each willingnes
 maximum expected net benefit of sampling.   The optimal sample size can be
 estimated using two alternative methods. 
 
-1.  The simple and fast method just searches among the sample sizes 
-defined in the `evsi` object. 
+1. A simple and fast method: just pick the highest ENBS from among the
+sample sizes included in the `evsi` object that was supplied to `enbs()`.
 
 2. A more sophisticated (but slower) method uses nonparametric regression
 to smooth and interpolate the ENBS estimates.   This is useful if the EVSI
@@ -264,8 +264,9 @@ p1 <- attr(nbs, "enbsmax") %>%
   ggplot(aes(y=nmax, x=k)) + 
   geom_ribbon(aes(ymin=nlower, ymax=nupper), fill="gray") + 
   geom_line() + 
-  ylim(0,1000) + xlim(0,50000) + 
-  xlab("Willingness to pay (£)") + ylab("Optimal sample size")
+  ylim(0,800) + xlim(10000,50000) + 
+  xlab("Willingness to pay (£)") + ylab("Optimal sample size") +
+  ggtitle("Unsmoothed")
 nbs_smoothed <- enbs(chemo_evsi_or, 
                      costs_setup = c(5000000, 10000000), 
                      costs_pp = c(28000, 42000), 
@@ -274,8 +275,9 @@ p2 <- attr(nbs_smoothed, "enbsmax") %>%
   ggplot(aes(y=nmax, x=k)) +
   geom_ribbon(aes(ymin=nlower, ymax=nupper), fill="gray") + 
   geom_line() + 
-  ylim(0,1000) + xlim(0,50000) + 
-  xlab("Willingness to pay (£)") + ylab("Optimal sample size")
+  ylim(0,800) + xlim(10000,50000) + 
+  xlab("Willingness to pay (£)") + ylab("Optimal sample size") +
+  ggtitle("Unsmoothed")
 gridExtra::grid.arrange(p1, p2, nrow=1)
 ```
 

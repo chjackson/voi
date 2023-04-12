@@ -8,14 +8,14 @@ of sampling}
 enbs_opt(x, pcut = 0.05, smooth = FALSE, smooth_df = NULL, keep_preds = FALSE)
 }
 \arguments{
-\item{x}{Data frame containing a set of ENBS estimates for a common
-willingness-to-pay, which will be optimised over.  Usually this is for a
-common willingness-to-pay. The required components are \code{enbs},
-\code{n} and \code{k}.}
+\item{x}{Data frame containing a set of ENBS estimates for
+different sample sizes, which will be optimised over.  Usually
+this is for a common willingness-to-pay. The required components
+are \code{enbs} and \code{n}.}
 
 \item{pcut}{Cut-off probability which defines a "near-optimal" sample size.
 The minimum and maximum sample size for which the ENBS is within
-\code{pcut} of its maximum value (by default 5\%) will be determined.}
+\code{pcut} (by default 5\%) of its maximum value will be determined.}
 
 \item{smooth}{If \code{TRUE}, then the maximum ENBS is determined after
 fitting a nonparametric regression to the data frame \code{x}, which
@@ -39,11 +39,17 @@ attribute of the result.}
 }
 \value{
 A data frame with one row, and the following columns:
+
 \code{ind}: An integer index identifying, e.g. the willingness to pay and other common characteristics of the ENBS estimates (e.g. incident population size, decision time horizon). This is copied from \code{x$ind}.
+
 \code{enbsmax}: the maximum ENBS
+
 \code{nmax}: the sample size at which this maximum is achieved
+
 \code{nlower}: the lowest sample size for which the ENBS is within
+
 \code{pcut} (default 5\%) of its maximum value
+
 \code{nupper}: the corresponding highest ENBS
 }
 \description{
