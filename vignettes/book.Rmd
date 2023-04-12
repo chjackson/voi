@@ -88,3 +88,9 @@ file.path("misc_dir", "evppi_reg.Rmd")
 
 `04_analysis/05_Expected_Value_of_Sample_Information_RB.R` ([link to GitHub source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_RB.R))
 
+
+#### Presenting EVSI and ENBS Analyses
+
+For base R functions to reproduce the plots in the book, see the [source on GitHub](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/06_Plotting_Book.R)
+
+For ggplot2 plotting functions, see the [voi package vignette](plots.html) about ENBS and plotting. 

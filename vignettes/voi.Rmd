@@ -713,3 +713,10 @@ evsivar(p2, inputs=inputs_p2, study = "binary", pars="p2", n=c(100, 1000, 10000)
 ```
 
 The unbiased data is clearly more valuable than the biased data, with double the variance reductions from biased data of the same sample size.   As the sample size increases, the value converges to the EVPI, hence (in the asymptote) we will eliminate all uncertainty about our quantity of interest $p_2$.  
+
+
+## Expected net benefit of sampling {#enbs}
+
+The `voi` package includes a function `enbs()` to calculate the expected net benefit of sampling for a simple proposed study, given estimates of EVSI, and some other information including study costs and the size of the decision population.
+
+This is described in a [separate vignette](plots.html), which also demonstrates how to plot the results of VoI analyses.

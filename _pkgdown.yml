@@ -14,6 +14,9 @@ reference:
   - plot.evppi
   - evsi
   - evsivar
+  - enbs
+  - enbs_opt
+  - pop_voi
 - title: Utilities
 - contents:
   - all_interactions
@@ -28,3 +31,7 @@ reference:
   - chemo_model_cea
   - chemo_model_lor_nb
   - chemo_model_lor_cea
+footer:
+  structure:
+    left: FALSE
+    right: built_with

@@ -7,7 +7,7 @@
 ##' TODO refer to VoI book for more details
 ##'
 ##' @param p_side_effects_t1 Probability of side effects under treatment 1
-##' @param p_side_effects_t2 Probability of side effects under treatment 2. (this is unused - TODO remove it) 
+##' @param p_side_effects_t2 Probability of side effects under treatment 2
 ##' @param logor_side_effects Log odds ratio of side effects for treatment 2 compared to 1
 ##' @param p_hospitalised_total Probability of hospitalisation in the year after receiving treatment
 ##' @param p_died Probability of death in the year after receiving treatment
@@ -54,8 +54,6 @@
 ##' 
 ##' * `lambda_hosp`: conditional probability that a patient in hospital recovers given they do not die
 ##'
-##' \code{chemo_constants} includes various constants required by the code.
-##'
 ##' @format Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
 ##' following data objects:
 ##' 
@@ -66,7 +64,18 @@
 ##' with two columns, one for each decision option. 
 ##'
 ##' \code{chemo_nb}: Data frame with two columns, giving the net monetary benefit for each decision option,
-##' at a willingness-to-pay of 20000 pounds. 
+##' at a willingness-to-pay of 20000 pounds.
+##'
+##' \code{chemo_cea_501}: List with components `e` (sampled effects), `c` (sampled costs), and `k` (a set of 501
+##' willlingess-to-pay values from 10000 to 50000)  This is provided to facilitate illustrations of plots of
+##' VoI measures against willingness-to-pay.
+##'
+##' The following additional data objects are supplied:
+##' 
+##' \code{chemo_constants} includes various constants required by the code. TODO DOC
+##'
+##' \code{chemo_evsi_or} is the result of an EVSI analysis to estimate the expected value of a two-arm trial, with a binary outcome, to estimate the log odds ratio of side effects.  This object is a data frame with three columns, giving the sample size per arm (`n`), willingness-to-pay (`k`) and the corresponding EVSI (`evsi`).
+##' 
 ##' 
 ##' @name chemo_model
 NULL
@@ -196,6 +205,3 @@ chemo_model_lor_cea <- function(p_side_effects_t1, logor_side_effects,
 
   ce
 }
-
-##' @rdname chemo_model
-"chemo_constants"

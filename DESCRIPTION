@@ -9,14 +9,14 @@ Authors@R:
 	   person(given="Kofi Placid", family="Adragni", role="ctb", comment="Author of code taken from the ldr package"),
 	   person(given="Andrew", family="Raim", role="ctb",comment="Author of code taken from the ldr package")
 	   )
-Description: Methods to calculate the expected value of partial perfect information (EVPPI) and expected value of sample information (EVSI) from a decision-analytic model.  Intended as an unified interface to all alternative methods for calculating these quantities. 
+Description: Methods to calculate the expected value of information from a decision-analytic model.  This includes the expected value of perfect information (EVPI), partial perfect information (EVPPI) and sample information (EVSI), and the expected net benefit of sampling (ENBS).  A range of alternative computational methods are provided under the same user interface.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
 VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress, dbarts, posterior, ggplot2, gridExtra
-Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown, rjags, truncnorm
+Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown, rjags, truncnorm, scales, dplyr
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 URL: https://chjackson.github.io/voi/

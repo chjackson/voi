@@ -5,15 +5,21 @@
 \alias{chemo_cea}
 \alias{chemo_nb}
 \alias{chemo_pars}
+\alias{chemo_cea_501}
+\alias{chemo_constants}
+\alias{chemo_evsi_or}
 \alias{chemo_model}
 \alias{chemo_pars_fn}
 \alias{chemo_model_nb}
 \alias{chemo_model_cea}
 \alias{chemo_model_lor_nb}
 \alias{chemo_model_lor_cea}
-\alias{chemo_constants}
 \title{Chemotherapy cost-effectiveness model}
 \format{
+An object of class \code{list} of length 33.
+
+An object of class \code{evsi} (inherits from \code{data.frame}) with 15030 rows and 3 columns.
+
 Samples of 10000 from probabilistic analysis of this model are made available in the package, in the
 following data objects:
 
@@ -26,7 +32,15 @@ with two columns, one for each decision option.
 \code{chemo_nb}: Data frame with two columns, giving the net monetary benefit for each decision option,
 at a willingness-to-pay of 20000 pounds.
 
-An object of class \code{list} of length 33.
+\code{chemo_cea_501}: List with components \code{e} (sampled effects), \code{c} (sampled costs), and \code{k} (a set of 501
+willlingess-to-pay values from 10000 to 50000)  This is provided to facilitate illustrations of plots of
+VoI measures against willingness-to-pay.
+
+The following additional data objects are supplied:
+
+\code{chemo_constants} includes various constants required by the code. TODO DOC
+
+\code{chemo_evsi_or} is the result of an EVSI analysis to estimate the expected value of a two-arm trial, with a binary outcome, to estimate the log odds ratio of side effects.  This object is a data frame with three columns, giving the sample size per arm (\code{n}), willingness-to-pay (\code{k}) and the corresponding EVSI (\code{evsi}).
 }
 \usage{
 chemo_cea
@@ -34,6 +48,12 @@ chemo_cea
 chemo_nb
 
 chemo_pars
+
+chemo_cea_501
+
+chemo_constants
+
+chemo_evsi_or
 
 chemo_pars_fn(n)
 
@@ -100,15 +120,13 @@ chemo_model_lor_cea(
   u_hospital,
   rate_longterm
 )
-
-chemo_constants
 }
 \arguments{
 \item{n}{Number of samples to generate from the uncertainty distribution of the parameters in \code{chemo_pars_fn}.}
 
 \item{p_side_effects_t1}{Probability of side effects under treatment 1}
 
-\item{p_side_effects_t2}{Probability of side effects under treatment 2. (this is unused - TODO remove it)}
+\item{p_side_effects_t2}{Probability of side effects under treatment 2}
 
 \item{p_hospitalised_total}{Probability of hospitalisation in the year after receiving treatment}
 
@@ -161,8 +179,6 @@ of side effects between treatment groups \code{logor_side_effects}, rather than 
 \item \code{lambda_home}: conditional probability that a patient recovers given they are not hospitalised
 \item \code{lambda_hosp}: conditional probability that a patient in hospital recovers given they do not die
 }
-
-\code{chemo_constants} includes various constants required by the code.
 }
 \description{
 An artificial health economic decision model with a typical Markov model structure, used for illustrating Value of Information methods.

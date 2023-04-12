@@ -15,7 +15,7 @@ Analogous functions \code{\link{evppivar}} and \code{\link{evsivar}} calculate t
 
 A pure "brute-force" Monte Carlo method for EVPPI calculation is provided in \code{\link{evppi_mc}}, though this is usually computationally impractical.
 
-The package overview vignette gives worked examples of the use of all of these functions.
+The \href{https://chjackson.github.io/voi/articles/voi.html}{package overview / Get Started vignette} gives worked examples of the use of all of these functions.
 }
 \references{
 Heath, A., Manolopoulou, I., & Baio, G. (2017). A review of methods for analysis of the expected value of information. Medical Decision Making, 37(7), 747-758.

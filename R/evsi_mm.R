@@ -62,8 +62,8 @@ evsi_mm_nb <- function(outputs, inputs, pars, pars_datagen, datagen_fn, n,
     evsis[i] <- calc_evppi(fits$fit_rescaled[,,i])
   }
   res <- data.frame(n=n, evsi=evsis)
-  attr(res, "evppi") <- calc_evppi(fits$fit)
-  if (any(attr(res,"evppi") < res$evsi))
+  attr(res, "evppi") <- data.frame(evppi = calc_evppi(fits$fit))
+  if (any(attr(res,"evppi")$evppi < res$evsi))
     message("EVSI > EVPPI may result from approximation error")
   res
 }
@@ -96,7 +96,7 @@ evsi_mm_cea <- function(outputs, inputs, pars,
     evsis[[i]] <- cbind(n=n[i], k=outputs$k, evsi=evsis[[i]])
   }
   res <- as.data.frame(do.call("rbind", evsis))
-  attr(res, "evppi") <- calc_evppi_ce(cfits$fit, efits$fit, outputs$k, verbose=verbose)$evppi
+  attr(res, "evppi") <- calc_evppi_ce(cfits$fit, efits$fit, outputs$k, verbose=verbose)
   res
 }
 
