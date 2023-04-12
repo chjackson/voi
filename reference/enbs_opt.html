@@ -67,16 +67,16 @@ sizes, or by a regression and interpolation method.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>Data frame containing a set of ENBS estimates for a common
-willingness-to-pay, which will be optimised over.  Usually this is for a
-common willingness-to-pay. The required components are <code>enbs</code>,
-<code>n</code> and <code>k</code>.</p></dd>
+<dd><p>Data frame containing a set of ENBS estimates for
+different sample sizes, which will be optimised over.  Usually
+this is for a common willingness-to-pay. The required components
+are <code>enbs</code> and <code>n</code>.</p></dd>
 
 
 <dt>pcut</dt>
 <dd><p>Cut-off probability which defines a "near-optimal" sample size.
 The minimum and maximum sample size for which the ENBS is within
-<code>pcut</code> of its maximum value (by default 5%) will be determined.</p></dd>
+<code>pcut</code> (by default 5%) of its maximum value will be determined.</p></dd>
 
 
 <dt>smooth</dt>
@@ -108,13 +108,25 @@ attribute of the result.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data frame with one row, and the following columns:
-<code>ind</code>: An integer index identifying, e.g. the willingness to pay and other common characteristics of the ENBS estimates (e.g. incident population size, decision time horizon). This is copied from <code>x$ind</code>.
-<code>enbsmax</code>: the maximum ENBS
-<code>nmax</code>: the sample size at which this maximum is achieved
-<code>nlower</code>: the lowest sample size for which the ENBS is within
-<code>pcut</code> (default 5%) of its maximum value
-<code>nupper</code>: the corresponding highest ENBS</p>
+<p>A data frame with one row, and the following columns:</p>
+
+
+<p><code>ind</code>: An integer index identifying, e.g. the willingness to pay and other common characteristics of the ENBS estimates (e.g. incident population size, decision time horizon). This is copied from <code>x$ind</code>.</p>
+
+
+<p><code>enbsmax</code>: the maximum ENBS</p>
+
+
+<p><code>nmax</code>: the sample size at which this maximum is achieved</p>
+
+
+<p><code>nlower</code>: the lowest sample size for which the ENBS is within</p>
+
+
+<p><code>pcut</code> (default 5%) of its maximum value</p>
+
+
+<p><code>nupper</code>: the corresponding highest ENBS</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

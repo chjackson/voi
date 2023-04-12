@@ -82,8 +82,8 @@ Jackson</h4>
 “tidy” format with one row per VoI estimate. This allows plots to be
 produced and customised with little further effort using
 <code>ggplot2</code>.</p>
-<p>This vignette gives some demonstrations of how to illustrate VoI
-analyses graphically, using an example EVSI results dataset
+<p>This vignette demonstrates how to illustrate VoI analyses
+graphically, using an example EVSI results dataset
 <code>chemo_evsi_or</code> supplied with the <code>voi</code>
 package.</p>
 <p>We also explain the use of the <code><a href="../reference/enbs.html">enbs()</a></code> function to
@@ -261,8 +261,10 @@ this willingness-to-pay value, then passing it to a simple
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Sample size"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Expected net benefit of sampling"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">dollar_format</a></span><span class="op">(</span>prefix<span class="op">=</span><span class="st">"£"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <p><img src="plots_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
-<p>Note the <code><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">scales::dollar_format</a></code> trick here for showing
-large currency values tidily in the axis labels.</p>
+<blockquote>
+<p>Note the <code><a href="https://scales.r-lib.org/reference/dollar_format.html" class="external-link">scales::dollar_format</a></code> trick for showing large
+currency values tidily in the axis labels.</p>
+</blockquote>
 <p>The same colouring techniques used above (using a <code>group</code>
 aesthetic, with <code>scale_colour_gradient</code>) might also be used
 to illustrate the dependence of the ENBS curve on the
@@ -297,8 +299,9 @@ size for each willingness-to-pay value. That is, the sample size which
 gives the maximum expected net benefit of sampling. The optimal sample
 size can be estimated using two alternative methods.</p>
 <ol style="list-style-type: decimal">
-<li><p>The simple and fast method just searches among the sample sizes
-defined in the <code>evsi</code> object.</p></li>
+<li><p>A simple and fast method: just pick the highest ENBS from among
+the sample sizes included in the <code>evsi</code> object that was
+supplied to <code><a href="../reference/enbs.html">enbs()</a></code>.</p></li>
 <li><p>A more sophisticated (but slower) method uses nonparametric
 regression to smooth and interpolate the ENBS estimates. This is useful
 if the EVSI has only been computed for a limited number of sample sizes,
@@ -418,8 +421,9 @@ determing the optimum: with and without smoothing.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">nmax</span>, x<span class="op">=</span><span class="va">k</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span><span class="va">nlower</span>, ymax<span class="op">=</span><span class="va">nupper</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1000</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">50000</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay (£)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Optimal sample size"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">800</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fl">10000</span>,<span class="fl">50000</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay (£)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Optimal sample size"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Unsmoothed"</span><span class="op">)</span></span>
 <span><span class="va">nbs_smoothed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enbs.html">enbs</a></span><span class="op">(</span><span class="va">chemo_evsi_or</span>, </span>
 <span>                     costs_setup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5000000</span>, <span class="fl">10000000</span><span class="op">)</span>, </span>
 <span>                     costs_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28000</span>, <span class="fl">42000</span><span class="op">)</span>, </span>
@@ -428,9 +432,12 @@ determing the optimum: with and without smoothing.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y<span class="op">=</span><span class="va">nmax</span>, x<span class="op">=</span><span class="va">k</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin<span class="op">=</span><span class="va">nlower</span>, ymax<span class="op">=</span><span class="va">nupper</span><span class="op">)</span>, fill<span class="op">=</span><span class="st">"gray"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1000</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">50000</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay (£)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Optimal sample size"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">800</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fl">10000</span>,<span class="fl">50000</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Willingness to pay (£)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Optimal sample size"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Unsmoothed"</span><span class="op">)</span></span>
 <span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, nrow<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Removed 100 rows containing missing values (`geom_line()`).</span></span>
+<span><span class="co">## Removed 100 rows containing missing values (`geom_line()`).</span></span></code></pre>
 <p><img src="plots_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 </div>
 </div>
@@ -446,7 +453,7 @@ effective, i.e. the probability that the expected net benefit of
 sampling is positive. This is compared on a grid defined by a range of
 population sizes from 0 to 60000, and a range of decision horizon times
 from 0 to 10.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nbs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enbs.html">enbs</a></span><span class="op">(</span><span class="va">chemo_evsi_or</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">k</span><span class="op">==</span><span class="fl">20000</span>, <span class="va">n</span><span class="op">==</span><span class="fl">400</span><span class="op">)</span>, </span>
 <span>            costs_setup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5000000</span>, <span class="fl">10000000</span><span class="op">)</span>, </span>
 <span>            costs_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">28000</span>, <span class="fl">42000</span><span class="op">)</span>, </span>
