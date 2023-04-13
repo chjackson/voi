@@ -264,7 +264,7 @@ p1 <- attr(nbs, "enbsmax") %>%
   ggplot(aes(y=nmax, x=k)) + 
   geom_ribbon(aes(ymin=nlower, ymax=nupper), fill="gray") + 
   geom_line() + 
-  ylim(0,800) + xlim(10000,50000) + 
+  ylim(0,800) + 
   xlab("Willingness to pay (£)") + ylab("Optimal sample size") +
   ggtitle("Unsmoothed")
 nbs_smoothed <- enbs(chemo_evsi_or, 
@@ -275,7 +275,7 @@ p2 <- attr(nbs_smoothed, "enbsmax") %>%
   ggplot(aes(y=nmax, x=k)) +
   geom_ribbon(aes(ymin=nlower, ymax=nupper), fill="gray") + 
   geom_line() + 
-  ylim(0,800) + xlim(10000,50000) + 
+  ylim(0,800) + 
   xlab("Willingness to pay (£)") + ylab("Optimal sample size") +
   ggtitle("Smoothed")
 gridExtra::grid.arrange(p1, p2, nrow=1)
