@@ -448,7 +448,7 @@ evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is"
 
 ### Moment matching method
 
-The momemt matching method from [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) is available as `evsi(..., method="mm")`.  This includes the extension of this method to efficiently estimate the EVSI for the same design but with many different sample sizes (from [Heath et al](https://doi.org/10.1177/0272989X19837983)).  The implementation in the `voi` package is experimental and has not been fully tested - note there is another implementation at [https://github.com/annaheath/EVSI](https://github.com/annaheath/EVSI).  
+The momemt matching method from [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) is available as `evsi(..., method="mm")`.  This includes the extension of this method to efficiently estimate the EVSI for the same design but with many different sample sizes (from [Heath et al](https://doi.org/10.1177/0272989X19837983)). 
 
 Roughly, this method works as follows (see [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) for full details) 
 
@@ -472,10 +472,9 @@ To use the moment matching method, `evsi` needs to know some information that is
     
     For custom study designs specified using `datagen_fn`, an extra function should be defined, and supplied as the `analysis_fn` argument to `evsi(..., method="mm")`.  This function should take three arguments: 
 
-    * `data` a data frame with names matching the output of `datagen_fn`
+    * `data` a data frame with names matching the output of `datagen_fn`,
 
-    * `args` a list of required constants, e.g. prior parameters or options for posterior computation
-    TODO they can also be hard-coded.  Only needed if ??? 
+    * `args` a list of constants for the analysis that the user might want to vary, e.g. prior parameters or options for posterior computation. The user supplies these in `analysis_args`.
   
     * `pars` names of the parameters whose posterior is being sampled.
 
