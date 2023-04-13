@@ -277,7 +277,7 @@ p2 <- attr(nbs_smoothed, "enbsmax") %>%
   geom_line() + 
   ylim(0,800) + xlim(10000,50000) + 
   xlab("Willingness to pay (£)") + ylab("Optimal sample size") +
-  ggtitle("Unsmoothed")
+  ggtitle("Smoothed")
 gridExtra::grid.arrange(p1, p2, nrow=1)
 ```
 
