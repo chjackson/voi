@@ -742,9 +742,7 @@ function, <code>evsi</code> can also be invoked with
 <p>The momemt matching method from <a href="https://journals.sagepub.com/doi/10.1177/0272989X17738515" class="external-link">Heath
 et al.</a> is available as <code>evsi(..., method="mm")</code>. This
 includes the extension of this method to efficiently estimate the EVSI
-for the same design but with many different sample sizes (from <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>). The
-implementation in the <code>voi</code> package is experimental and has
-not been fully tested - note there is another implementation at <a href="https://github.com/annaheath/EVSI" class="external-link">https://github.com/annaheath/EVSI</a>.</p>
+for the same design but with many different sample sizes (from <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>).</p>
 <p>Roughly, this method works as follows (see <a href="https://journals.sagepub.com/doi/10.1177/0272989X17738515" class="external-link">Heath
 et al.</a> for full details)</p>
 <ul>
@@ -787,10 +785,11 @@ extra function should be defined, and supplied as the
 arguments:</p>
 <ul>
 <li><p><code>data</code> a data frame with names matching the output of
-<code>datagen_fn</code></p></li>
-<li><p><code>args</code> a list of required constants, e.g. prior
-parameters or options for posterior computation TODO they can also be
-hard-coded. Only needed if ???</p></li>
+<code>datagen_fn</code>,</p></li>
+<li><p><code>args</code> a list of constants for the analysis that the
+user might want to vary, e.g. prior parameters or options for posterior
+computation. The user supplies these in
+<code>analysis_args</code>.</p></li>
 <li><p><code>pars</code> names of the parameters whose posterior is
 being sampled.</p></li>
 </ul>
