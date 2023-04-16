@@ -19,13 +19,13 @@
 
 #### EVPPI computation
 
-* `voi` includes all the EVPPI computation methods that are in [SAVI](http://savi.shef.ac.uk) (GAM and Gaussian process regression), and includes the INLA method from [BCEA](https://cran.r-project.org/package=BCEA).
+* `voi` includes all the [EVPPI computation](https://chjackson.github.io/voi/articles/voi.html#evppi) methods that are in [SAVI](http://savi.shef.ac.uk) (GAM and Gaussian process regression), and includes the INLA method from [BCEA](https://cran.r-project.org/package=BCEA).
 
-* Some other nonparametric regression methods (`"earth"`, `"bart"`) are included in `voi`, which may improve efficiency for multiparameter EVPPI computation problems with large numbers of parameters.
+* Some other nonparametric regression methods ([`"earth"`](https://chjackson.github.io/voi/articles/voi.html#earth), [`"bart"`](https://chjackson.github.io/voi/articles/voi.html#bart)) are included in `voi`, which may improve efficiency for multiparameter EVPPI computation problems with large numbers of parameters.
 
 #### EVSI computation
 
-* `voi` is the first package to implement a range of EVSI computation methods: nonparametric regression, moment matching and importance sampling.
+* `voi` is the first package to implement a range of [EVSI computation](https://chjackson.github.io/voi/articles/voi.html#evsi) methods: nonparametric regression, moment matching and importance sampling.   A simple model for the [expected net benefit of sampling](https://chjackson.github.io/voi/articles/plots.html) is also included.
 
 #### In summary 
 

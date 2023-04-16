@@ -1,7 +1,7 @@
 
 fitted_bart <- function(y, inputs, pars, verbose=FALSE, ...){
     opts <- list(...)
-    model <- dbarts::bart(x.train=inputs[,pars,drop=FALSE], y.train=y, ...)
+    model <- dbarts::bart(x.train=inputs[,pars,drop=FALSE], y.train=y, verbose=verbose, ...)
     model$y <- y
     model$rhat_mean <- check_bart_conv(model)
     res <- as.numeric(fitted(model))

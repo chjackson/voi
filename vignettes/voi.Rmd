@@ -202,7 +202,7 @@ The method can be changed by supplying the `method` argument to `evppi`.   Some 
 evppi(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
 ```
 
-#### Multivariate adaptive regression splines
+#### Multivariate adaptive regression splines {#earth}
 This is a variant of generalized additive models based on linear splines, which uses a package called [earth](https://CRAN.R-project.org/package=earth).  
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", method="earth")
@@ -227,15 +227,15 @@ However it has been found to be more efficient than the Gaussian process method 
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla", pfc_struc="iso")
 ```
 
-#### Bayesian additive regression trees (BART)
+#### Bayesian additive regression trees (BART) {#bart}
 
 This is another general nonparametric regression procedure.  It is designed for regression with lots of predictors, so it may be particularly efficient for calculating multiparameter EVPPI, as the following demonstration shows.
 
 The `voi` package includes a (fictitious) example health economic model based on a decision tree and Markov model: see the help page `voi::chemo_model`.  There are 14 uncertain parameters.  Outputs and inputs from probabilistic analysis are stored in the datasets `chemo_nb` (net benefit for willingness-to-pay £20000) and `chemo_pars`.  The multiparameter EVPPI for all fourteen of these parameters is by definition equal to the EVPI.
 
-Using the BART estimation method, the EVPPI estimate for all 14 parameters is very close to the estimate of the EVPI, and the computation is quick (about 16 seconds on my laptop).
+Using the BART estimation method, the EVPPI estimate for all 14 parameters is very close to the estimate of the EVPI, and the computation is quick (about 16 seconds on my laptop. Call as `evppi(...,verbose=TRUE)` to see the progress of the estimation).
 
-```{r,cache=TRUE}
+```{r,cache=TRUE,message=FALSE}
 evppi(chemo_nb, chemo_pars, pars=colnames(chemo_pars), method="bart")
 evpi(chemo_nb)
 ```
