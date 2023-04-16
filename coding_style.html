@@ -45,22 +45,34 @@
       
     </div>
 
-
 <div class="section level2">
-<h2 id="todo-long-term">TODO long term<a class="anchor" aria-label="anchor" href="#todo-long-term"></a></h2>
-<ul><li><p>More built-in common study designs for EVSI, e.g. binary trial that just informs the odds ratio.</p></li>
-<li><p>Different regression methods and options for effects and costs (e.g. int.ord)</p></li>
+<h2 id="principles-of-package-development">PRINCIPLES OF PACKAGE DEVELOPMENT<a class="anchor" aria-label="anchor" href="#principles-of-package-development"></a></h2>
+<div class="section level3">
+<h3 id="using">Using<a class="anchor" aria-label="anchor" href="#using"></a></h3>
+<ul><li><p>Most important!</p></li>
+<li><p>Just use it any time you want to do a VoI calculation, and give feedback. Describe what you had to do to make it work in your example. If you need to do anything tedious, this may suggest how the package could be more helpful.</p></li>
+<li><p>Does other software do anything better?</p></li>
 </ul></div>
-<div class="section level2">
-<h2 id="features-that-i-dont-plan-to-implement-myself-but-would-accept-cleanly-written-contributions-for-see-coding_stylemd">Features that I don’t plan to implement myself, but would accept cleanly-written contributions for (see coding_style.md)<a class="anchor" aria-label="anchor" href="#features-that-i-dont-plan-to-implement-myself-but-would-accept-cleanly-written-contributions-for-see-coding_stylemd"></a></h2>
-<ul><li><p>Parallel processing for 2 level Monte Carlo, and partial results for convergence checking</p></li>
-<li><p>Gaussian Approximation EVSI method</p></li>
-<li><p>MLMC and QMC methods</p></li>
-<li><p>2-level Monte Carlo EVSI</p></li>
-<li><p>Check can reproduce results from ConVoI 1 four case studies</p></li>
-<li><p>Standard errors for EVSI methods and INLA EVPPI method</p></li>
+<div class="section level3">
+<h3 id="design">Design<a class="anchor" aria-label="anchor" href="#design"></a></h3>
+<ul><li><p>Decide what the package should do, and what is better done with other tools</p></li>
+<li><p>What functions should look like: argument formats, consistency between different parts of the code</p></li>
+<li><p>Identifying where we do the same task multiple times, therefore should have a function for that task</p></li>
 </ul></div>
-
+<div class="section level3">
+<h3 id="coding">Coding<a class="anchor" aria-label="anchor" href="#coding"></a></h3>
+<ul><li><p>Clean, modular and consistent style. Each function does one thing that can be described concisely.</p></li>
+<li><p>Descriptive/concise variable and function names.</p></li>
+<li><p>Code should be understandable as much as possible by itself without the need for commenting.</p></li>
+<li><p>Comment in cases where it won’t be instantly obvious what the code is doing.</p></li>
+<li><p>Any time you add code, add a unit test - a concise example where that code is executed - to ensure that test gives the expected result every time the code is modified.</p></li>
+<li>
+<p>House style:</p>
+<ul><li><p>underscores not dots to separate words in function or variable names: <code>my_variable_name</code></p></li>
+<li><p>use spaces to clearly separate elements of code, e.g.  <code>x &lt;- fn(a, b, c)</code> is much easier to read than <code>x&lt;-fn(a,b,c)</code></p></li>
+</ul></li>
+</ul></div>
+</div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

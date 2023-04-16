@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,6 +84,8 @@ effects, likewise.</p>
 <p>Objects of class <code>"bcea"</code>, as created by the <span class="pkg">BCEA</span> package, are in
 this "cost-effectiveness analysis" format, therefore they may be supplied as
 the <code>outputs</code> argument.</p>
+<p>Users of <span class="pkg">heemod</span> can create an object of this form, given an object
+produced by <code>run_psa</code> (<code>obj</code>, say), with <code><a href="import_heemod.html">import_heemod_outputs</a></code>.</p>
 <p>If <code>outputs</code> is a matrix or data frame, it is assumed to be of "net
 benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 effectiveness analysis" form.</p></dd>
@@ -95,7 +97,9 @@ distribution of the input parameters of the decision model.   The number
 of columns should equal the number of parameters, and the columns should
 be named.    This should have the same number of rows as there are samples
 in <code>outputs</code>, and each row of the samples in <code>outputs</code> should
-give the model output evaluated at the corresponding parameters.</p></dd>
+give the model output evaluated at the corresponding parameters.</p>
+<p>Users of <span class="pkg">heemod</span> can create an object of this form, given an object
+produced by <code>run_psa</code> (<code>obj</code>, say), with <code><a href="import_heemod.html">import_heemod_inputs</a></code>.</p></dd>
 
 
 <dt>pars</dt>
@@ -138,9 +142,12 @@ for single parameter EVPPI.</p></dd>
 
 <dt>se</dt>
 <dd><p>If this is <code>TRUE</code>, calculate a standard error for the EVPPI
-if possible.  Currently only supported for <code>method="gam"</code>, and
+if possible.  Currently only supported for methods <code>"gam"</code>, <code>"earth"</code> and
 <code>method="bart"</code>.  (In the latter method it is more correctly called
-a posterior standard deviation).</p></dd>
+a posterior standard deviation).  These represent uncertainty about the
+parameters of the fitted regression model, and will naturally be lower when
+more simulations from the decision model are used to fit it.  They do not
+represent uncertainty about the structure of the regression model,</p></dd>
 
 
 <dt>B</dt>

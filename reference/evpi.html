@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,8 @@ effects, likewise.</p>
 <p>Objects of class <code>"bcea"</code>, as created by the <span class="pkg">BCEA</span> package, are in
 this "cost-effectiveness analysis" format, therefore they may be supplied as
 the <code>outputs</code> argument.</p>
+<p>Users of <span class="pkg">heemod</span> can create an object of this form, given an object
+produced by <code>run_psa</code> (<code>obj</code>, say), with <code><a href="import_heemod.html">import_heemod_outputs</a></code>.</p>
 <p>If <code>outputs</code> is a matrix or data frame, it is assumed to be of "net
 benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 effectiveness analysis" form.</p></dd>
