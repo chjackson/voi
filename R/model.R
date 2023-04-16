@@ -9,7 +9,7 @@
 ##' number of decision options. 
 ##' 
 ##' @keywords internal 
-check_model_fn <- function(model_fn, par_fn, mfargs=NULL, outputs_class=NULL, verbose=FALSE){
+check_model_fn <- function(model_fn, par_fn, mfargs=NULL, outputs=NULL, verbose=FALSE){
     ## Test by evaluating the model function at a single set of parameters/arguments
     if (is.null(model_fn)) stop("`model_fn` was not supplied")
     if (is.null(par_fn)) stop("`par_fn` was not supplied")
@@ -17,19 +17,27 @@ check_model_fn <- function(model_fn, par_fn, mfargs=NULL, outputs_class=NULL, ve
     defaults <- get_default_args(model_fn, pars)
   
     res <- do.call(model_fn, c(pars, mfargs, defaults)[names(formals(model_fn))])
-
+    
     if (is.vector(res)){
-        class(model_fn) <- c("nb", attr(model_fn, "class"))
-        attr(model_fn, "nopt") <- length(res)
-        if (identical(outputs_class, "cea"))
+      class(model_fn) <- c("nb", attr(model_fn, "class"))
+      attr(model_fn, "nopt") <- length(res)
+      if (!is.null(outputs)){
+        if (identical(class(outputs)[1], "cea"))
           stop("output of model_fn should have two rows if `outputs` is in cost-effectiveness format")
+        if (length(res) != ncol(outputs))
+          stop(sprintf("Number of decision options returned by model_fn is %s, whereas `outputs` has %s columns. These should match.",length(res),ncol(outputs)))
+      }
     }  else if (is.matrix(res) || is.data.frame(res)) {
-        class(model_fn) <- c("cea", attr(model_fn, "class"))
-        attr(model_fn, "nopt") <- ncol(res)
-        if (nrow(res) != 2)
-          stop("If `model_fn` returns a matrix or data frame it should have two rows, one for effects and one for costs")
-        if (identical(outputs_class, "nb"))
+      class(model_fn) <- c("cea", attr(model_fn, "class"))
+      attr(model_fn, "nopt") <- ncol(res)
+      if (nrow(res) != 2)
+        stop("If `model_fn` returns a matrix or data frame it should have two rows, one for effects and one for costs")
+      if (!is.null(outputs)){
+        if (identical(class(outputs)[1], "nb"))
           stop("output of model_fn should be a vector if `outputs` is in cost-effectiveness format")
+        if (ncol(res) != ncol(outputs$c))
+          stop(sprintf("Number of decision options returned by model_fn is %s, whereas `outputs$c` has %s columns. These should match.",ncol(res),ncol(outputs$c)))
+      }
     } else stop("`model_fn` should return a vector, matrix or data frame")
     if (verbose) 
         describe_modelfn(model_fn)
