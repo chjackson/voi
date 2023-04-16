@@ -71,7 +71,7 @@ fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B=NULL, verbose, ..
     models <- vector(nopt-1, mode="list")
     for (i in 1:(nopt-1)){
         if (verbose) message(sprintf("Decision option %s",i+1)) 
-        fit <- fitted_npreg_fn(method)(y=inb[,i], inputs=inputs, pars=pars, verbose=verbose, ...) 
+        fit <- fitted_npreg_fn(method)(y=inb[,i], inputs=inputs, pars=pars, verbose=verbose, se=se, ...) 
         fitted[,i+1] <- as.vector(fit)
         if (se){
             fitted_rep[,,i+1] <- fitted_npreg_rep_call(method, attr(fit,"model"), B, verbose)
@@ -96,12 +96,14 @@ fitted_npreg_rep_call <- function(method, model, B, verbose=FALSE){
     if (verbose) message("Simulating parameters to calculate standard errors")
     if (method=="gam") {
         frep <- fitted_rep_gam(model, B)
+    } else if (method=="earth") {
+        frep <- fitted_rep_earth(model, B)
     } else if (method=="gp") {
         frep <- fitted_rep_gp(model, B)
     } else if (method=="bart") {
         frep <- fitted_rep_bart(model)
     }
-    else stop("Standard errors only currently available for GAM, GP and BART methods")
+    else stop(sprintf("Standard errors not available for method = \"%s\"",method))
     frep
 }
 
