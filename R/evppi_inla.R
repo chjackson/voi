@@ -8,8 +8,6 @@ check_packages <- function(){
     }
 }
 
-## TODO int.ord - allow different ones for costs and effects 
-
 fitted_inla <- function(y, inputs, pars,
                         verbose = TRUE,
                         cutoff = 0.3,
@@ -93,27 +91,9 @@ make.proj <- function(parameter, inputs, x, pfc_struc="AIC") {
 
 
 plot.mesh <- function(mesh, data, plot) {
-    if (plot == TRUE || plot == T) {
-        cat("\n")
-        choice <- select.list(c("yes", "no"), title = "Would you like to save the graph?",
-                              graphics = F)
-        if (choice == "yes") {
-            exts <- c("jpeg", "pdf", "bmp", "png", "tiff")
-            ext <- select.list(exts, title = "Please select file extension",
-                               graphics = F)
-            name <- paste0(getwd(), "/mesh.", ext)
-            txt <- paste0(ext, "('", name, "')")
-            eval(parse(text = txt))
-            plot(mesh)
-            points(data, col = "blue", pch = 19, cex = 0.8)
-            dev.off()
-            txt <- paste0("Graph saved as: ", name)
-            cat(txt)
-            cat("\n")
-        }
-        cat("\n")
-        plot(mesh)
-        points(data, col = "blue", pch = 19, cex = 0.8)
+    if (plot) {
+      plot(mesh)
+      points(data, col = "blue", pch = 19, cex = 0.8)
     }
 }
 
