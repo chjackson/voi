@@ -26,7 +26,10 @@ distribution of the input parameters of the decision model.   The number
 of columns should equal the number of parameters, and the columns should
 be named.    This should have the same number of rows as there are samples
 in \code{outputs}, and each row of the samples in \code{outputs} should
-give the model output evaluated at the corresponding parameters.}
+give the model output evaluated at the corresponding parameters.
+
+Users of \pkg{heemod} can create an object of this form, given an object
+produced by \code{run_psa} (\code{obj}, say), with \code{\link{import_heemod_inputs}}.}
 
 \item{study}{Name of one of the built-in study types supported by this
 package for EVSI calculation.  If this is supplied, then the columns of
@@ -86,13 +89,7 @@ interpreted as the sample size for the proposed study.
 }}
 
 \item{pars}{Character vector identifying which parameters are learned from the proposed study.
-These should be columns of \code{inputs}.
-
-This is required for the methods which involve an
-intermediate EVPPI calculation, that is, \code{method="is"} and
-\code{method="mm"}.  It should consist of the variables used in the
-definition of \code{datagen_fn} (and \code{likelihood}, \code{analysis_fn}
-and \code{model_fn}, if these are used) and only these variables.}
+These should be columns of \code{inputs}.}
 
 \item{n}{Sample size of future study, or vector of alternative sample sizes.
 This is understood by the built-in study designs.  For studies specified

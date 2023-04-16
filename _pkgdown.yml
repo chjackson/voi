@@ -19,6 +19,7 @@ reference:
   - pop_voi
 - title: Utilities
 - contents:
+  - import_heemod
   - all_interactions
   - check_regression
 - title: Example decision models

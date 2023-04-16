@@ -18,7 +18,8 @@ enbs(
 }
 \arguments{
 \item{evsi}{Data frame giving estimates of the expected value of sample
-information, as returned by \code{\link{evsi}}.}
+information, as returned by \code{\link{evsi}}.  This may contain
+multiple estimates, one for each sample size and willingness to pay.}
 
 \item{costs_setup}{Setup costs of the study.  This can either be a constant,
 or a vector of two elements giving a 95\% credible interval (with mean
@@ -80,10 +81,11 @@ rate for each ENBS calculation.  An index \code{ind} is also returned
 to identify the unique combination that each row refers to.
 }
 \description{
-Calculate the expected net benefit of sampling for a typical study to inform
+Calculates the expected net benefit of sampling for a typical study to inform
 a health economic evaluation, given estimates of the per-person expected
 value of sample information, decision population size and study setup and
-per-participant costs.
+per-participant costs.   The optimal sample size for each willingness-to-pay,
+population size and time horizon is also determined.
 }
 \details{
 \code{pop},\code{time} and \code{dis} may be supplied as vectors

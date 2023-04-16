@@ -9,7 +9,7 @@ check_model_fn(
   model_fn,
   par_fn,
   mfargs = NULL,
-  outputs_class = NULL,
+  outputs = NULL,
   verbose = FALSE
 )
 }

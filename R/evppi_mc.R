@@ -97,7 +97,6 @@ evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, w
     nf <- names(formals(model_fn))
     defaults <- get_default_args(model_fn, pars_rep)   
     pars_corr <- intersect(names(formals(par_fn)), nf)
-#    registerDoParallel() # TODO 
     pb <- progress::progress_bar$new(total = nouter) 
     for (i in 1:nouter){
         nbi <- matrix(nrow=ninner, ncol=nopt)

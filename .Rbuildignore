@@ -15,3 +15,4 @@ inst/Chemotherapy_Book/.RData
 inst/Chemotherapy_Book/.git
 ^_pkgdown2\.yml$
 git_notes.md
+coding_style.md

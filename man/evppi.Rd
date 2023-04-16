@@ -40,6 +40,9 @@ Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in
 this "cost-effectiveness analysis" format, therefore they may be supplied as
 the \code{outputs} argument.
 
+Users of \pkg{heemod} can create an object of this form, given an object
+produced by \code{run_psa} (\code{obj}, say), with \code{\link{import_heemod_outputs}}.
+
 If \code{outputs} is a matrix or data frame, it is assumed to be of "net
 benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 effectiveness analysis" form.}
@@ -49,7 +52,10 @@ distribution of the input parameters of the decision model.   The number
 of columns should equal the number of parameters, and the columns should
 be named.    This should have the same number of rows as there are samples
 in \code{outputs}, and each row of the samples in \code{outputs} should
-give the model output evaluated at the corresponding parameters.}
+give the model output evaluated at the corresponding parameters.
+
+Users of \pkg{heemod} can create an object of this form, given an object
+produced by \code{run_psa} (\code{obj}, say), with \code{\link{import_heemod_inputs}}.}
 
 \item{pars}{Either a character vector, or a list of character vectors.
 
@@ -97,9 +103,12 @@ for single parameter EVPPI.
 for single parameter EVPPI.}
 
 \item{se}{If this is \code{TRUE}, calculate a standard error for the EVPPI
-if possible.  Currently only supported for \code{method="gam"}, and
+if possible.  Currently only supported for methods \code{"gam"}, \code{"earth"} and
 \code{method="bart"}.  (In the latter method it is more correctly called
-a posterior standard deviation).}
+a posterior standard deviation).  These represent uncertainty about the
+parameters of the fitted regression model, and will naturally be lower when
+more simulations from the decision model are used to fit it.  They do not
+represent uncertainty about the structure of the regression model,}
 
 \item{B}{Number of parameter replicates for calculating the standard error.
 Only applicable to \code{method="gam"}.  For \code{method="bart"} the

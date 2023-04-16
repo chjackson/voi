@@ -26,6 +26,13 @@ test_that("Basic inputs are of the right format",{
 
     expect_error(evppi(nb, inputs, pars="badpar"), "not found in columns")
 
+    cea <- list(
+      c = data.frame(treatment=1:10, control=1:10),
+      e = data.frame(treatment=1:10, control=1:10),
+      k = "wrong"
+    )
+    expect_error(evpi(cea), "should be numeric")
+    expect_error(evppi(cea, inputs, pars="baseline"), "should be numeric")
 })
 
 

@@ -4,7 +4,7 @@
 ##' Functions are provided to generate model parameters and evaluate the model, and samples from probabilistic analysis of the model are
 ##' provided as built-in datasets.
 ##'
-##' TODO refer to VoI book for more details
+##' For more details, refer to Heath et al. (forthcoming book...)
 ##'
 ##' @param p_side_effects_t1 Probability of side effects under treatment 1
 ##' @param p_side_effects_t2 Probability of side effects under treatment 2
@@ -72,10 +72,12 @@
 ##'
 ##' The following additional data objects are supplied:
 ##' 
-##' \code{chemo_constants} includes various constants required by the code. TODO DOC
+##' \code{chemo_constants} includes various constants required by the code.
 ##'
 ##' \code{chemo_evsi_or} is the result of an EVSI analysis to estimate the expected value of a two-arm trial, with a binary outcome, to estimate the log odds ratio of side effects.  This object is a data frame with three columns, giving the sample size per arm (`n`), willingness-to-pay (`k`) and the corresponding EVSI (`evsi`).
 ##' 
+##' @references Value of Information for Healthcare Decision Making
+##' (CRC Press, eds. Heath, Kunst and Jackson: forthcoming)
 ##' 
 ##' @name chemo_model
 NULL

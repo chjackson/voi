@@ -29,6 +29,9 @@ Objects of class \code{"bcea"}, as created by the \pkg{BCEA} package, are in
 this "cost-effectiveness analysis" format, therefore they may be supplied as
 the \code{outputs} argument.
 
+Users of \pkg{heemod} can create an object of this form, given an object
+produced by \code{run_psa} (\code{obj}, say), with \code{\link{import_heemod_outputs}}.
+
 If \code{outputs} is a matrix or data frame, it is assumed to be of "net
 benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 effectiveness analysis" form.}

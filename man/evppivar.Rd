@@ -24,7 +24,10 @@ distribution of the input parameters of the decision model.   The number
 of columns should equal the number of parameters, and the columns should
 be named.    This should have the same number of rows as there are samples
 in \code{outputs}, and each row of the samples in \code{outputs} should
-give the model output evaluated at the corresponding parameters.}
+give the model output evaluated at the corresponding parameters.
+
+Users of \pkg{heemod} can create an object of this form, given an object
+produced by \code{run_psa} (\code{obj}, say), with \code{\link{import_heemod_inputs}}.}
 
 \item{pars}{Either a character vector, or a list of character vectors.
 

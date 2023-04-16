@@ -1,6 +1,6 @@
 Package: voi
 Title: Expected Value of Information 
-Version: 0.1
+Version: 0.9
 Authors@R: 
     c(person(given = "Christopher", family = "Jackson",role = c("aut", "cre"),email = "chris.jackson@mrc-bsu.cam.ac.uk"),
 	   person(given = "Anna", family = "Heath", role = c("aut"), email = "anna.heath@sickkids.ca"),
@@ -16,7 +16,7 @@ LazyData: true
 Depends: R (>= 2.10)
 VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress, dbarts, posterior, ggplot2, gridExtra
-Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown, rjags, truncnorm, scales, dplyr
+Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown, rjags, truncnorm, scales, dplyr, heemod
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 URL: https://chjackson.github.io/voi/

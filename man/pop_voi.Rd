@@ -24,5 +24,9 @@ expected value of information, given a discount rate over some
 time horizon.
 }
 \details{
-Calculated as \code{voi*pop/dis*(1 - exp(-dis*time))}.
+Calculated as \code{voi*pop/dis*(1 - exp(-dis*time))}, or \code{voi*pop}
+if the discount rate is zero.
+
+Any arguments may be supplied as vectors, in which case, all
+arguments are replicated to the length of the longest argument.
 }

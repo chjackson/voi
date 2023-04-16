@@ -65,13 +65,12 @@ likelihood_trial_binary <- function(Y, inputs, n=100, pars){
 
 ## Single-arm study of a normal outcome with known variance (supplied as an argument) 
 ## Return an estimate of the mean from a study of size n 
-## TODO consistent naming with the vignette
 
 datagen_normal_known <- function(inputs, n=100, pars, sd=1){
-    nsim <- nrow(inputs)
-    mu <- inputs[,pars[1]]
     data.frame(
-        X1 = rnorm(nsim, mu, sd/sqrt(n))
+      X1 = rnorm(nrow(inputs),
+                 mean = inputs[,pars[1]],
+                 sd = sd/sqrt(n))
     )
 }
 

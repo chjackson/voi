@@ -66,8 +66,6 @@
 ##' 
 ##' @export
 check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs", plot=TRUE){
-  ## TODO check for evsi vs evppi here.
-  ## then treat n in evsi like pars in evppi 
   if (inherits(x, "evppi")) {
     if (is.null(pars)) pars <- x$pars[1]
     if (!(pars %in% x$pars)) stop(sprintf("parameter `%s` not found", pars))
