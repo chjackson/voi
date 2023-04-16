@@ -207,6 +207,7 @@ This is a variant of generalized additive models based on linear splines, which 
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", method="earth")
 ```
+While the merits of this method for EVPPI computation have not been systematically investigated, I have found this to be generally faster than comparable `mgcv` spline models for similar levels of accuracy and around 5 or fewer parameters.
 
 #### INLA method
 (from [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) ).  This needs the following extra packages to be installed, using the following commands.  
@@ -226,13 +227,23 @@ However it has been found to be more efficient than the Gaussian process method 
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla", pfc_struc="iso")
 ```
 
-#### Bayesian additive regression trees
+#### Bayesian additive regression trees (BART)
 
-This is a promising novel method for calculating multiparameter EVPPI:
+This is another general nonparametric regression procedure.  It is designed for regression with lots of predictors, so it may be particularly efficient for calculating multiparameter EVPPI, as the following demonstration shows.
 
-```{r,eval=FALSE}
-evppi(outputs_nb, inputs, pars=c("p1","p2"), method="bart")
+The `voi` package includes a (fictitious) example health economic model based on a decision tree and Markov model: see the help page `voi::chemo_model`.  There are 14 uncertain parameters.  Outputs and inputs from probabilistic analysis are stored in the datasets `chemo_nb` (net benefit for willingness-to-pay £20000) and `chemo_pars`.  The multiparameter EVPPI for all fourteen of these parameters is by definition equal to the EVPI.
+
+Using the BART estimation method, the EVPPI estimate for all 14 parameters is very close to the estimate of the EVPI, and the computation is quick (about 16 seconds on my laptop).
+
+```{r,cache=TRUE}
+evppi(chemo_nb, chemo_pars, pars=colnames(chemo_pars), method="bart")
+evpi(chemo_nb)
 ```
+
+The BART estimation is being performed using the `bart()` function from the [dbarts](https://cran.r-project.org/web/packages/dbarts/index.html) package, and in this case the function's default settings are used. 
+
+While the BART method has not been investigated systematically as a way of estimating EVPPI, these are promising results.
+
 
 #### Tuning the generalized additive model method
 
@@ -260,7 +271,7 @@ evppi(outputs_nb, inputs, pars="p1", se=TRUE, B=100)
 #### Single-parameter methods 
 
 These are only applicable for computing the EVPPI for a single scalar parameter.   They are 
-supplied in the package for technical completeness, but for single-parameter EVPPI we have
+supplied in the package for academic interest, but for single-parameter EVPPI we have
 found it to be sufficiently reliable to use the default GAM method, which requires less tuning than
 these methods. 
 
@@ -384,7 +395,7 @@ The `evsi` function can then be used to compute the EVSI for a series of differe
 
 ```{r}
 datagen_normal <- function(inputs, n=100, sd=1){
-  data.frame(xbar = rnorm(n = nrow(inputs),
+  data.frame(xbar = rnorm(nrow(inputs),
                           mean = inputs[,"p1"],
                           sd = sd / sqrt(n)))
 }
