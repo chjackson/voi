@@ -12,7 +12,7 @@ evsi_mm <- function(outputs,
                     Q,
                     npreg_method="gam",
                     verbose, ...){
-  model_fn <- check_model_fn(model_fn, par_fn, mfargs=NULL, class(outputs)[1], verbose=verbose)
+  model_fn <- check_model_fn(model_fn, par_fn, mfargs=NULL, outputs, verbose=verbose)
   check_pars_in_modelfn(pars, model_fn)
   analysis_args <- form_analysis_args(analysis_args, study, n)
   analysis_fn <- form_analysis_fn(study, analysis_fn, analysis_args, datagen_fn, inputs, n, pars, pars_datagen) 
@@ -147,7 +147,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
       if (!is.null(output_row)) nbpost <- nbpost[mfi(nbpost)[[output_row]],]
       inbpost[j,] <- nbpost[-1] - nbpost[1]
     }
-    var_sim[i,] <- apply(inbpost, 2, var) # TODO CHECK works with >2 decision options.  TODO should we account for the covariance
+    var_sim[i,] <- apply(inbpost, 2, var)
     pb$tick()
   }
   
@@ -175,7 +175,7 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
         beta <- regression_on_sample_size(var_red, nfit, var_fit[d])
       for (j in 1:length(n)){
         var_red_n[j,] <- quantile(var_fit[d] * n[j] / (n[j] + beta), quants)
-        var_prep_mean[j,d] <- var_red_n[j,"0.5"] # TODO return uncertainty in these
+        var_prep_mean[j,d] <- var_red_n[j,"0.5"]
       }
     }
   } else {
@@ -184,13 +184,14 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
   
   fit_rescaled <- array(dim = c(dim(fit), length(n)))
   p_shrink <- numeric(length(n))
+  p_shrink <- matrix(nrow=length(n), ncol=ncomp)
   for (j in 1:length(n)){  
     s1 <- sqrt(var_prep_mean[j,])
     s2 <- sqrt(var_fit)
-    p_shrink[j] <- s1/s2 # prop of unc explained by new data. if 1 then EVSI=EVPPI, if 0 then EVSI=0. 
-    fit_rescaled[,,j] <- cbind(0,
-    (fitn1 - mean_fit) * p_shrink[j] + mean_fit
-    )
+    p_shrink[j,] <- s1/s2 # prop of unc explained by new data. if 1 then EVSI=EVPPI, if 0 then EVSI=0.
+    fit_rescaled[,1,j] <- 0 
+    for (k in 1:ncomp)
+      fit_rescaled[,k+1,j] <- (fitn1[,k] - mean_fit[k]) * p_shrink[j,k] + mean_fit[k]
   }
   
   list(fit=fit, fit_rescaled=fit_rescaled, p_shrink=p_shrink)
