@@ -24,6 +24,9 @@
 ##' this "cost-effectiveness analysis" format, therefore they may be supplied as
 ##' the \code{outputs} argument.
 ##'
+##' Users of \pkg{heemod} can create an object of this form, given an object
+##' produced by \code{run_psa} (\code{obj}, say), with \code{\link{import_heemod_outputs}}. 
+##'
 ##' If \code{outputs} is a matrix or data frame, it is assumed to be of "net
 ##' benefit" form.  Otherwise if it is a list, it is assumed to be of "cost
 ##' effectiveness analysis" form.
@@ -34,6 +37,9 @@
 ##'   be named.    This should have the same number of rows as there are samples
 ##'   in \code{outputs}, and each row of the samples in \code{outputs} should
 ##'   give the model output evaluated at the corresponding parameters.
+##'
+##' Users of \pkg{heemod} can create an object of this form, given an object
+##' produced by \code{run_psa} (\code{obj}, say), with \code{\link{import_heemod_inputs}}. 
 ##'
 ##' @param pars Either a character vector, or a list of character vectors. 
 ##'
@@ -81,9 +87,12 @@
 ##' for single parameter EVPPI.
 ##' 
 ##' @param se If this is \code{TRUE}, calculate a standard error for the EVPPI
-##'  if possible.  Currently only supported for \code{method="gam"}, and
+##'  if possible.  Currently only supported for methods \code{"gam"}, \code{"earth"} and
 ##' \code{method="bart"}.  (In the latter method it is more correctly called
-##' a posterior standard deviation).
+##' a posterior standard deviation).  These represent uncertainty about the
+##' parameters of the fitted regression model, and will naturally be lower when
+##' more simulations from the decision model are used to fit it.  They do not
+##' represent uncertainty about the structure of the regression model,
 ##'
 ##' @param B Number of parameter replicates for calculating the standard error.
 ##' Only applicable to \code{method="gam"}.  For \code{method="bart"} the
@@ -260,9 +269,13 @@ evppi <- function(outputs,
         } else if (methods[i]=="sal") {
             evppi_fn <- evppi_sal
         } else stop("Other methods not implemented yet")
-        eres[[i]] <- evppi_fn(outputs=outputs, inputs=inputs, pars=pars[[i]], 
-                              method=methods[i], se=se, B=B, verbose=verbose,
-                              ...)
+        ip <- remove_constant_linear_cols(inputs[,pars[[i]],drop=FALSE], pars[[i]])
+        if (!is.null(ip$res))
+          eres[[i]] <- ip$res
+        else 
+          eres[[i]] <- evppi_fn(outputs=outputs, inputs=ip$inputs, pars=ip$pars,
+                                method=methods[i], se=se, B=B, verbose=verbose,
+                                ...)
     }
     res <- do.call("rbind", eres)
     nwtp <- if (inherits(outputs, "nb")) 1 else length(outputs$k)
@@ -337,12 +350,15 @@ check_outputs <- function(outputs, inputs=NULL){
             check_outputs_matrix(outputs$c, inputs, "outputs$c")
             check_outputs_matrix(outputs$e, inputs, "outputs$e")
         }
-        ## TODO Also check wtp
+        check_wtp(outputs$k, "outputs$k")
     }
     else stop("`outputs` should be a matrix, data frame or list, see help(evppi)")
     outputs
 }
 
+check_wtp <- function(k, name){
+  if (!is.numeric(k)) stop(sprintf("%s should be numeric", name))
+}
 
 check_pars <- function(pars, inputs, evppi=TRUE){
     if (is.null(pars) && evppi){
@@ -374,33 +390,39 @@ clean_pars <- function(pars) {
     parsc
 }
 
-## TODO TEST AND INTEGRATE THIS
-remove_constant_linear_cols <- function(inputs, verbose=TRUE){
+remove_constant_linear_cols <- function(inputs, pars){
   inputs <- as.matrix(inputs)
   p <- ncol(inputs)
-  sets <- seq_len(p)
-  constantParams <- (apply(inputs, 2, var) == 0)
-  if (sum(constantParams) == p)
-    stop("EVPI is zero as all parameters are constant")
-  if (sum(constantParams) > 0)
-    sets <- sets[-which(constantParams)] # remove constants
-  inputs <- inputs[, sets, drop=FALSE] # now with constants removed
-
+  inds <- seq_len(p)
+  inds_const <- (apply(inputs, 2, var) == 0)
+  pars_const <- pars[which(inds_const)]
+  if (sum(inds_const) == p){
+    res <- data.frame(evppi = 0)
+  } else res <- NULL
+  if (sum(inds_const) > 0){
+    inds_drop <- inds[which(inds_const)] 
+    inputs <- inputs[, -inds_drop, drop=FALSE] # now with constants removed
+    message(sprintf("Input parameters %s are constant",
+                    paste(sprintf("\"%s\"", pars_const), collapse=",")))
+  }
   rankifremoved <- sapply(1:NCOL(inputs), function (x) qr(inputs[, -x])$rank)
+  pars_lin <- NULL
   while(length(unique(rankifremoved)) > 1) {
     linearCombs <- which(rankifremoved == max(rankifremoved))
-    if (verbose) 
-        print(paste("Linear dependence: removing column", colnames(inputs)[max(linearCombs)]))
-    inputs <- inputs[, -max(linearCombs), drop=FALSE]
-    sets <- sets[-max(linearCombs)]
+    inds_drop <- max(linearCombs)
+    pars_lin <- c(pars_lin, colnames(inputs)[inds_drop])
+    inputs <- inputs[, -inds_drop, drop=FALSE]
     rankifremoved <- sapply(1:NCOL(inputs), function(x) qr(inputs[, -x])$rank)
   }  
   if(qr(inputs)$rank == rankifremoved[1]) {
-    inputs <- inputs[, -1, drop=FALSE] # special case only lincomb left
-    sets <- sets[-1]
-    if (verbose) 
-        print(paste("Linear dependence: removing column", colnames(inputs)[1]))
+    inds_drop <- 1
+    pars_lin <- c(pars_lin, colnames(inputs)[inds_drop])
+    inputs <- inputs[, -inds_drop, drop=FALSE] # special case only lincomb left
   }
-  inputs[, sets, drop=FALSE]
+  if (length(pars_lin) > 0)
+    message(sprintf("Ignoring input parameters %s that are linearly dependent on others",
+                    paste(sprintf("\"%s\"", pars_lin), collapse=",")))
+  pars_keep <- setdiff(pars, c(pars_const, pars_lin))
+  list(inputs = as.data.frame(inputs), pars = pars_keep, res=res)
 }
 
