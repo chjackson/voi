@@ -57,7 +57,7 @@ The minimum and maximum sample size for which the ENBS is within
 }
 \value{
 Data frame with components \code{enbs} giving the ENBS, and
-\code{enbs} giving the corresponding standard deviation.  The rows of the
+\code{sd} giving the corresponding standard deviation.  The rows of the
 data frame correspond to the rows of \code{evsi}, and any \code{n} and
 \code{k} are inherited from \code{evsi}.  Additional columns include:
 

@@ -33,9 +33,9 @@ parameter values under uncertainty, that can be supplied as the
 in \pkg{voi}.
 }
 \description{
-\pkg{heemod} is a package for constructing common forms of health economic
-decision models.  The outputs from probabilistic analysis of these
-models can be imported using these functions, to allow Value of
-Information measures to be calculated for them using the \pkg{voi}
-package.
+\href{https://CRAN.R-project.org/package=heemod}{heemod} is a package
+for constructing common forms of health economic decision models.
+The outputs from probabilistic analysis of these models can be
+imported using these functions, to allow Value of Information
+measures to be calculated for them using the \pkg{voi} package.
 }
