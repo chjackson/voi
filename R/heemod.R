@@ -1,10 +1,10 @@
 ##' Import results of probabilistic analysis from heemod
 ##'
-##' \pkg{heemod} is a package for constructing common forms of health economic
-##' decision models.  The outputs from probabilistic analysis of these
-##' models can be imported using these functions, to allow Value of
-##' Information measures to be calculated for them using the \pkg{voi}
-##' package.
+##' [heemod](https://CRAN.R-project.org/package=heemod) is a package
+##' for constructing common forms of health economic decision models.
+##' The outputs from probabilistic analysis of these models can be
+##' imported using these functions, to allow Value of Information
+##' measures to be calculated for them using the \pkg{voi} package.
 ##'
 ##' @aliases import_heemod_outputs import_heemod_inputs
 ##'
