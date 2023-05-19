@@ -34,9 +34,10 @@ for (i in 1:nsim){
   costs[i,] <- ce[2,]
 }
 colnames(effs) <- colnames(costs) <- c("SoC","Novel")
-chemo_nb <- effs*20000 - costs
+chemo_nb <- as.data.frame(effs*20000 - costs)
 chemo_cea <- list(e = effs, c = costs, k = 10000 * 1:5)
 
+library(usethis)
 use_data(chemo_constants, overwrite=TRUE)
 use_data(chemo_pars, overwrite=TRUE)
 use_data(chemo_cea, overwrite=TRUE)
