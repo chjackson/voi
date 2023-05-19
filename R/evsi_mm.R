@@ -116,7 +116,8 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
                          verbose=FALSE, ...){
   ## Generate future data given Q quantiles
   ncomp <- ncol(nb) - 1 # number of comparisons, not number of decision options
-  var_sim <- matrix(nrow=Q, ncol=ncomp)
+  ncov <- ncomp*(ncomp+1)/2
+  var_sim <- matrix(nrow=Q, ncol=ncov)
   pb <- progress::progress_bar$new(total = Q) 
   if (length(n) > 1) {
     nfit <- unique(round(seq(sqrt(min(n)), sqrt(max(n)), length=Q)^2))
@@ -147,27 +148,28 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
       if (!is.null(output_row)) nbpost <- nbpost[mfi(nbpost)[[output_row]],]
       inbpost[j,] <- nbpost[-1] - nbpost[1]
     }
-    var_sim[i,] <- apply(inbpost, 2, var)
+    var_sim[i,] <- covvec(inbpost)
+
     pb$tick()
   }
   
   mean_prep_var <- apply(var_sim, 2, mean)
   inbprior <- nb[,-1,drop=FALSE] - nb[,1]
-  prior_var <- apply(inbprior, 2, var)
+  prior_var <- covvec(inbprior)
   
   if (verbose) message("Calculating fitted values for EVPPI...")
   fit <- fitted_npreg(nb, inputs=inputs, pars=pars, method=npreg_method, verbose=verbose, ...)
   fitn1 <- fit[,-1,drop=FALSE]
-  var_fit <- apply(fitn1, 2, var)
+  var_fit <- covvec(fitn1)
   mean_fit <- apply(fitn1, 2, mean)
 
-  var_prep_mean <- matrix(nrow=length(n), ncol=ncomp)
+  var_prep_mean <- matrix(nrow=length(n), ncol=ncov)
   if (length(n) > 1){
     ## do regression to relate variance reduction to sample size 
     quants <- c(0.025, 0.125, 0.5, 0.875, 0.975)
     var_red_n <- matrix(nrow=length(n), ncol=5, dimnames=list(NULL, quants))
     if (verbose) message("Running regression on sample size...")
-    for (d in 1:ncomp){
+    for (d in 1:ncov){
       var_red <- prior_var[d] - var_sim[,d] 
       if (sd(var_red)==0)
         beta <- 0
@@ -179,19 +181,30 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
       }
     }
   } else {
-    var_prep_mean[1,] <- pmax(0, prior_var - mean_prep_var)  # Why is the 0 needed here? Monte Carlo error?
+    var_prep_mean[1,] <- pmax(0, prior_var - mean_prep_var) # Correct for Monte Carlo error
   }
   
   fit_rescaled <- array(dim = c(dim(fit), length(n)))
-  p_shrink <- numeric(length(n))
-  p_shrink <- matrix(nrow=length(n), ncol=ncomp)
-  for (j in 1:length(n)){  
-    s1 <- sqrt(var_prep_mean[j,])
+  if (ncomp==1){
+    p_shrink <- numeric(length(n))
     s2 <- sqrt(var_fit)
-    p_shrink[j,] <- s1/s2 # prop of unc explained by new data. if 1 then EVSI=EVPPI, if 0 then EVSI=0.
+  } else {
+    p_shrink <- vector(length(n), mode="list")
+    s2inv <- MatrixSqrt(cov(fitn1), inverse=TRUE)
+  }
+  for (j in 1:length(n)){  
     fit_rescaled[,1,j] <- 0 
-    for (k in 1:ncomp)
-      fit_rescaled[,k+1,j] <- (fitn1[,k] - mean_fit[k]) * p_shrink[j,k] + mean_fit[k]
+    if (ncomp == 1){
+      s1 <- sqrt(var_prep_mean[j,])
+      p_shrink[j] <- s1/s2 # prop of unc explained by new data. if 1 then EVSI=EVPPI, if 0 then EVSI=0.
+      fit_rescaled[,2,j] <- (fitn1[,1] - mean_fit[1]) * p_shrink[j] + mean_fit[1]
+    }
+    else {
+      s1 <- MatrixSqrt(covvec2mat(var_prep_mean[j,]))
+      p_shrink[[j]] <- s2inv %*% s1
+      mean_mat <- matrix(mean_fit, nrow=nrow(fitn1), ncol = ncomp, byrow = TRUE)
+      fit_rescaled[,-1,j] <- (fitn1 - mean_mat) %*% p_shrink[[j]] + mean_mat
+    }  
   }
   
   list(fit=fit, fit_rescaled=fit_rescaled, p_shrink=p_shrink)
@@ -255,4 +268,34 @@ regression_on_sample_size <- function(var_reduction,
   sam <- rjags::coda.samples(jagsmod, variable.names="beta", n.iter=3000, progress.bar="none")
   beta <- as.data.frame(sam[[1]])[,1]
   beta
+}
+
+
+## Covariances as a vector rather than a matrix
+covvec <- function(x){ 
+  covmat2vec(cov(x))
+}
+
+## Convert a covariance matrix to a vector (excluding the above-diagonals)
+covmat2vec <- function(x){
+  c(diag(x), x[lower.tri(x)])
+}
+
+## Convert a vectorised covariance matrix back to a matrix
+covvec2mat <- function(x){
+  n <- trunc(sqrt(length(x)*2))
+  mat <- diag(x[1:n])
+  covs <- x[(n+1):length(x)]
+  mat[lower.tri(mat)] <- covs
+  mat[upper.tri(mat)] <- t(mat)[upper.tri(t(mat))]
+  mat
+}
+
+MatrixSqrt <- function(x, inverse=FALSE){
+  e <- eigen(x)
+  if (any(e$values<0)){ 
+    e <- eigen(Matrix::nearPD(x)$mat)
+  }
+  sq <- e$vectors %*% diag(sqrt(e$values)) %*% t(e$vectors)
+  if (inverse) chol2inv(chol(sq)) else sq
 }

@@ -81,8 +81,9 @@ test_that("moment matching method",{
                n = c(100), Q = 5, 
                analysis_args = list(a=53, b=60, n=100),
                model_fn = multcomp_model_cea,  par_fn = multcomp_pars_fn)
-  expect_equal(evm2$evsi[2], 207, tol=1)
-  
+  evm2
+  expect_equal(evm2$evsi[2], 167, tol=1) 
+
   evm3 <- evsi(outputs=multcomp_cea, inputs=multcomp_pars, 
                pars="p_side_effects_t2",
                method = "gam", study =  "binary",
