@@ -27,7 +27,7 @@ Draw a sample from probabilistic analysis of the model.
 
 ```{r}
 source("04_analysis/01_model_run.R")
-nb <- as.data.frame(m_costs_effects[,1,]*20000 - m_costs_effects[,2,])
+nb <- m_net_benefit[ , , wtp_seq == 20000]
 ```
 
 ## Calculating single-parameter EVPPI. 
