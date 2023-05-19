@@ -4,7 +4,7 @@
 ##'
 ##' \code{\link{evppi}} calculates the expected value of partial perfect information from a decision-analytic model.  The default, recommended computation methods are based on nonparametric regression.  \code{\link{evpi}} is also provided for the expected value of perfect information.
 ##'
-##' \code{\link{evsi}} calculates the expected value of sample information.   Currently this implements the same set of nonparametric regression methods as in \code{\link{evppi}}, and methods based on moment matching and importance sampling.
+##' \code{\link{evsi}} calculates the expected value of sample information.   Currently this implements the same set of nonparametric regression methods as in \code{\link{evppi}}, and methods based on moment matching and importance sampling.  \code{\link{enbs}} can then be used to calculate and optimise the expected net benefit of sampling for a simple study with a fixed upfront cost and per-participant costs.
 ##'
 ##' \code{\link{evppi}} and \code{\link{evsi}} both require a sample of inputs and outputs from a Monte Carlo probabilistic analysis of a decision-analytic model.
 ##'

@@ -185,7 +185,8 @@ enbs_opt <- function(x, pcut=0.05, smooth=FALSE, smooth_df=NULL, keep_preds=FALS
 ##' time horizon.
 ##'
 ##' Calculated as \code{voi*pop/dis*(1 - exp(-dis*time))}, or \code{voi*pop}
-##' if the discount rate is zero.
+##' if the discount rate is zero.  This is a continuous-time variant
+##' of the typical discrete-time discounting formula.
 ##'
 ##' Any arguments may be supplied as vectors, in which case, all
 ##' arguments are replicated to the length of the longest argument.

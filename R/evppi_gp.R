@@ -119,6 +119,11 @@ estimate.hyperparameters <- function(NB, inputs, verbose=FALSE) {
 
 ##' Fit a Gaussian process regression
 ##'
+##' Fit a Gaussian process regression.  This is a simple
+##' implementation, in pure R, that is designed to be sufficient for
+##' doing VoI calculations, but not polished and tuned for any other
+##' purpose.
+##'
 ##' @param y Vector of outcome data
 ##' 
 ##' @param X Matrix of inputs
@@ -134,7 +139,7 @@ estimate.hyperparameters <- function(NB, inputs, verbose=FALSE) {
 ##' @param maxSample Maximum sample size to employ. If datasets larger than this are supplied, they are
 ##' truncated to this size.
 ##'
-##' @param verbose Progress messages: currently not fully implemented.
+##' @param verbose Progress messages (not thoroughly implemented).
 ##'
 ##' @return A list with the following components
 ##'
@@ -149,7 +154,7 @@ estimate.hyperparameters <- function(NB, inputs, verbose=FALSE) {
 ##' \code{hyper} The hyperparameters (delta and nu) used in the fit. Lower values of delta give
 ##' less smooth regression fits, and nu is an independent measurement error variance (or "nugget").
 ##'
-##' The variance of the predicted points is currently not implemented.
+##' The variance of the predicted points is not implemented.
 ##'
 ##' @noRd
 gp <- function(y, X, Xpred=NULL, hyper="est", m=NULL, maxSample=5000,  verbose=FALSE) {

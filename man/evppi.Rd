@@ -2,7 +2,7 @@
 % Please edit documentation in R/evppi.R
 \name{evppi}
 \alias{evppi}
-\title{Calculate the expected value of partial perfect information from a decision model}
+\title{Calculate the expected value of partial perfect information from a decision-analytic model}
 \usage{
 evppi(
   outputs,
@@ -214,7 +214,7 @@ If standard errors are requested, then the standard errors are returned in
 the column \code{se}.
 }
 \description{
-Calculate the expected value of partial perfect information from a decision model
+Calculate the expected value of partial perfect information from a decision-analytic model
 }
 \references{
 Strong, M., Oakley, J. E., & Brennan, A. (2014). Estimating multiparameter

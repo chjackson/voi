@@ -1,6 +1,6 @@
-##' Calculate the expected value of partial perfect information from a decision model
+##' Calculate the expected value of partial perfect information from a decision-analytic model
 ##'
-##' Calculate the expected value of partial perfect information from a decision model
+##' Calculate the expected value of partial perfect information from a decision-analytic model
 ##'
 ##' @param outputs This could take one of two forms
 ##'
