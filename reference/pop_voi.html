@@ -14,7 +14,7 @@ time horizon."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/li
     
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,8 @@ data frames returned by <code><a href="evppi.html">evppi</a></code> or <code><a 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Calculated as <code>voi*pop/dis*(1 - exp(-dis*time))</code>, or <code>voi*pop</code>
-if the discount rate is zero.</p>
+if the discount rate is zero.  This is a continuous-time variant
+of the typical discrete-time discounting formula.</p>
 <p>Any arguments may be supplied as vectors, in which case, all
 arguments are replicated to the length of the longest argument.</p>
     </div>

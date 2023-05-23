@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,7 +105,7 @@ function from the <span class="pkg">mgcv</span> package.  This is the default me
 calculating the EVPPI of 4 or fewer parameters.</p>
 <p><code>"gp"</code> for a Gaussian process regression, as described by Strong et al.
 (2014) and implemented in the <span class="pkg">SAVI</span> package
-(<a href="http://savi.shef.ac.uk/SAVI/" class="external-link">http://savi.shef.ac.uk/SAVI/</a>).  This is the default method for calculating the EVPPI
+(<a href="https://savi.shef.ac.uk/SAVI/" class="external-link">https://savi.shef.ac.uk/SAVI/</a>).  This is the default method for calculating the EVPPI
 of more than 4 parameters.</p>
 <p><code>"inla"</code> for an INLA/SPDE Gaussian process regression method, from
 Heath et al. (2016).</p>
@@ -142,7 +142,7 @@ basis, which is more computationally efficient than the default "thin plate"
 basis.  If there are four or more parameters of interest, then the
 additional argument <code>k=4</code> is supplied to <code>te()</code>, specifying a
 four-dimensional basis, which is currently the default in the SAVI package
-(<a href="http://savi.shef.ac.uk/SAVI/" class="external-link">http://savi.shef.ac.uk/SAVI/</a>).</p>
+(<a href="https://savi.shef.ac.uk/SAVI/" class="external-link">https://savi.shef.ac.uk/SAVI/</a>).</p>
 <p>If there are spaces in the variable names in <code>inputs</code>, then these should
 be converted to underscores before forming an explicit <code>gam_formula</code>.</p></li>
 </ul><p>For <code>method="gp"</code>, the following arguments can be supplied:</p><ul><li><p><code>gp_hyper_n</code>: number of samples to use to estimate the hyperparameters

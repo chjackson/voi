@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
                         <h4 data-toc-skip class="author">Christopher
 Jackson</h4>
             
-            <h4 data-toc-skip class="date">2023-05-11</h4>
+            <h4 data-toc-skip class="date">2023-05-23</h4>
       
       
       <div class="d-none name"><code>voi.Rmd</code></div>
@@ -104,7 +104,7 @@ evaluations.</p>
 used for <em>estimation</em> of uncertain quantities, rather than for
 explicit decision-making. For more information about the theory behind
 this, see <a href="https://doi.org/10.1080/01621459.2018.1562932" class="external-link">Jackson et
-al. 2019</a> and <a href="https://www.degruyter.com/document/doi/10.1515/em-2021-0012/html" class="external-link">Jackson
+al. 2019</a> and <a href="https://doi.org/10.1515/em-2021-0012" class="external-link">Jackson
 et al. 2021</a>.</p>
 <div class="section level2">
 <h2 id="simple-example-model">Simple example model<a class="anchor" aria-label="anchor" href="#simple-example-model"></a>
@@ -308,8 +308,9 @@ expected net benefit given current information.</p>
 in this function. The default methods are based on nonparametric
 regression, and come from <a href="https://doi.org/10.1177/0272989X13505910" class="external-link">Strong et
 al. (2013)</a>. If there are four or fewer parameters, then a
-generalized additive model is used. With five or more, then Gaussian
-process regression is used.</p>
+generalized additive model is used (the default spline model in
+<code>gam</code> from the <code>mgcv</code> package). With five or more,
+then Gaussian process regression is used.</p>
 <div class="section level3">
 <h3 id="invoking-the-evppi-function-">Invoking the <code>evppi</code> function.<a class="anchor" aria-label="anchor" href="#invoking-the-evppi-function-"></a>
 </h3>
@@ -401,10 +402,9 @@ accuracy and around 5 or fewer parameters.</p>
 <div class="section level4">
 <h4 id="inla-method">INLA method<a class="anchor" aria-label="anchor" href="#inla-method"></a>
 </h4>
-<p>(from <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983" class="external-link">Heath
-et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf" class="external-link">Baio
-et al.</a> ). This needs the following extra packages to be installed,
-using the following commands.</p>
+<p>(from <a href="https://doi.org/10.1002/sim.6983" class="external-link">Heath et al.</a>, <a href="https://doi.org/10.1007/978-3-319-55718-2" class="external-link">Baio et al.</a> ). This
+needs the following extra packages to be installed, using the following
+commands.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'INLA'</span>, repos<span class="op">=</span><span class="st">'https://inla.r-inla-download.org/R/stable'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'splancs'</span><span class="op">)</span></span></code></pre></div>
@@ -414,10 +414,8 @@ or more parameters.</p>
 simply the EVPI, and the default method needs an esoteric tweak
 (<code>pfc_struc</code>) to work.</p>
 <p>However it has been found to be more efficient than the Gaussian
-process method in many other situations. See <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983" class="external-link">Heath
-et al.</a>, <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf" class="external-link">Baio
-et al.</a> for more details about implementing and tuning this
-method.</p>
+process method in many other situations. See <a href="https://doi.org/10.1002/sim.6983" class="external-link">Heath et al.</a>, <a href="https://doi.org/10.1007/978-3-319-55718-2" class="external-link">Baio et al.</a> for
+more details about implementing and tuning this method.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"p1"</span>,<span class="st">"p2"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"inla"</span>, pfc_struc<span class="op">=</span><span class="st">"iso"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -450,8 +448,8 @@ estimation).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/evpi.html">evpi</a></span><span class="op">(</span><span class="va">chemo_nb</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 368.6051</span></span></code></pre>
 <p>The BART estimation is being performed using the <code>bart()</code>
-function from the <a href="https://cran.r-project.org/web/packages/dbarts/index.html" class="external-link">dbarts</a>
-package, and in this case the function’s default settings are used.</p>
+function from the <a href="https://CRAN.R-project.org/package=dbarts" class="external-link">dbarts</a> package, and
+in this case the function’s default settings are used.</p>
 <p>While the BART method has not been investigated systematically as a
 way of estimating EVPPI, these are promising results.</p>
 </div>
@@ -496,8 +494,8 @@ parameter. They are supplied in the package for academic interest, but
 for single-parameter EVPPI we have found it to be sufficiently reliable
 to use the default GAM method, which requires less tuning than these
 methods.</p>
-<p>The method of <a href="https://journals.sagepub.com/doi/full/10.1177/0272989X12465123" class="external-link">Strong
-and Oakley</a>:</p>
+<p>The method of <a href="https://doi.org/10.1177/0272989X12465123" class="external-link">Strong and
+Oakley</a>:</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/evppi.html">evppi</a></span><span class="op">(</span><span class="va">outputs_nb</span>, <span class="va">inputs</span>, pars<span class="op">=</span><span class="st">"p1"</span>, n.blocks<span class="op">=</span><span class="fl">20</span>, method<span class="op">=</span><span class="st">"so"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   pars      evppi</span></span>
@@ -769,12 +767,12 @@ function, <code>evsi</code> can also be invoked with
 <div class="section level3">
 <h3 id="moment-matching-method">Moment matching method<a class="anchor" aria-label="anchor" href="#moment-matching-method"></a>
 </h3>
-<p>The momemt matching method from <a href="https://journals.sagepub.com/doi/10.1177/0272989X17738515" class="external-link">Heath
-et al.</a> is available as <code>evsi(..., method="mm")</code>. This
-includes the extension of this method to efficiently estimate the EVSI
-for the same design but with many different sample sizes (from <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>).</p>
-<p>Roughly, this method works as follows (see <a href="https://journals.sagepub.com/doi/10.1177/0272989X17738515" class="external-link">Heath
-et al.</a> for full details)</p>
+<p>The momemt matching method from <a href="https://doi.org/10.1177/0272989X17738515" class="external-link">Heath et al.</a> is
+available as <code>evsi(..., method="mm")</code>. This includes the
+extension of this method to efficiently estimate the EVSI for the same
+design but with many different sample sizes (from <a href="https://doi.org/10.1177/0272989X19837983" class="external-link">Heath et al</a>).</p>
+<p>Roughly, this method works as follows (see <a href="https://doi.org/10.1177/0272989X17738515" class="external-link">Heath et al.</a> for
+full details)</p>
 <ul>
 <li><p>a small set of values <span class="math inline">\(\theta_q: q =
 1,\ldots, Q\)</span> are simulated for the decision model parameters
@@ -1096,8 +1094,8 @@ sample as</p>
 describes the expected reduction in variance given perfect knowledge of
 a particular parameter. In this example, we compute the EVPPI for <span class="math inline">\(p_1\)</span> and <span class="math inline">\(\beta\)</span>, respectively, defined as</p>
 <p><span class="math display">\[EVPPI[p_1] = var(p_2) - E(var(p_2|
-p_1)\]</span> <span class="math display">\[EVPPI[\beta] = var(p_2) -
-E(var(p_2 | \beta)\]</span></p>
+p_1))\]</span> <span class="math display">\[EVPPI[\beta] = var(p_2) -
+E(var(p_2 | \beta))\]</span></p>
 <p>These can be computed using nonparametric regression, as described in
 <a href="https://doi.org/10.1080/01621459.2018.1562932" class="external-link">Jackson et
 al. 2019</a>. This is implemented in the function <code>evppivar</code>
@@ -1132,7 +1130,7 @@ order of the square root and expectation operators).</p>
 <div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">-</span> <span class="va">evppi_p1</span><span class="op">$</span><span class="va">evppi</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.04044691</span></span></code></pre>
-<p>Hence we would expect to reduce the SD of <span class="math inline">\(p_1\)</span> to around 2/3 of its original value
+<p>Hence we would expect to reduce the SD of <span class="math inline">\(p_2\)</span> to around 2/3 of its original value
 by learning <span class="math inline">\(p_1\)</span> or <span class="math inline">\(\beta\)</span>.</p>
 </div>
 <div class="section level3">
