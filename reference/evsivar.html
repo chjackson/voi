@@ -34,7 +34,13 @@
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/chjackson/voi/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -42,7 +48,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Calculate the expected value of sample information for an estimation problem</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/HEAD/R/evsivar.R" class="external-link"><code>R/evsivar.R</code></a></small>
       <div class="d-none name"><code>evsivar.Rd</code></div>
     </div>
 
@@ -192,6 +198,12 @@ and other controlling options (see <code><a href="evppi.html">evppi</a></code>) 
 nonparametric regression used inside the moment matching method.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>A data frame with a column <code>pars</code>, indicating the parameter(s), and a column <code>evsi</code>, giving the corresponding EVSI.  If there are EVSI estimates for multiple sample sizes, the sample size is returned in the column <code>n</code>.</p>
+    </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Jackson, C., Presanis, A., Conti, S., &amp; De Angelis, D. (2019). Value of information:

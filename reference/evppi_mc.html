@@ -42,7 +42,13 @@ will usually be much more computationally efficient."><!-- mathjax --><script sr
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/chjackson/voi/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -50,7 +56,7 @@ will usually be much more computationally efficient."><!-- mathjax --><script sr
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Traditional two-level Monte Carlo estimator of EVPPI.</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/HEAD/R/evppi_mc.R" class="external-link"><code>R/evppi_mc.R</code></a></small>
       <div class="d-none name"><code>evppi_mc.Rd</code></div>
     </div>
 
@@ -70,7 +76,7 @@ will usually be much more computationally efficient.</p>
 <span>  <span class="va">pars</span>,</span>
 <span>  <span class="va">nouter</span>,</span>
 <span>  <span class="va">ninner</span>,</span>
-<span>  wtp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  k <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  mfargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -131,7 +137,7 @@ that are independent of those of the other parameters.</p></dd>
 <dd><p>Number of inner samples</p></dd>
 
 
-<dt>wtp</dt>
+<dt>k</dt>
 <dd><p>Vector of willingness-to-pay values.  Only used if
 <code>model_fn</code> is in cost-effectiveness analyis format.</p></dd>
 
@@ -146,6 +152,18 @@ that are independent of those of the other parameters.</p></dd>
 help with debugging.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>A data frame with a column <code>pars</code>, indicating the parameter(s),
+and a column <code>evppi</code>, giving the corresponding EVPPI.</p>
+
+
+<p>If <code>outputs</code> is of "cost-effectiveness analysis" form, so that there is
+one EVPPI per willingness-to-pay value, then a column <code>k</code> identifies the
+willingness-to-pay.</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>See the <a href="https://chjackson.github.io/voi/articles/voi.html#evppimc">package overview / Get Started vignette</a> for an example of using this function.</p>
