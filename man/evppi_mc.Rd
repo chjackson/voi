@@ -10,7 +10,7 @@ evppi_mc(
   pars,
   nouter,
   ninner,
-  wtp = NULL,
+  k = NULL,
   mfargs = NULL,
   verbose = FALSE
 )
@@ -67,7 +67,7 @@ that are independent of those of the other parameters.}
 
 \item{ninner}{Number of inner samples}
 
-\item{wtp}{Vector of willingness-to-pay values.  Only used if
+\item{k}{Vector of willingness-to-pay values.  Only used if
 \code{model_fn} is in cost-effectiveness analyis format.}
 
 \item{mfargs}{Named list of additional arguments to supply to
@@ -75,6 +75,14 @@ that are independent of those of the other parameters.}
 
 \item{verbose}{Set to \code{TRUE} to print some additional messages to
 help with debugging.}
+}
+\value{
+A data frame with a column \code{pars}, indicating the parameter(s),
+and a column \code{evppi}, giving the corresponding EVPPI.
+
+If \code{outputs} is of "cost-effectiveness analysis" form, so that there is
+one EVPPI per willingness-to-pay value, then a column \code{k} identifies the
+willingness-to-pay.
 }
 \description{
 Traditional two-level Monte Carlo estimator of the expected value of partial

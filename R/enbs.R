@@ -202,6 +202,7 @@ enbs_opt <- function(x, pcut=0.05, smooth=FALSE, smooth_df=NULL, keep_preds=FALS
 ##'
 ##' @param dis Discount rate used when converting per-person to population EVSI.
 ##'
+##' @return A vector of population VoI estimates.
 ##' 
 ##' @export
 pop_voi <- function(voi, pop, time, dis=0.035){

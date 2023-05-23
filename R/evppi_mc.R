@@ -60,7 +60,7 @@
 ##'
 ##' @param ninner Number of inner samples
 ##'
-##' @param wtp Vector of willingness-to-pay values.  Only used if
+##' @param k Vector of willingness-to-pay values.  Only used if
 ##'   \code{model_fn} is in cost-effectiveness analyis format.
 ##'
 ##' @param mfargs Named list of additional arguments to supply to
@@ -68,10 +68,17 @@
 ##'
 ##' @param verbose Set to \code{TRUE} to print some additional messages to
 ##' help with debugging.
+##' 
+##' @return A data frame with a column \code{pars}, indicating the parameter(s),
+##'   and a column \code{evppi}, giving the corresponding EVPPI. 
+##'
+##'   If \code{outputs} is of "cost-effectiveness analysis" form, so that there is
+##'   one EVPPI per willingness-to-pay value, then a column \code{k} identifies the 
+##'   willingness-to-pay.
 ##'
 ##' @export
 evppi_mc <- function(model_fn, par_fn, pars, nouter, ninner,
-                     wtp=NULL, mfargs=NULL, verbose=FALSE){
+                     k=NULL, mfargs=NULL, verbose=FALSE){
     model_fn <- check_model_fn(model_fn, par_fn, mfargs, verbose=verbose)
     nopt <- attr(model_fn, "nopt")
     check_parfnn(par_fn, model_fn)
@@ -80,9 +87,10 @@ evppi_mc <- function(model_fn, par_fn, pars, nouter, ninner,
     pars_rep <- par_fn(n=nouter)
     check_evppimc_pars(pars, model_fn, pars_rep)
     pars_rep <- pars_rep[,pars,drop=FALSE]
-    rese <- evppimc(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs) 
+    rese <- evppimc(model_fn=model_fn, par_fn=par_fn, pars=pars, pars_rep=pars_rep,
+                    nouter=nouter, ninner=ninner, nopt=nopt, wtp=k, mfargs=mfargs) 
     if (inherits(model_fn, "cea")){
-        res <- data.frame(wtp=wtp, evppi=rese) 
+        res <- data.frame(k=k, evppi=rese) 
     } else res <- data.frame(evppi=rese)
     res
 }
@@ -91,7 +99,7 @@ evppimc <- function(model_fn, ...){
     UseMethod("evppimc", model_fn)
 }
     
-evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs, ...) {
+evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, mfargs, ...) {
     nb_current <- matrix(nrow=nouter, ncol=nopt)
     nb_ppi <- numeric(nouter)
     nf <- names(formals(model_fn))
@@ -116,7 +124,7 @@ evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, w
 evppimc.cea <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs, ...) {
     nwtp <- length(wtp)
     if (nwtp < 1)
-        stop("If `model_fn` is in cost-effectiveness format, at least one willingness-to-pay should be supplied in `wtp`")
+        stop("If `model_fn` is in cost-effectiveness format, at least one willingness-to-pay should be supplied in `k`")
     res <- numeric(nwtp)
     ce_current <- array(dim=c(nouter, 2, nopt))
     cost_ppi <- eff_ppi <- matrix(nrow=nouter, ncol=nopt)

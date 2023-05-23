@@ -7,6 +7,8 @@
 ##' @param method See \code{\link{evsi}}, only nonparametric regression methods are
 ##' currently supported in \code{\link{evsivar}}.
 ##'
+##' @return A data frame with a column \code{pars}, indicating the parameter(s), and a column \code{evsi}, giving the corresponding EVSI.  If there are EVSI estimates for multiple sample sizes, the sample size is returned in the column \code{n}. 
+##'
 ##' @inheritParams evsi
 ##'
 ##' @references  

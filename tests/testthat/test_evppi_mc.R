@@ -55,8 +55,8 @@ par_fn <- function(n){data.frame(p1 = rnorm(n, 0, s1), p2 = rnorm(n, 0, s2))}
 
 test_that("Monte Carlo EVPPI, CEA format",{
   set.seed(1)
-  expect_equal(evppi_mc(model_fn, par_fn, pars="p1", nouter=50, ninner=50, wtp=1)$evppi, 0.245, tol=1e-01)
-  expect_equal(evppi_mc(model_fn, par_fn, pars="p1", nouter=50, ninner=50, wtp=c(1,2))$evppi, c(0.271, 0.096), tol=1e-01)
+  expect_equal(evppi_mc(model_fn, par_fn, pars="p1", nouter=50, ninner=50, k=1)$evppi, 0.245, tol=1e-01)
+  expect_equal(evppi_mc(model_fn, par_fn, pars="p1", nouter=50, ninner=50, k=c(1,2))$evppi, c(0.271, 0.096), tol=1e-01)
 })
 
 test_that("Errors in Monte Carlo EVPPI for CEA format",{

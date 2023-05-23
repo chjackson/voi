@@ -18,6 +18,9 @@ data frames returned by \code{\link{evppi}} or \code{\link{evpi}}.}
 
 \item{dis}{Discount rate used when converting per-person to population EVSI.}
 }
+\value{
+A vector of population VoI estimates.
+}
 \description{
 Convert per-person expected value of information to the population
 expected value of information, given a discount rate over some

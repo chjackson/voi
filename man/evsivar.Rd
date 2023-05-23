@@ -132,6 +132,9 @@ these.  Can be useful to see the progress of slow calculations.}
 and other controlling options (see \code{\link{evppi}}) can be passed to the
 nonparametric regression used inside the moment matching method.}
 }
+\value{
+A data frame with a column \code{pars}, indicating the parameter(s), and a column \code{evsi}, giving the corresponding EVSI.  If there are EVSI estimates for multiple sample sizes, the sample size is returned in the column \code{n}.
+}
 \description{
 Calculate the expected value of sample information for an estimation problem.  This computes the expected reduction in variance in some quantity of interest from a study of a certain design that informs the parameters of interest.
 }

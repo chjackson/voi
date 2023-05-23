@@ -225,7 +225,15 @@
 ##'
 ##' @param ... Other arguments understood by specific methods, e.g. \code{gam_formula}
 ##' and other controlling options (see \code{\link{evppi}}) can be passed to the
-##' nonparametric regression used inside the moment matching method. 
+##' nonparametric regression used inside the moment matching method.
+##'
+##' @return A data frame with a column \code{pars}, indicating the
+##'   parameter(s), and a column \code{evsi}, giving the corresponding
+##'   EVPPI.  If the EVSI for multiple sample sizes was requested,
+##'   then the sample size is returned in the column \code{n}, and if
+##'   \code{outputs} is of "cost-effectiveness analysis" form, so that
+##'   there is one EVPPI per willingness-to-pay value, then a column
+##'   \code{k} identifies the willingness-to-pay.
 ##'
 ##' @references
 ##'

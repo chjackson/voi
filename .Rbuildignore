@@ -17,3 +17,5 @@ inst/Chemotherapy_Book/.git
 git_notes.md
 coding_style.md
 ^.*\.RData
+vignettes/voi_cache
+vignettes/voi_files
