@@ -33,5 +33,6 @@
 ##' @importFrom stats formula as.formula dist dnorm formula optim sd var rbeta rbinom rlnorm rnorm quantile dbinom coef vcov predict AIC cov lm fitted reorder IQR residuals update pnorm
 ##' @importFrom utils select.list combn
 ##' @importFrom progress progress_bar
+##' @importFrom Matrix nearPD
 ##' 
 NULL

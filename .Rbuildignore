@@ -16,3 +16,4 @@ inst/Chemotherapy_Book/.git
 ^_pkgdown2\.yml$
 git_notes.md
 coding_style.md
+^.*\.RData

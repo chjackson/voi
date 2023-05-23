@@ -31,7 +31,7 @@ This document gives a simple overview of how the `voi` package is used to calcul
 
 The example model is a model used for _decision making_, which has been the most common application of VoI, e.g. in health economic evaluations.
 
-A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making.  For more information about the theory behind this, see [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) and [Jackson et al. 2021](https://www.degruyter.com/document/doi/10.1515/em-2021-0012/html).
+A later section describes the use of VoI methods for a model that is used for _estimation_ of uncertain quantities, rather than for explicit decision-making.  For more information about the theory behind this, see [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932) and [Jackson et al. 2021](https://doi.org/10.1515/em-2021-0012).
 
 ## Simple example model 
 
@@ -160,7 +160,7 @@ The EVPPI is defined as the expected net benefit given perfect knowledge of $\ph
 
 The function `evppi` can be used to compute this. 
 
-There are a variety of alternative computational methods implemented in this function.   The default methods are based on nonparametric regression, and come from [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910).  If there are four or fewer parameters, then a generalized additive model is used.   With five or more, then Gaussian process regression is used. 
+There are a variety of alternative computational methods implemented in this function.   The default methods are based on nonparametric regression, and come from [Strong et al. (2013)](https://doi.org/10.1177/0272989X13505910).  If there are four or fewer parameters, then a generalized additive model is used (the default spline model in `gam` from the `mgcv` package).   With five or more, then Gaussian process regression is used. 
 
 
 ### Invoking the `evppi` function. 
@@ -203,14 +203,14 @@ evppi(outputs_nb, inputs, pars="p1", method="gp", nsim=1000)
 ```
 
 #### Multivariate adaptive regression splines {#earth}
-This is a variant of generalized additive models based on linear splines, which uses a package called [earth](https://CRAN.R-project.org/package=earth).  
+This is a variant of generalized additive models based on linear splines, which uses a package called [earth](https://CRAN.R-project.org/package=earth).
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", method="earth")
 ```
 While the merits of this method for EVPPI computation have not been systematically investigated, I have found this to be generally faster than comparable `mgcv` spline models for similar levels of accuracy and around 5 or fewer parameters.
 
 #### INLA method
-(from [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) ).  This needs the following extra packages to be installed, using the following commands.  
+(from [Heath et al.](https://doi.org/10.1002/sim.6983), [Baio et al.](https://doi.org/10.1007/978-3-319-55718-2) ).  This needs the following extra packages to be installed, using the following commands.
 
 ```{r,eval=FALSE}
 install.packages('INLA', repos='https://inla.r-inla-download.org/R/stable')
@@ -221,7 +221,7 @@ It is only applicable to calculating the multiparameter EVPPI for 2 or more para
 
 In this toy example it is overkill, since the two-parameter EVPPI is simply the EVPI, and the default method needs an esoteric tweak (`pfc_struc`) to work.
 
-However it has been found to be more efficient than the Gaussian process method in many other situations. See [Heath et al.](https://onlinelibrary.wiley.com/doi/full/10.1002/sim.6983), [Baio et al.](https://link.springer.com/content/pdf/10.1007/978-3-319-55718-2.pdf) for more details about implementing and tuning this method. 
+However it has been found to be more efficient than the Gaussian process method in many other situations. See [Heath et al.](https://doi.org/10.1002/sim.6983), [Baio et al.](https://doi.org/10.1007/978-3-319-55718-2) for more details about implementing and tuning this method. 
 
 ```{r,eval=FALSE}
 evppi(outputs_nb, inputs, pars=c("p1","p2"), method="inla", pfc_struc="iso")
@@ -240,7 +240,7 @@ evppi(chemo_nb, chemo_pars, pars=colnames(chemo_pars), method="bart")
 evpi(chemo_nb)
 ```
 
-The BART estimation is being performed using the `bart()` function from the [dbarts](https://cran.r-project.org/web/packages/dbarts/index.html) package, and in this case the function's default settings are used. 
+The BART estimation is being performed using the `bart()` function from the [dbarts](https://CRAN.R-project.org/package=dbarts) package, and in this case the function's default settings are used. 
 
 While the BART method has not been investigated systematically as a way of estimating EVPPI, these are promising results.
 
@@ -275,7 +275,7 @@ supplied in the package for academic interest, but for single-parameter EVPPI we
 found it to be sufficiently reliable to use the default GAM method, which requires less tuning than
 these methods. 
 
-The method of [Strong and Oakley](https://journals.sagepub.com/doi/full/10.1177/0272989X12465123):
+The method of [Strong and Oakley](https://doi.org/10.1177/0272989X12465123):
 
 ```{r}
 evppi(outputs_nb, inputs, pars="p1", n.blocks=20, method="so")
@@ -459,9 +459,9 @@ evsi(outputs_nb, inputs, study = "normal_known", n=100, pars = "p1", method="is"
 
 ### Moment matching method
 
-The momemt matching method from [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) is available as `evsi(..., method="mm")`.  This includes the extension of this method to efficiently estimate the EVSI for the same design but with many different sample sizes (from [Heath et al](https://doi.org/10.1177/0272989X19837983)). 
+The momemt matching method from [Heath et al.](https://doi.org/10.1177/0272989X17738515) is available as `evsi(..., method="mm")`.  This includes the extension of this method to efficiently estimate the EVSI for the same design but with many different sample sizes (from [Heath et al](https://doi.org/10.1177/0272989X19837983)). 
 
-Roughly, this method works as follows (see [Heath et al.](https://journals.sagepub.com/doi/10.1177/0272989X17738515) for full details) 
+Roughly, this method works as follows (see [Heath et al.](https://doi.org/10.1177/0272989X17738515) for full details) 
 
 * a small set of values $\theta_q: q = 1,\ldots, Q$ are simulated for the decision model parameters $\theta$ (typically $Q<50$ is sufficient). 
 
@@ -642,8 +642,8 @@ var(p2)
 
 A more interesting quantity is the EVPPI for a parameter.  It describes the expected reduction in variance given perfect knowledge of a particular parameter.  In this example, we compute the EVPPI for $p_1$ and $\beta$, respectively, defined as 
 
-$$EVPPI[p_1] = var(p_2) - E(var(p_2| p_1)$$
-$$EVPPI[\beta] = var(p_2) - E(var(p_2 | \beta)$$
+$$EVPPI[p_1] = var(p_2) - E(var(p_2| p_1))$$
+$$EVPPI[\beta] = var(p_2) - E(var(p_2 | \beta))$$
 
 These can be computed using nonparametric regression, as described in [Jackson et al. 2019](https://doi.org/10.1080/01621459.2018.1562932).  This is implemented in the function `evppivar` in the `voi` package. 
 
@@ -663,7 +663,7 @@ sqrt(var(p2) - evppi_beta$evppi)
 sqrt(var(p2) - evppi_p1$evppi)
 ```
 
-Hence we would expect to reduce the SD of $p_1$ to around 2/3 of its original value by learning $p_1$ or $\beta$.
+Hence we would expect to reduce the SD of $p_2$ to around 2/3 of its original value by learning $p_1$ or $\beta$.
 
 
 ### How regression-based EVPPI estimation works
