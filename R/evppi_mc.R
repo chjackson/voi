@@ -91,7 +91,7 @@ evppimc <- function(model_fn, ...){
     UseMethod("evppimc", model_fn)
 }
     
-evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs) {
+evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs, ...) {
     nb_current <- matrix(nrow=nouter, ncol=nopt)
     nb_ppi <- numeric(nouter)
     nf <- names(formals(model_fn))
@@ -113,7 +113,7 @@ evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, w
     mean(nb_ppi) - max(colMeans(nb_current))
 }
 
-evppimc.cea <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs) {
+evppimc.cea <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs, ...) {
     nwtp <- length(wtp)
     if (nwtp < 1)
         stop("If `model_fn` is in cost-effectiveness format, at least one willingness-to-pay should be supplied in `wtp`")

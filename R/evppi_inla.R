@@ -37,7 +37,7 @@ fitted_inla <- function(y, inputs, pars,
     }
     mesh <- make.mesh(data = data, convex.inner = convex.inner,
                       convex.outer = convex.outer, cutoff = cutoff,max.edge=max.edge)
-    plot.mesh(mesh = mesh$mesh, data = data, plot = plot_inla_mesh)
+    plot_mesh(mesh = mesh$mesh, data = data, plot = plot_inla_mesh)
     if (verbose) {
         message("Calculating fitted values for the GP regression using INLA/SPDE")
     }
@@ -90,7 +90,7 @@ make.proj <- function(parameter, inputs, x, pfc_struc="AIC") {
 }
 
 
-plot.mesh <- function(mesh, data, plot) {
+plot_mesh <- function(mesh, data, plot) {
     if (plot) {
       plot(mesh)
       points(data, col = "blue", pch = 19, cex = 0.8)

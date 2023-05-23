@@ -297,13 +297,13 @@ subset_outputs <- function(outputs, ...){
     UseMethod("subset_outputs", outputs)
 }
 
-subset_outputs.nb <- function(outputs, nsim){
+subset_outputs.nb <- function(outputs, nsim, ...){
     outputs <- outputs[1:nsim,,drop=FALSE]
     class(outputs) <- c("nb", attr(outputs, "class"))
     outputs 
 }
 
-subset_outputs.cea <- function(outputs, nsim){
+subset_outputs.cea <- function(outputs, nsim, ...){
     outputs$c <- outputs$c[1:nsim,,drop=FALSE]
     outputs$e <- outputs$e[1:nsim,,drop=FALSE]
     class(outputs) <- c("cea", attr(outputs, "class"))
