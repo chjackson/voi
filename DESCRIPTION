@@ -1,7 +1,7 @@
 Package: voi
 Title: Expected Value of Information 
 Version: 1.0
-Date: 2023-05-23
+Date: 2023-05-26
 Authors@R: 
     c(person(given = "Christopher", family = "Jackson",role = c("aut", "cre"),email = "chris.jackson@mrc-bsu.cam.ac.uk"),
 	   person(given = "Anna", family = "Heath", role = c("aut"), email = "anna.heath@sickkids.ca"),
