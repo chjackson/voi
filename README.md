@@ -48,7 +48,7 @@ install.packages("voi")
 ```
 
 Development version
-```
+```{r}
 remotes::install_github("chjackson/voi")
  ```
 
