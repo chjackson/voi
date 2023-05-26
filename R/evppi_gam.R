@@ -25,8 +25,10 @@ fitted_rep_gam <- function(model, B) {
 }
 
 check_plot_gam <- function(mod){
-    graphics::par(mfrow=c(2,2))
-    mgcv::gam.check(mod)
+  oldpar <- graphics::par(no.readonly=TRUE)
+  on.exit(par(oldpar))
+  graphics::par(mfrow=c(2,2))
+  mgcv::gam.check(mod)
 }
 
 check_stats_gam <- function(mod){

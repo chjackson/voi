@@ -10,7 +10,7 @@ Authors@R:
 	   person(given="Kofi Placid", family="Adragni", role="ctb", comment="Author of code taken from the ldr package"),
 	   person(given="Andrew", family="Raim", role="ctb",comment="Author of code taken from the ldr package")
 	   )
-Description: Methods to calculate the expected value of information from a decision-analytic model.  This includes the expected value of perfect information (EVPI), partial perfect information (EVPPI) and sample information (EVSI), and the expected net benefit of sampling (ENBS).  A range of alternative computational methods are provided under the same user interface.  The package accompanies a forthcoming book: "Value of Information for Healthcare Decision-Making" (CRC Press, eds. Heath, Jackson, Kunst).
+Description: Methods to calculate the expected value of information from a decision-analytic model.  This includes the expected value of perfect information (EVPI), partial perfect information (EVPPI) and sample information (EVSI), and the expected net benefit of sampling (ENBS).  A range of alternative computational methods are provided under the same user interface.  See Jackson et al. (2022) <doi:10.1146/annurev-statistics-040120-010730>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

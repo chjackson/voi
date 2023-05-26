@@ -153,6 +153,9 @@ For \code{method="sal"}:
 \item \code{n.seps} Number of separators (default 1).
 }}
 }
+\value{
+A data frame with a column \code{pars}, indicating the parameter(s), and a column \code{evppi}, giving the corresponding EVPPI.
+}
 \description{
 Calculate the expected value of partial perfect information for an estimation problem.  This computes the expected reduction in variance in some quantity of interest with perfect information about a parameter or parameters of interest.
 }

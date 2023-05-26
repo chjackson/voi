@@ -22,6 +22,8 @@ fitted_earth <- function(y, inputs, pars, verbose=FALSE, ...){
 }
 
 check_plot_earth <- function(mod){
+  oldpar <- graphics::par(no.readonly=TRUE)
+  on.exit(par(oldpar))
   graphics::par(mfrow=c(2,2))
   plot(mod)
 }

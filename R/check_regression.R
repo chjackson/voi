@@ -113,6 +113,8 @@ check_plot_default <- function(mod){
   if (!is.numeric(res))
     warning("residuals() does not work on regression model object, so can't produce diagnostic plots")
   dat <- data.frame(fit = fit, res = res)
+  oldpar <- graphics::par(no.readonly=TRUE)
+  on.exit(par(oldpar))
   graphics::par(mfrow=c(2,1))
   bw <- 2 * IQR(dat$res) / length(dat$res)^(1/3)
   p1 <- ggplot2::ggplot(dat, aes(x=res)) +

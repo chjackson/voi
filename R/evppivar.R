@@ -6,7 +6,8 @@
 ##'
 ##' Typically this will come from a Monte Carlo sample, where we first sample from the uncertainty distributions of the parameters, and then compute the quantity of interest as a function of the parameters.  It might also be produced by a Markov Chain Monte Carlo sample from the joint distribution of parameters and outputs. 
 ##'
-##'
+##' @return A data frame with a column \code{pars}, indicating the parameter(s), and a column \code{evppi}, giving the corresponding EVPPI.
+##' 
 ##' @inheritParams evppi
 ##' 
 ##' @references

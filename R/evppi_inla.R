@@ -156,8 +156,10 @@ fit.inla <- function(parameter, inputs, x, mesh,
 }
 
 check_plot_inla <- function(mod){
-    graphics::par(mfrow=c(2,2))
-    gp.check(mod)
+  oldpar <- graphics::par(no.readonly=TRUE)
+  on.exit(par(oldpar))
+  graphics::par(mfrow=c(2,2))
+  gp.check(mod)
 }
 
 check_stats_inla <- function(mod){
