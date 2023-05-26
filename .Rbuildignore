@@ -1,6 +1,7 @@
 TODO\.md
 data-raw
 ^\.travis\.yml$
+^.*\.Rprofile$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^doc$

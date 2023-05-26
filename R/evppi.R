@@ -68,7 +68,7 @@
 ##'
 ##' \code{"gp"} for a Gaussian process regression, as described by Strong et al.
 ##' (2014) and implemented in the \pkg{SAVI} package
-##' (\url{https://savi.shef.ac.uk/SAVI/}).  This is the default method for calculating the EVPPI
+##' (\url{https://github.com/Sheffield-Accelerated-VoI/SAVI}).  This is the default method for calculating the EVPPI
 ##' of more than 4 parameters.
 ##'
 ##' \code{"inla"} for an INLA/SPDE Gaussian process regression method, from
@@ -127,8 +127,7 @@
 ##' basis, which is more computationally efficient than the default "thin plate"
 ##' basis.  If there are four or more parameters of interest, then the
 ##' additional argument \code{k=4} is supplied to \code{te()}, specifying a
-##' four-dimensional basis, which is currently the default in the SAVI package
-##' (\url{https://savi.shef.ac.uk/SAVI/}).
+##' four-dimensional basis, which is currently the default in the SAVI package.
 ##' 
 ##'     If there are spaces in the variable names in \code{inputs}, then these should
 ##' be converted to underscores before forming an explicit \code{gam_formula}.

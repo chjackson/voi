@@ -22,3 +22,4 @@ RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 URL: https://chjackson.github.io/voi/
 BugReports: https://github.com/chjackson/voi/issues
+Additional_repositories: https://inla.r-inla-download.org/R/stable/

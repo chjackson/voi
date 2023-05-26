@@ -11,7 +11,7 @@
 
 ## Comparison with other packages
 
-`voi` is pure "command-based" R, with no web interface like [SAVI](https://savi.shef.ac.uk/).
+`voi` is pure "command-based" R, with no web interface like [SAVI](https://github.com/Sheffield-Accelerated-VoI/SAVI).
 
 * The R commands in `voi` are clean and consistent: they all have the same basic interface, so you can switch between computational methods easily.
 
@@ -19,7 +19,7 @@
 
 #### EVPPI computation
 
-* `voi` includes all the [EVPPI computation](https://chjackson.github.io/voi/articles/voi.html#evppi) methods that are in [SAVI](https://savi.shef.ac.uk/) (GAM and Gaussian process regression), and includes the INLA method from [BCEA](https://cran.r-project.org/package=BCEA).
+* `voi` includes all the [EVPPI computation](https://chjackson.github.io/voi/articles/voi.html#evppi) methods that are in [SAVI](https://github.com/Sheffield-Accelerated-VoI/SAVI) (GAM and Gaussian process regression), and includes the INLA method from [BCEA](https://cran.r-project.org/package=BCEA).
 
 * Some other nonparametric regression methods ([`"earth"`](https://chjackson.github.io/voi/articles/voi.html#earth), [`"bart"`](https://chjackson.github.io/voi/articles/voi.html#bart)) are included in `voi`, which may improve efficiency for multiparameter EVPPI computation problems with large numbers of parameters.
 
