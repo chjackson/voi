@@ -44,24 +44,34 @@ ggplot(dat, aes(x=x, y=inb)) +
 mod <- gam(inb ~ s(x), data=dat)
 dat$fitted <- fitted(mod)
 dat$frontier <- pmax(dat$fitted, 0)
-
+phi_crit <- min(dat$x[dat$frontier==0])
+  
 pointdat <- data.frame(x=-1.4, xpad=-1.42, xend=0.2, 
                        inb=c(mean(dat$inb), mean(dat$frontier)),
                        label=c("Current", "Partial perfect"))
-
+dat2 <- data.frame(x1=-0.25, x2=-0.25, y1=-1000, y2=0)
 pdf("~/work/voibook/voibook/Figures/04-evppi/regression_illus.pdf", width=6, height=3.5)
 ggplot(dat, aes(x=x, y=inb)) + 
   geom_point(pch=16, col="gray60", size=0.7) + 
   geom_segment(data=pointdat, aes(x=x, xend=xend, y=inb, yend=inb)) +
-  geom_hline(yintercept = 0, alpha=0.3) +
+  geom_vline(aes(xintercept=round(phi_crit,2)), col="gray70") +
   xlab(expression(paste("Parameter ", phi))) + 
   ylab("Incremental net benefit") + 
   xlim(-1.7, 0.2) +
+  scale_y_continuous(breaks = c(-2500, round(mean(dat$inb)), 
+                                round(mean(dat$frontier)), 2500)) +
+  scale_x_continuous(breaks=c(-1.5,-1,round(phi_crit,2),0,0.5)) +
   geom_text(data=pointdat, aes(label=label, x=xpad), hjust=1) +
   geom_line(aes(y = frontier), lwd=5, alpha=0.4) +
   geom_line(aes(y = fitted), lwd=1.5) + 
   theme(legend.position = "none") +
-  theme_bw()
+  annotate(x=0,y=-600,geom="text",size=2.7,label="Value gained by",col="blue") +
+  annotate(x=0,y=-1000,geom="text",size=2.7,label="changing decision",col="blue") +
+  geom_segment(data=dat2, aes(x = x1, y = y1, xend = x2, yend = y2),
+               arrow = arrow(length = unit(0.03, "npc")), col="blue") + 
+  geom_segment(data=dat2, aes(x = x1, y = y2, xend = x2, yend = y1),
+               arrow = arrow(length = unit(0.03, "npc")), col="blue") +
+  theme_bw() 
 dev.off()
 
 (evppi <- mean(dat$frontier) - mean(dat$inb))
