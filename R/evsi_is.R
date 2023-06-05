@@ -4,7 +4,8 @@
 evsi_is <- function(outputs, inputs, pars, pars_datagen,
                     datagen_fn, n=100, aux_pars=aux_pars,
                     likelihood, npreg_method="gam", verbose, ...){
-    nn <- length(n)
+  check_pars(pars, inputs, evppi=FALSE)
+  nn <- length(n)
     res <- vector(nn, mode="list")
     for (i in seq_along(n)){
         res[[i]] <- data.frame(

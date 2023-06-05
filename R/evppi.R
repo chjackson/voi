@@ -365,14 +365,19 @@ check_pars <- function(pars, inputs, evppi=TRUE){
             pars <- colnames(inputs)
         else stop("`pars` should be specified if there are two or more parameters in `inputs`")
     }
-    if (!is.null(pars) && !is.character(pars))
-        stop("`pars` should be a character vector")
+    validate_char(pars, "pars")
     badpars <- pars[!(pars %in% colnames(inputs))]
     if (length(badpars)>0){
         stop(sprintf("parameters of interest `%s` not found in columns of `inputs`",
                      paste(badpars,collapse=",")))
     }
     pars
+}
+
+validate_char <- function(x,name=NULL){
+  if (is.null(name)) name <- deparse(substitute(x))
+  if (!is.null(x) && !is.character(x))
+    stop(sprintf("`%s` should be a character vector",name))
 }
 
 clean_pars <- function(pars) {

@@ -89,7 +89,9 @@ interpreted as the sample size for the proposed study.
 }}
 
 \item{pars}{Character vector identifying which parameters are learned from the proposed study.
-These should be columns of \code{inputs}.}
+This is required for the moment matching and importance sampling methods,
+and these should be columns of \code{inputs}.   This is not required for the nonparametric
+regression methods.}
 
 \item{n}{Sample size of future study, or vector of alternative sample sizes.
 This is understood by the built-in study designs.  For studies specified

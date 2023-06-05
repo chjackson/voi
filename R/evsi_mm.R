@@ -12,6 +12,7 @@ evsi_mm <- function(outputs,
                     Q,
                     npreg_method="gam",
                     verbose, ...){
+  check_pars(pars, inputs, evppi=FALSE)
   model_fn <- check_model_fn(model_fn, par_fn, mfargs=NULL, outputs, verbose=verbose)
   check_pars_in_modelfn(pars, model_fn)
   analysis_args <- form_analysis_args(analysis_args, study, n)
