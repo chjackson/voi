@@ -179,7 +179,9 @@ interpreted as the sample size for the proposed study.</p></li>
 
 <dt>pars</dt>
 <dd><p>Character vector identifying which parameters are learned from the proposed study.
-These should be columns of <code>inputs</code>.</p></dd>
+This is required for the moment matching and importance sampling methods,
+and these should be columns of <code>inputs</code>.   This is not required for the nonparametric
+regression methods.</p></dd>
 
 
 <dt>pars_datagen</dt>
