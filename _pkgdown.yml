@@ -36,3 +36,7 @@ footer:
   structure:
     left: FALSE
     right: built_with
+home:
+  links:
+  - text: Questions, suggestions
+    href: https://github.com/chjackson/voi/issues
