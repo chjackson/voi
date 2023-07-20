@@ -5,12 +5,14 @@
 
 datagen_binary <- function(inputs, n=100, pars){
     nsim <- nrow(inputs)
+    validate_prob(inputs[,pars[1]], pars[1])
     data.frame(
         X1 = rbinom(nsim, size=n, prob=inputs[,pars[1]])
     )
 }
 
 likelihood_binary <- function(Y, inputs, n=100, pars){
+    validate_prob(inputs[,pars[1]], pars[1])
     loglik <-
         dbinom(Y[,"X1"], size=n, inputs[,pars[1]], log=TRUE) 
     exp(loglik)
@@ -49,6 +51,8 @@ analysis_trial_binary <- function(data, args, pars,...){
 
 datagen_trial_binary <- function(inputs, n=100, pars){
     nsim <- nrow(inputs)
+    validate_prob(inputs[,pars[1]], pars[1])
+    validate_prob(inputs[,pars[2]], pars[2])
     data.frame(
         X1 = rbinom(nsim, size=n, prob=inputs[,pars[1]]),
         X2 = rbinom(nsim, size=n, prob=inputs[,pars[2]])
@@ -56,6 +60,8 @@ datagen_trial_binary <- function(inputs, n=100, pars){
 }
 
 likelihood_trial_binary <- function(Y, inputs, n=100, pars){
+    validate_prob(inputs[,pars[1]], pars[1])
+    validate_prob(inputs[,pars[2]], pars[2])
     loglik <-
         dbinom(Y[,"X1"], size=n, inputs[,pars[1]], log=TRUE) + 
         dbinom(Y[,"X2"], size=n, inputs[,pars[2]], log=TRUE) 
@@ -101,4 +107,9 @@ check_analysis_args <- function(args, required){
     if (is.null(args[[i]]))
       stop(sprintf("`%s` not supplied in `analysis_args`", i))
   }
+}
+
+validate_prob <- function(p, name){
+  if (any((p<0)|(p>1)))
+    stop(sprintf("%s should represent a probability, but it has values that are greater than 1 or less than 0", name))
 }

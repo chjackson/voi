@@ -51,3 +51,10 @@ test_that("Do we need to specify pars for EVSI",{
   expect_error(evsi(chemo_nb, chemo_pars, study="binary", method="mm", pars = "p_wrong"), "not found in columns of `inputs`") 
   expect_error(evsi(chemo_nb, chemo_pars, study="binary", method="is", pars = "p_wrong"), "not found in columns of `inputs`") 
 })
+
+test_that("Input parameter validation for built in EVSI",{
+  pars_wrong <- chemo_pars
+  pars_wrong$p_side_effects_t1[1] <- -1
+  expect_error(evsi(chemo_nb, pars_wrong, study="binary", pars="p_side_effects_t1"),
+                 "less than 0")
+})
