@@ -37,6 +37,21 @@ test_that("single-parameter EVPPI, earth",{
         265.1299, tol=1e-03)
 })
 
+if (requireNamespace("INLA",quietly=TRUE)) { 
+  test_that("EVPPI with INLA",{
+    skip_on_cran()
+    expect_error(evppi(chemo_nb, chemo_pars, pars=pi2, method="inla", nsim=100), "2 or more parameters")
+    pars <- c(pi2,rho)
+    set.seed(1)
+    expect_equal(
+      evppi(chemo_nb, chemo_pars, pars=pars, method="inla", nsim=1000)$evppi, 
+      323.7706, tol=1e-02)
+    if (interactive()){
+      evppi(chemo_nb, chemo_pars, pars=pars, method="inla", nsim=1000, plot_inla_mesh = TRUE)
+    }
+  })
+}
+
 test_that("multi-parameter EVPPI, gam",{
     pars <- c(pi2,rho)
     expect_equal(evppi(chemo_nb, chemo_pars, pars=pars, method="gam")$evppi,
