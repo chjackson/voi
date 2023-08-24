@@ -64,6 +64,6 @@ remotes::install_github("chjackson/voi")
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/chjackson/voi/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/chjackson/voi/actions/workflows/R-CMD-check.yaml)
-[![test-coverage](https://github.com/chjackson/voi/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/chjackson/voi/actions/workflows/test-coverage.yaml)
+[![test-coverage](https://codecov.io/gh/chjackson/voi/branch/master/graph/badge.svg)](https://github.com/chjackson/voi/actions/workflows/test-coverage.yaml)
 [![DOI](https://zenodo.org/badge/227181181.svg)](https://zenodo.org/badge/latestdoi/227181181)
 <!-- badges: end -->
