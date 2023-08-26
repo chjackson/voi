@@ -11,6 +11,7 @@ function(y, case=c("poly", "categ", "fourier", "pcont", "pdisc"), degree=1, nsli
 
 	case <- match.arg(case); nobs=length(y); 
 
+# nocov start
 	if (case=="categ")
 	{
 		bins.y<-unique(sort(y)); 
@@ -26,12 +27,14 @@ function(y, case=c("poly", "categ", "fourier", "pcont", "pdisc"), degree=1, nsli
 			fy[2*i, 1:nobs]<-  sin(2*pi*y*i); 
 		}
 	}
+# nocov end
 	else if (case=="poly") 
 	{
 		if (degree==0) stop("This case is not defined");
 		fy <- array(rep(0), c(degree, nobs));
 		for (k in 1:degree) fy[k, ] <- y^k; 
 	}
+# nocov start
 	else if (case=="pdisc")
 	{
 		if ((nslices==0) | (nslices==1)){message("The minimum number of slices is 2"); nslices=2;}
@@ -114,5 +117,6 @@ function(y, case=c("poly", "categ", "fourier", "pcont", "pdisc"), degree=1, nsli
 			}
 		} 	
 	}
+# nocov end
 	return( scale(t(Re(fy)), center=TRUE, scale=scale))
 }

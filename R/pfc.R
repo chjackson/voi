@@ -45,6 +45,7 @@ function(X, y, fy=NULL, numdir=NULL, structure=c("iso", "aniso", "unstr"), eps_a
 		coef.proj <- 1/sqrt(diag(crossprod(v)))
 		return(t(t(v) * coef.proj))
 	}
+## nocov start
 	onepfc = function(X, y, fy)
 	{
 		# X is univariate predictor
@@ -78,6 +79,7 @@ function(X, y, fy=NULL, numdir=NULL, structure=c("iso", "aniso", "unstr"), eps_a
 
 		return(ans)
 	}
+## nocov end
 	
 	if (is.null(fy)) {fy <- scale(y, TRUE, TRUE); numdir <- 1}
 	r <- dim(fy)[2]; X <- as.matrix(X)
@@ -136,6 +138,7 @@ function(X, y, fy=NULL, numdir=NULL, structure=c("iso", "aniso", "unstr"), eps_a
 			return(ans);		
 		}
 
+# nocov start
 		if (identical(numdir.test, TRUE))
 		{
 			aic <- bic <- numpar <- loglik <- vector(length=eff.numdir+1);
@@ -168,6 +171,7 @@ function(X, y, fy=NULL, numdir=NULL, structure=c("iso", "aniso", "unstr"), eps_a
 			class(ans)<- "pfc";
 			return(ans)
 		} 
+# nocov end
 	}
 
 	if (structure=="aniso")

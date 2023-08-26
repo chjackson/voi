@@ -46,9 +46,11 @@ if (requireNamespace("INLA",quietly=TRUE)) {
     expect_equal(
       evppi(chemo_nb, chemo_pars, pars=pars, method="inla", nsim=1000)$evppi, 
       323.7706, tol=1e-02)
-    if (interactive()){
+    expect_error({
       evppi(chemo_nb, chemo_pars, pars=pars, method="inla", nsim=1000, plot_inla_mesh = TRUE)
-    }
+      evppi(chemo_nb, chemo_pars, pars=pars, method="inla", pfc_struc="iso", nsim=100)
+      evppi(chemo_nb, chemo_pars, pars=pars, method="inla", pfc_struc="aniso", nsim=50)
+    },NA)
   })
 }
 
