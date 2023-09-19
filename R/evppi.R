@@ -281,7 +281,7 @@ evppi <- function(outputs,
     res <- cbind(pars=rep(names(pars), each = nwtp), res)
     if (check){
         attr(res, "models") <- lapply(eres, function(x)attr(x, "models"))
-        names(attr(res, "models")) <- res$pars
+        names(attr(res, "models")) <- names(pars)
     }
     attr(res, "methods") <- methods
     attr(res, "outputs") <- class(outputs)[1]

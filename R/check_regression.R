@@ -22,7 +22,8 @@
 ##' 
 ##' @param pars Parameter (or parameter group) whose EVPPI calculation is to be checked.
 ##' This should be in the \code{pars} component of the object returned by \code{\link{evppi}}.
-##' Only relevant if \code{x} is the result of an \code{\link{evppi}} calculation.
+##' Only relevant if \code{x} is the result of an \code{\link{evppi}} calculation.  By default,
+##' the first calculation shown in \code{x} is checked.
 ##' 
 ##' @param n Sample size whose EVSI calculation is to be checked. 
 ##' This should be in the \code{n} component of the object returned by \code{\link{evsi}}.
@@ -69,7 +70,7 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
   if (inherits(x, "evppi")) {
     if (is.null(pars)) pars <- x$pars[1]
     if (!(pars %in% x$pars)) stop(sprintf("parameter `%s` not found", pars))
-    method <- attr(x, "methods")[match(pars, x$pars)]
+    method <- attr(x, "methods")[match(pars, unique(x$pars))]
   }
   else if (inherits(x, "evsi")){
     if (is.null(n)) pars <- as.character(x$n[1])
@@ -89,6 +90,7 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
     if (!(comparison %in% 1:ncomp)) stop(sprintf("`comparison` should be a positive integer <= %s", ncomp))
     if (cea){
       if (!(outcome %in% c("costs","effects"))) stop("`outcome` should be \"costs\" or \"effects\"")
+      outcome <- if (outcome=="costs") "c" else "e"
       mod <- mods[[pars]][[outcome]][[comparison]]
     } else { 
       mod <- mods[[pars]][[comparison]]
@@ -113,9 +115,6 @@ check_plot_default <- function(mod){
   if (!is.numeric(res))
     warning("residuals() does not work on regression model object, so can't produce diagnostic plots")
   dat <- data.frame(fit = fit, res = res)
-  oldpar <- graphics::par(no.readonly=TRUE)
-  on.exit(par(oldpar))
-  graphics::par(mfrow=c(2,1))
   bw <- 2 * IQR(dat$res) / length(dat$res)^(1/3)
   p1 <- ggplot2::ggplot(dat, aes(x=res)) +
     ggplot2::geom_histogram(binwidth=bw) +

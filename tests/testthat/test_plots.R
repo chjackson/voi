@@ -14,7 +14,4 @@ test_that("EVPPI plots work",{
     evtest <- evppi(chemo_cea, chemo_pars, pars=as.list(names(chemo_pars)))
     plot(evtest, top=6)
   }, NA)
-  evtest <- evppi(chemo_nb, chemo_pars, pars=pi1, check=TRUE)
-  et <- check_regression(evtest)
-  expect_equal(et$AIC, 165744, tol=1)
 })

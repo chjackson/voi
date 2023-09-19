@@ -21,7 +21,8 @@ default, since these objects can be large.).   \code{attr(x, "models")} cont}
 
 \item{pars}{Parameter (or parameter group) whose EVPPI calculation is to be checked.
 This should be in the \code{pars} component of the object returned by \code{\link{evppi}}.
-Only relevant if \code{x} is the result of an \code{\link{evppi}} calculation.}
+Only relevant if \code{x} is the result of an \code{\link{evppi}} calculation.  By default,
+the first calculation shown in \code{x} is checked.}
 
 \item{n}{Sample size whose EVSI calculation is to be checked.
 This should be in the \code{n} component of the object returned by \code{\link{evsi}}.
