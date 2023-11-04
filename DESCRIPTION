@@ -17,7 +17,7 @@ LazyData: true
 Depends: R (>= 3.5.0)
 VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress, dbarts, posterior, ggplot2, gridExtra, Matrix
-Suggests: testthat, BCEA, INLA, splancs, knitr, rmarkdown, rjags, truncnorm, scales, dplyr, heemod
+Suggests: testthat, BCEA, INLA, splancs, sf, knitr, rmarkdown, rjags, truncnorm, scales, dplyr, heemod
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 URL: https://chjackson.github.io/voi/
