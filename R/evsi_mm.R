@@ -1,3 +1,12 @@
+#' Moment matching method for calculating EVSI
+#'
+#' @inheritParams evsi
+#'
+#' @param ... Options passed to nonparametric regression functions
+#'
+#' @return Data frame with EVSI estimates, as documented in \code{\link{EVSI}}.
+#'
+#' @noRd
 evsi_mm <- function(outputs, 
                     inputs,
                     pars,
@@ -9,7 +18,7 @@ evsi_mm <- function(outputs,
                     model_fn,
                     par_fn,
                     n=100, 
-                    Q,
+                    Q=50,
                     npreg_method="gam",
                     verbose, ...){
   check_pars(pars, inputs, evppi=FALSE)
@@ -18,13 +27,11 @@ evsi_mm <- function(outputs,
   analysis_args <- form_analysis_args(analysis_args, study, n)
   analysis_fn <- form_analysis_fn(study, analysis_fn, analysis_args, datagen_fn, inputs, n, pars, pars_datagen) 
     
-  ## Get quantiles of input parameters from PSA sample 
-  quants <- mm_gen_quantiles(pars_datagen, inputs, Q)
   if (inherits(outputs,"nb")){
     evsi_mm_nb(outputs, inputs=inputs,
                pars=pars, pars_datagen=pars_datagen,
                datagen_fn=datagen_fn, n=n,
-               quants=quants, Q=Q, 
+               Q=Q, 
                analysis_fn=analysis_fn,
                analysis_args=analysis_args,
                model_fn=model_fn, 
@@ -36,7 +43,7 @@ evsi_mm <- function(outputs,
     evsi_mm_cea(outputs, inputs=inputs,
                 pars=pars, pars_datagen=pars_datagen,
                 datagen_fn=datagen_fn, n=n,
-                quants=quants, Q=Q, 
+                Q=Q, 
                 analysis_fn=analysis_fn,
                 analysis_args=analysis_args,
                 model_fn=model_fn, 
@@ -46,15 +53,22 @@ evsi_mm <- function(outputs,
   }
 }
 
+#' Moment matching method for calculating EVSI
+#'
+#' @inheritParams evsi
+#'
+#' Specific to `outputs` of net benefit form
+#'
+#' @noRd 
 evsi_mm_nb <- function(outputs, inputs, pars, pars_datagen, datagen_fn, n,
-                       quants, Q, 
+                       Q, 
                        analysis_fn,
                        analysis_args,
                        model_fn, 
                        par_fn,
                        npreg_method="gam",
                        verbose=FALSE, ...){
-  fits <- evsi_mm_core(nb=outputs, inputs, pars, pars_datagen, datagen_fn, n, quants, Q,
+  fits <- evsi_mm_core(nb=outputs, inputs, pars, pars_datagen, datagen_fn, n, Q,
                        analysis_fn, analysis_args,
                        model_fn, par_fn, output_row=NULL, npreg_method, verbose, ...)
 
@@ -69,22 +83,29 @@ evsi_mm_nb <- function(outputs, inputs, pars, pars_datagen, datagen_fn, n,
   res
 }
 
+#' Moment matching method for calculating EVSI
+#'
+#' @inheritParams evsi
+#'
+#' Specific to `outputs` of "cost-effectiveness analysis" form
+#'
+#' @noRd 
 evsi_mm_cea <- function(outputs, inputs, pars,
                         pars_datagen,
                         datagen_fn, n,
-                        quants, Q, 
+                        Q, 
                         analysis_fn,
                         analysis_args,
                         model_fn, 
                         par_fn,
                         npreg_method="gam",
                         verbose=FALSE, ...){
-  cfits <- evsi_mm_core(outputs$c, inputs, pars, pars_datagen, datagen_fn, n, quants, Q,
+  cfits <- evsi_mm_core(outputs$c, inputs, pars, pars_datagen, datagen_fn, n, Q,
                         analysis_fn, analysis_args,
                         model_fn, par_fn,
                         output_row = "c",
                         npreg_method, verbose, ...)
-  efits <- evsi_mm_core(outputs$e, inputs, pars, pars_datagen, datagen_fn, n, quants, Q,
+  efits <- evsi_mm_core(outputs$e, inputs, pars, pars_datagen, datagen_fn, n, Q,
                         analysis_fn, analysis_args,
                         model_fn, par_fn,
                         output_row = "e",
@@ -101,13 +122,42 @@ evsi_mm_cea <- function(outputs, inputs, pars,
   res
 }
 
+#' Moment-matching method for EVSI calculation - all the hard work is
+#' done in this core function.
+#'
+#' @inheritParams evsi
+#' 
+#' @param nb Matrix of outputs, with columns indicating decision
+#'   options, and rows indicating samples. Could be either net
+#'   benefits, costs or effects.
+#'
+#' @param output_row Name of the row of the decision model output
+#' that is used.  Only used if `nb` is costs or effects.
+#'
+#' @return A list with components:
+#'
+#' `fit` Fitted values for EVPPI calculation.  Matrix with `nsim` rows
+#' (number of samples from the parameter uncertainty distribution) and
+#' `d` columns (number of decision options).  "Fitted values" means
+#' the expected net benefit given further information, conditionally
+#' on specific parameter values.
+#' 
+#' `fits` Array of fitted values for EVSI calculation, with dimensions
+#' `nsim`  x  `d`  x  `length(n)`, where `length(n)` is the number of
+#' distinct sample sizes that the EVSI calculation was requested for.
+#'
+#' `p_shrink` is the ratio of standard deviations, describing the
+#' proportion of uncertainty explained by the further information
+#' gained from the proposed study.
+#'
+#' @noRd
 evsi_mm_core <- function(nb, # could actually be nb, or c, or e
                          inputs, 
                          pars, 
                          pars_datagen, 
                          datagen_fn, 
                          n,
-                         quants, Q, 
+                         Q, 
                          analysis_fn,
                          analysis_args,
                          model_fn, 
@@ -115,7 +165,9 @@ evsi_mm_core <- function(nb, # could actually be nb, or c, or e
                          output_row=NULL,
                          npreg_method="gam",
                          verbose=FALSE, ...){
-  ## Generate future data given Q quantiles
+  ## Determine grid of Q parameters from quantiles
+  quants <- mm_gen_quantiles(pars_datagen, inputs, Q)
+  ## Generate future data given these parameters
   ncomp <- ncol(nb) - 1 # number of comparisons, not number of decision options
   ncov <- ncomp*(ncomp+1)/2
   var_sim <- matrix(nrow=Q, ncol=ncov)
@@ -237,6 +289,13 @@ mm_gen_quantiles <- function(pars,
 }
 
 
+#' Bayesian nonlinear regression of the variance reduction in terms of
+#' the proposed study sample size
+#'
+#' @return A sample from the posterior distribution of the parameter
+#' `beta` governing this dependence.
+#' 
+#' @noRd
 regression_on_sample_size <- function(var_reduction,
                                       sample_size,
                                       var_base) {
@@ -292,6 +351,11 @@ covvec2mat <- function(x){
   mat
 }
 
+#' Matrix square root.  Used to implement (co)variance reduction when
+#' using the moment matching method for models with two or more
+#' treatment comparisons (i.e. three or more decision options).
+#'
+#' @noRd
 MatrixSqrt <- function(x, inverse=FALSE){
   e <- eigen(x)
   if (any(e$values<0)){ 
