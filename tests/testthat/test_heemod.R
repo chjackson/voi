@@ -40,7 +40,7 @@ if (require("heemod",quietly=TRUE)){
     parameters = define_parameters(
       age_init = 60,
       cost_init = 1000,
-      age = age_init + markov_cycle,
+      age = age_init + model_time,
       p_trans = .7
     ),
     init = 1:0,
