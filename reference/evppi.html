@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -235,6 +235,10 @@ mesh, passed to <code><a href="https://rdrr.io/pkg/INLA/man/inla.mesh.2d.html" c
 package for principal fitted components. The default <code>"AIC"</code> selects the
 one that fits best given two basis terms.  Change this to, e.g. <code>"iso"</code>,
 <code>"aniso"</code> or <code>"unstr"</code> if an "Error in eigen..." is obtained.</p></li>
+</ul><p>For any of the nonparametric regression methods:</p><ul><li><p><code>ref</code> The reference decision option used to define the
+incremental net benefit, cost or effects before performing
+nonparametric regression.  Either an integer column number, or the
+name of the column from <code>outputs</code>.</p></li>
 </ul><p>For <code>method="so"</code>:</p><ul><li><p><code>n.blocks</code> Number of blocks to split the sample into. Required.</p></li>
 </ul><p>For <code>method="sal"</code>:</p><ul><li><p><code>n.seps</code> Number of separators (default 1).</p></li>
 </ul></dd>
