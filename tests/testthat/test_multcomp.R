@@ -90,3 +90,17 @@ test_that("moment matching method",{
                analysis_args = list(a=53, b=60, n=100))
   expect_equal(evm3$evsi[2], 221, tol=1)
 })
+
+
+expect_not_equal <- function(x, y) expect_true(!isTRUE(identical(x, y)))
+
+test_that("reference decision option",{
+  expect_not_equal(
+    evppi(multcomp_nb, multcomp_pars, pars=pi2, ref=3),
+    evppi(chemo_nb, chemo_pars, pars=pi2, ref=1)
+  )
+  expect_not_equal(
+    evppi(multcomp_nb, multcomp_pars, pars=pi2, ref="Novel"),
+    evppi(chemo_nb, chemo_pars, pars=pi2, ref="SoC")
+  )
+})

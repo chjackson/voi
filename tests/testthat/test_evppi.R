@@ -161,3 +161,15 @@ test_that("Variable names matching R built in objects", {
     names(cp)[names(cp)=="pi"] <- "letters"
     expect_error(evppi(chemo_nb, cp, pars="letters"), "R internal constant")
 })
+
+test_that("reference decision option",{
+  expect_equal(evppi(chemo_nb, chemo_pars, pars=pi2, ref=2),
+               evppi(chemo_nb, chemo_pars, pars=pi2, ref=1)) # since only two options 
+  expect_equal(evppi(chemo_nb, chemo_pars, pars=pi2, ref="Novel"),
+               evppi(chemo_nb, chemo_pars, pars=pi2, ref="SoC")) # since only two options 
+  
+  expect_error(evppi(chemo_nb, chemo_pars, pars=pi2, ref="wrongname"),
+               "does not appear")
+  expect_error(evppi(chemo_nb, chemo_pars, pars=pi2, ref=3),
+               "should either be a string")
+})

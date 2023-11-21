@@ -181,6 +181,12 @@
 #' one that fits best given two basis terms.  Change this to, e.g. \code{"iso"},
 #' \code{"aniso"} or \code{"unstr"} if an "Error in eigen..." is obtained.
 #'
+#' For any of the nonparametric regression methods:
+#'
+#' * \code{ref} The reference decision option used to define the
+#'   "incremental" net benefit, cost or effects before performing
+#'   nonparametric regression.  Should be an integer. 
+#'
 ##' For \code{method="so"}:
 ##'
 ##' * \code{n.blocks} Number of blocks to split the sample into. Required.

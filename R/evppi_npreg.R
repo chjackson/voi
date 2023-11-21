@@ -54,12 +54,30 @@ calc_evppi_ce <- function(cfit, efit, wtp, se=FALSE, B=0, verbose=FALSE){
     res
 }
 
+check_ref <- function(ref, nb){
+  if (is.character(ref)){
+    ref_num <- match(ref, colnames(nb))
+    if (is.na(ref_num))
+      stop(sprintf("reference decision option ref=\"%s\" does not appear in the supplied column names of `outputs`: %s",
+                   ref,
+                   paste(paste0("\"", colnames(nb), "\""),collapse=",")))
+  }
+  else {
+    if (!(ref %in% 1:ncol(nb)))
+      stop(sprintf("reference decision option `ref` should either be a string matching one of the column names of `outputs`, or an integer <= %s indicating the corresponding column number of `outputs`", ncol(nb)))
+    ref_num <- ref
+  }
+  ref_num
+}
+
 fitted_npreg <- function(nb, inputs, pars, method, se=FALSE, B=NULL, verbose, ...){
     nopt <- ncol(nb)
     nsim <- nrow(nb)
     ## Transforming to incremental net benefit allows us to do one fewer regression
-    ## Assume it doesn't matters which option is the baseline for this purpose
-    inb <- nb[, -1, drop=FALSE] - nb[,1]
+    ref <- list(...)$ref # reference decision option
+    if (is.null(ref)) ref <- 1
+    else ref <- check_ref(ref, nb)
+    inb <- nb[, -ref, drop=FALSE] - nb[,ref]
     fitted <- matrix(0, nrow=nsim, ncol=nopt)
     if (se) {
         if (method=="bart"){
