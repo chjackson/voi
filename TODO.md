@@ -1,3 +1,6 @@
+* partial argument matching in https://github.com/chjackson/voi/blob/master/R/evppi_gam.R#L11.  nicer to make inla and gp methods return classed model object and use fitted() method. 
+
+
 ## TODO long term 
 
 * More built-in common study designs for EVSI, e.g. binary trial that just informs the odds ratio.

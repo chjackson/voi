@@ -4,6 +4,9 @@
 
 * `pars` no longer required for `evsi()` with regression methods
 
+* Reference decision option can be supplied for nonparametric regression
+  with `ref` argument to `evppi()`. 
+  
 
 # Version 1.0 
 
