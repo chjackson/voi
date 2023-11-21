@@ -291,6 +291,7 @@ evsi <- function(outputs,
     ## Could use any nonparametric regression method to regress on a summary statistic, in identical way to EVPPI estimation.
     
     pars_datagen <- check_pars_datagen(pars, pars_datagen, inputs)
+    npreg_method <- default_npreg_method(pars)
     if (method %in% npreg_methods) { 
         res <- evsi_npreg(outputs=outputs, inputs=inputs, 
                    datagen_fn=datagen_fn, pars=pars_datagen, n=n, 

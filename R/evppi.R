@@ -310,6 +310,10 @@ subset_outputs.cea <- function(outputs, nsim, ...){
 }
 
 default_evppi_method <- function(pars){
+    default_npreg_method(pars)
+}
+
+default_npreg_method <- function(pars){
     if (length(pars) <= 4) "gam" else "gp"
 }
 
