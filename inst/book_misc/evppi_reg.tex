@@ -5,16 +5,19 @@
 \documentclass[
 ]{article}
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -45,13 +48,13 @@
 \newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
 \newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
 \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
 \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
 \newcommand{\BuiltInTok}[1]{#1}
 \newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
 \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
 \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
 \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
 \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
@@ -59,7 +62,7 @@
 \newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
 \newcommand{\ExtensionTok}[1]{#1}
 \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
 \newcommand{\ImportTok}[1]{#1}
 \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
@@ -68,7 +71,7 @@
 \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
 \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
 \newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
 \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
@@ -96,7 +99,7 @@
 \fi
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
+\urlstyle{same}
 \hypersetup{
   pdftitle={VoI book code: Case study and guidelines for estimating EVPPI using regression in R},
   hidelinks,
@@ -111,7 +114,7 @@ using regression in R}
 \maketitle
 
 Change this path to reflect where you downloaded the Chemotherapy\_Book
-repository
+repository.
 
 This block of code is only needed if you want to compile this
 \texttt{Rmd} source file into a document.
@@ -121,7 +124,7 @@ Draw a sample from probabilistic analysis of the model.
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{source}\NormalTok{(}\StringTok{"04\_analysis/01\_model\_run.R"}\NormalTok{)}
-\NormalTok{nb }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(m\_costs\_effects[,}\DecValTok{1}\NormalTok{,]}\SpecialCharTok{*}\DecValTok{20000} \SpecialCharTok{{-}}\NormalTok{ m\_costs\_effects[,}\DecValTok{2}\NormalTok{,])}
+\NormalTok{nb }\OtherTok{\textless{}{-}}\NormalTok{ m\_net\_benefit[ , , wtp\_seq }\SpecialCharTok{==} \DecValTok{20000}\NormalTok{]}
 \end{Highlighting}
 \end{Shaded}
 
@@ -186,7 +189,8 @@ respectively.
 \begin{Highlighting}[]
 \NormalTok{par\_groups }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
   \StringTok{"side\_effects"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"p\_side\_effects\_t1"}\NormalTok{,}\StringTok{"logor\_side\_effects"}\NormalTok{),}
-  \StringTok{"trans\_probs"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"p\_hospitalised\_total"}\NormalTok{,}\StringTok{"p\_died"}\NormalTok{,}\StringTok{"lambda\_home"}\NormalTok{,}\StringTok{"lambda\_hosp"}\NormalTok{),}
+  \StringTok{"trans\_probs"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"p\_hospitalised\_total"}\NormalTok{,}\StringTok{"p\_died"}\NormalTok{,}
+                    \StringTok{"lambda\_home"}\NormalTok{,}\StringTok{"lambda\_hosp"}\NormalTok{),}
   \StringTok{"costs"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"c\_home\_care"}\NormalTok{,}\StringTok{"c\_hospital"}\NormalTok{,}\StringTok{"c\_death"}\NormalTok{),}
   \StringTok{"utilities"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"u\_recovery"}\NormalTok{,}\StringTok{"u\_home\_care"}\NormalTok{,}\StringTok{"u\_hospital"}\NormalTok{)}
 \NormalTok{)}
@@ -200,7 +204,7 @@ respectively.
 ## 1 side_effects 330.62
 ## 2  trans_probs  63.14
 ## 3        costs   7.01
-## 4    utilities 105.27
+## 4    utilities 105.22
 \end{verbatim}
 
 In this example, it is clear that the parameters associated with the
@@ -225,7 +229,8 @@ Additional analysis with standard errors:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{evppi}\NormalTok{(}\AttributeTok{outputs=}\NormalTok{nb, }\AttributeTok{inputs=}\NormalTok{m\_params, }\AttributeTok{pars=}\FunctionTok{list}\NormalTok{(}\StringTok{"p\_side\_effects\_t2"}\NormalTok{,}\StringTok{"u\_hospital"}\NormalTok{), }\AttributeTok{se=}\ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{evppi}\NormalTok{(}\AttributeTok{outputs=}\NormalTok{nb, }\AttributeTok{inputs=}\NormalTok{m\_params,}
+      \AttributeTok{pars =} \FunctionTok{list}\NormalTok{(}\StringTok{"p\_side\_effects\_t2"}\NormalTok{,}\StringTok{"u\_hospital"}\NormalTok{), }\AttributeTok{se=}\ConstantTok{TRUE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -233,10 +238,30 @@ Alternative regression models:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{evppi}\NormalTok{(}\AttributeTok{outputs=}\NormalTok{nb, }\AttributeTok{inputs=}\NormalTok{m\_params, }\AttributeTok{pars=}\FunctionTok{list}\NormalTok{(}\StringTok{"p\_side\_effects\_t2"}\NormalTok{,}\StringTok{"u\_hospital"}\NormalTok{))}
-\FunctionTok{evppi}\NormalTok{(}\AttributeTok{outputs=}\NormalTok{nb, }\AttributeTok{inputs=}\NormalTok{m\_params, }\AttributeTok{pars=}\FunctionTok{list}\NormalTok{(}\StringTok{"p\_side\_effects\_t2"}\NormalTok{,}\StringTok{"u\_hospital"}\NormalTok{), }\AttributeTok{method=}\StringTok{"earth"}\NormalTok{)}
+\FunctionTok{evppi}\NormalTok{(}\AttributeTok{outputs=}\NormalTok{nb, }\AttributeTok{inputs=}\NormalTok{m\_params,}
+      \AttributeTok{pars =} \FunctionTok{list}\NormalTok{(}\StringTok{"p\_side\_effects\_t2"}\NormalTok{,}\StringTok{"u\_hospital"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+##                pars  evppi
+## 1 p_side_effects_t2 260.91
+## 2        u_hospital   2.64
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{evppi}\NormalTok{(}\AttributeTok{outputs=}\NormalTok{nb, }\AttributeTok{inputs=}\NormalTok{m\_params,}
+      \AttributeTok{pars =} \FunctionTok{list}\NormalTok{(}\StringTok{"p\_side\_effects\_t2"}\NormalTok{,}\StringTok{"u\_hospital"}\NormalTok{),}
+      \AttributeTok{method=}\StringTok{"earth"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                pars evppi
+## 1 p_side_effects_t2   262
+## 2        u_hospital     0
+\end{verbatim}
 
 \hypertarget{comparing-different-regression-specifications-single-parameter-evppi}{%
 \subsection{Comparing different regression specifications:

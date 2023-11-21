@@ -90,7 +90,7 @@ evppi(outputs=nb, inputs=m_params,
 
 Alternative regression models:
 
-```{r,eval=FALSE}
+```{r}
 evppi(outputs=nb, inputs=m_params,
       pars = list("p_side_effects_t2","u_hospital"))
 evppi(outputs=nb, inputs=m_params,
