@@ -18,7 +18,7 @@
 ##' @param x Output from \code{\link{evppi}} or \code{\link{evsi}}. The argument \code{check=TRUE}
 ##' must have been used when calling \code{evppi} or \code{evsi}, to allow the regression model
 ##' objects from \code{gam} or \code{earth} to be preserved.  (This is not done by
-##' default, since these objects can be large.).   \code{attr(x, "models")} cont
+##' default, since these objects can be large.).   \code{attr(x, "models")} contains these objects.
 ##' 
 ##' @param pars Parameter (or parameter group) whose EVPPI calculation is to be checked.
 ##' This should be in the \code{pars} component of the object returned by \code{\link{evppi}}.
