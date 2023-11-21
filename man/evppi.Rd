@@ -194,8 +194,9 @@ one that fits best given two basis terms.  Change this to, e.g. \code{"iso"},
 For any of the nonparametric regression methods:
 \itemize{
 \item \code{ref} The reference decision option used to define the
-"incremental" net benefit, cost or effects before performing
-nonparametric regression.  Should be an integer.
+incremental net benefit, cost or effects before performing
+nonparametric regression.  Either an integer column number, or the
+name of the column from \code{outputs}.
 }
 
 For \code{method="so"}:
