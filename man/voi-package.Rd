@@ -2,6 +2,7 @@
 % Please edit documentation in R/voi-package.R
 \docType{package}
 \name{voi-package}
+\alias{voi}
 \alias{voi-package}
 \title{Methods to calculate the Expected Value of Information}
 \description{
@@ -18,9 +19,36 @@ A pure "brute-force" Monte Carlo method for EVPPI calculation is provided in \co
 The \href{https://chjackson.github.io/voi/articles/voi.html}{package overview / Get Started vignette} gives worked examples of the use of all of these functions.
 }
 \references{
+Heath, A., Kunst, N., & Jackson, C. (eds.). (2024). Value of Information for Healthcare Decision-Making. CRC Press.
+
 Heath, A., Manolopoulou, I., & Baio, G. (2017). A review of methods for analysis of the expected value of information. Medical Decision Making, 37(7), 747-758.
 
 Heath, A., Kunst, N., Jackson, C., Strong, M., Alarid-Escudero, F., Goldhaber-Fiebert, J. D., Baio, G. Menzies, N.A, Jalal, H. (2020). Calculating the Expected Value of Sample Information in Practice: Considerations from 3 Case Studies. Medical Decision Making, 40(3), 314-326.
 
 Kunst, N., Wilson, E. C., Glynn, D., Alarid-Escudero, F., Baio, G., Brennan, A., Fairley, M., Glynn, D., Goldhaber-Fiebert, J. D., Jackson, C., Jalal, H., Menzies, N. A., Strong, M., Thom, H., Heath, A. (2020). Computing the Expected Value of Sample Information Efficiently: Practical Guidance and Recommendations for Four Model-Based Methods. Value in Health, 3(6), 734-742.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://chjackson.github.io/voi/}
+  \item Report bugs at \url{https://github.com/chjackson/voi/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Christopher Jackson \email{chris.jackson@mrc-bsu.cam.ac.uk}
+
+Authors:
+\itemize{
+  \item Anna Heath \email{anna.heath@sickkids.ca}
+}
+
+Other contributors:
+\itemize{
+  \item Gianluca Baio \email{g.baio@ucl.ac.uk} (Author of code taken from the BCEA package) [contributor]
+  \item Mark Strong \email{mark.strong@sheffield.ac.uk} (Author of code taken from the SAVI package) [contributor]
+  \item Kofi Placid Adragni (Author of code taken from the ldr package) [contributor]
+  \item Andrew Raim (Author of code taken from the ldr package) [contributor]
+}
+
 }

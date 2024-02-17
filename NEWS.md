@@ -1,3 +1,8 @@
+# Version 1.0.3
+
+* Citations to published book ([Heath et al](https://doi.org/10.1201/9781003156109)) added.
+
+
 # Version 1.0.2
 
 * Fix for test of reference option

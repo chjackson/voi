@@ -5,6 +5,7 @@ evppi_npreg <- function(outputs, ...){
     UseMethod("evppi_npreg", outputs)
 }
 
+##' @noRd
 evppi_npreg.nb <- function(outputs, inputs, pars, method, se, B, verbose, ...){
     if (verbose) message("Fitting nonparametric regression") 
     fit <- fitted_npreg(outputs, inputs=inputs, pars=pars, method=method, se=se, B=B, 
@@ -23,6 +24,7 @@ evppi_npreg.nb <- function(outputs, inputs, pars, method, se, B, verbose, ...){
     res
 }
 
+##' @noRd
 evppi_npreg.cea <- function(outputs, inputs, pars, method, se, B, verbose, ...){
     wtp <- outputs$k
     if (verbose) message("Fitting nonparametric regression for costs") 

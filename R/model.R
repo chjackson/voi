@@ -49,10 +49,14 @@ check_model_fn <- function(model_fn, par_fn, mfargs=NULL, outputs=NULL, verbose=
 describe_modelfn <- function(model_fn, ...){
     UseMethod("describe_modelfn", model_fn)
 }
+
+##' @noRd
 describe_modelfn.nb <- function(model_fn, ...){
     plural <- if (attr(model_fn, "nopt") > 1) "s" else ""
     message(sprintf("model_fn returns net benefit for %s decision option%s", attr(model_fn, "nopt"), plural))
 }
+
+##' @noRd
 describe_modelfn.cea <- function(model_fn, ...){
     plural <- if (attr(model_fn, "nopt") > 1) "s" else ""
     message(sprintf("model_fn returns effects and costs for %s decision option%s", attr(model_fn, "nopt"), plural))

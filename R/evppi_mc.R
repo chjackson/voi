@@ -99,6 +99,7 @@ evppimc <- function(model_fn, ...){
     UseMethod("evppimc", model_fn)
 }
     
+##' @noRd
 evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, mfargs, ...) {
     nb_current <- matrix(nrow=nouter, ncol=nopt)
     nb_ppi <- numeric(nouter)
@@ -121,6 +122,7 @@ evppimc.nb <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, m
     mean(nb_ppi) - max(colMeans(nb_current))
 }
 
+##' @noRd
 evppimc.cea <- function(model_fn, par_fn, pars, pars_rep, nouter, ninner, nopt, wtp, mfargs, ...) {
     nwtp <- length(wtp)
     if (nwtp < 1)

@@ -313,6 +313,8 @@ model
 See the \href{https://chjackson.github.io/voi/articles/voi.html#evsi}{package overview / Get Started vignette} for some examples of using this function.
 }
 \references{
+Heath, A., Kunst, N., & Jackson, C. (eds.). (2024). Value of Information for Healthcare Decision-Making. CRC Press.
+
 Strong, M., Oakley, J. E., Brennan, A., & Breeze, P. (2015). Estimating the
 expected value of sample information using the probabilistic sensitivity
 analysis sample: a fast, nonparametric regression-based method. Medical

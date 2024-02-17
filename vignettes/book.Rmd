@@ -18,9 +18,9 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-This is a guide to the code and software resources for the book _Value of Information for Health Economic Evaluations_ (eds. Heath, Jackson, Kunst).  The book is under development, and when published, these resources will be linked from here.
+This is a guide to the code and software resources for the book [_Value of Information for Health Economic Evaluations_ (eds. Heath, Kunst, Jackson)](https://doi.org/10.1201/9781003156109), (Chapman and Hall/CRC, 2024). 
 
-Before running any of this code, you should install the `voi` package, which when the book is published will be available from CRAN. 
+Before running any of this code, you should install the `voi` package, which is available from CRAN.
 
 ```{r}
 install.packages("voi")

@@ -108,7 +108,9 @@ if possible.  Currently only supported for methods \code{"gam"}, \code{"earth"} 
 a posterior standard deviation).  These represent uncertainty about the
 parameters of the fitted regression model, and will naturally be lower when
 more simulations from the decision model are used to fit it.  They do not
-represent uncertainty about the structure of the regression model,}
+represent uncertainty about the structure of the regression model, and are
+also typically small in the context of uncertainties arising from
+converting individual-level to population VoI.}
 
 \item{B}{Number of parameter replicates for calculating the standard error.
 Only applicable to \code{method="gam"}.  For \code{method="bart"} the
@@ -224,6 +226,8 @@ the column \code{se}.
 Calculate the expected value of partial perfect information from a decision-analytic model
 }
 \references{
+Heath, A., Kunst, N., & Jackson, C. (eds.). (2024). Value of Information for Healthcare Decision-Making. CRC Press.
+
 Strong, M., Oakley, J. E., & Brennan, A. (2014). Estimating multiparameter
 partial expected value of perfect information from a probabilistic
 sensitivity analysis sample: a nonparametric regression approach. Medical

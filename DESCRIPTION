@@ -1,7 +1,7 @@
 Package: voi
 Title: Expected Value of Information 
-Version: 1.0.2
-Date: 2023-11-27
+Version: 1.0.3
+Date: 2024-02-17
 Authors@R: 
     c(person(given = "Christopher", family = "Jackson",role = c("aut", "cre"),email = "chris.jackson@mrc-bsu.cam.ac.uk"),
 	   person(given = "Anna", family = "Heath", role = c("aut"), email = "anna.heath@sickkids.ca"),
@@ -10,7 +10,7 @@ Authors@R:
 	   person(given="Kofi Placid", family="Adragni", role="ctb", comment="Author of code taken from the ldr package"),
 	   person(given="Andrew", family="Raim", role="ctb",comment="Author of code taken from the ldr package")
 	   )
-Description: Methods to calculate the expected value of information from a decision-analytic model.  This includes the expected value of perfect information (EVPI), partial perfect information (EVPPI) and sample information (EVSI), and the expected net benefit of sampling (ENBS).  A range of alternative computational methods are provided under the same user interface.  See Jackson et al. (2022) <doi:10.1146/annurev-statistics-040120-010730>.
+Description: Methods to calculate the expected value of information from a decision-analytic model.  This includes the expected value of perfect information (EVPI), partial perfect information (EVPPI) and sample information (EVSI), and the expected net benefit of sampling (ENBS).  A range of alternative computational methods are provided under the same user interface.  See Heath et al. (2024) <doi:10.1201/9781003156109>, Jackson et al. (2022) <doi:10.1146/annurev-statistics-040120-010730>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -18,7 +18,7 @@ Depends: R (>= 3.5.0)
 VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress, dbarts, posterior, ggplot2, gridExtra, Matrix
 Suggests: testthat, BCEA, INLA, splancs, sf, knitr, rmarkdown, rjags, truncnorm, scales, dplyr, heemod
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Roxygen: list(markdown = TRUE)
 URL: https://chjackson.github.io/voi/
 BugReports: https://github.com/chjackson/voi/issues

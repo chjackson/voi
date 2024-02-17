@@ -16,6 +16,8 @@
 ##'
 ##' @references
 ##'
+##' Heath, A., Kunst, N., & Jackson, C. (eds.). (2024). Value of Information for Healthcare Decision-Making. CRC Press.
+##'
 ##' Heath, A., Manolopoulou, I., & Baio, G. (2017). A review of methods for analysis of the expected value of information. Medical Decision Making, 37(7), 747-758.
 ##' 
 ##' Heath, A., Kunst, N., Jackson, C., Strong, M., Alarid-Escudero, F., Goldhaber-Fiebert, J. D., Baio, G. Menzies, N.A, Jalal, H. (2020). Calculating the Expected Value of Sample Information in Practice: Considerations from 3 Case Studies. Medical Decision Making, 40(3), 314-326.
@@ -24,7 +26,6 @@
 ##'
 ##' @name voi-package
 ##' @aliases voi-package
-##' @docType package
 ##'
 ##' @importFrom grDevices dev.off
 ##' @importFrom graphics points hist par
@@ -35,4 +36,4 @@
 ##' @importFrom progress progress_bar
 ##' @importFrom Matrix nearPD
 ##' 
-NULL
+"_PACKAGE"

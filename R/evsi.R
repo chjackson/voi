@@ -238,6 +238,8 @@
 ##'   \code{k} identifies the willingness-to-pay.
 ##'
 ##' @references
+##' 
+##' Heath, A., Kunst, N., & Jackson, C. (eds.). (2024). Value of Information for Healthcare Decision-Making. CRC Press.
 ##'
 ##' Strong, M., Oakley, J. E., Brennan, A., & Breeze, P. (2015). Estimating the
 ##' expected value of sample information using the probabilistic sensitivity
