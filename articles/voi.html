@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,7 @@
                         <h4 data-toc-skip class="author">Christopher
 Jackson</h4>
             
-            <h4 data-toc-skip class="date">2023-11-27</h4>
+            <h4 data-toc-skip class="date">2024-02-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/HEAD/vignettes/voi.Rmd" class="external-link"><code>vignettes/voi.Rmd</code></a></small>
       <div class="d-none name"><code>voi.Rmd</code></div>
@@ -93,23 +93,18 @@ kinds.</p>
 <p>They are used in mathematical and statistical models, where
 parameters of the models represent quantities that are uncertain, and
 uncertainty is described by probability distributions.</p>
-<p>The following two papers give a thorough recent review of the theory
-of the methods, and details of how they are applied and interpreted,
-from the perspective of healthcare decision-making.</p>
-<p><a href="https://doi.org/10.1016/j.jval.2020.01.001" class="external-link">Value of
-Information Analysis for Research Decisions—An Introduction: Report 1 of
-the ISPOR Value of Information Analysis Emerging Good Practices Task
-Force</a></p>
-<p><a href="https://doi.org/10.1016/j.jval.2020.01.004" class="external-link">Value of
-information analytical methods: report 2 of the ISPOR value of
-information analysis emerging good practices task force</a></p>
+<p>A comprehensive guide to VoI methods is given in the the book <a href="https://doi.org/10.1201/9781003156109" class="external-link"><em>Value of Information
+for Health Economic Evaluations</em> (eds. Heath, Kunst, Jackson)</a>,
+(Chapman and Hall/CRC, 2024), which this R package accompanies.</p>
 <p>This document gives a simple overview of how the <code>voi</code>
 package is used to calculate measures of Value of Information. A simple
 example model is used, but the same methods work in more complex
 models.</p>
 <p>The example model is a model used for <em>decision making</em>, which
 has been the most common application of VoI, e.g. in health economic
-evaluations.</p>
+evaluations (see, e.g. <a href="https://doi.org/10.1016/j.jval.2020.01.001" class="external-link">Fenwick et al.</a> and
+<a href="https://doi.org/10.1016/j.jval.2020.01.004" class="external-link">Rothery et
+al.</a>)</p>
 <p>A later section describes the use of VoI methods for a model that is
 used for <em>estimation</em> of uncertain quantities, rather than for
 explicit decision-making. For more information about the theory behind
