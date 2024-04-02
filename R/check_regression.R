@@ -73,8 +73,9 @@ check_regression <- function(x, pars=NULL, n=NULL, comparison=1, outcome="costs"
     method <- attr(x, "methods")[match(pars, unique(x$pars))]
   }
   else if (inherits(x, "evsi")){
-    if (is.null(n)) pars <- as.character(x$n[1])
-    if (!(n %in% x$n)) stop(sprintf("sample size `%s` not found", n))
+    if (is.null(n)) n <- x$n[1]
+    else if (!(n %in% x$n)) stop(sprintf("sample size `%s` not found", n))
+    pars <- as.character(n)
     method <- attr(x,"method")
   }
   else stop("`x` should be an object returned by evppi() or evsi()")

@@ -74,3 +74,13 @@ test_that("EVSI with multiple sample sizes and CEA output", {
   expect_equal(e12$evsi, c(e1$evsi,e2$evsi), tol=1e-03)
   expect_equal(e12$n, c(e1$n,e2$n))
 })
+
+test_that("EVSI with check", { 
+  expect_no_error({
+    ev <- evsi(chemo_nb, chemo_pars, study="trial_binary", pars=c(pi1, pi2), 
+               n=c(100, 200), check=TRUE)
+    check_regression(ev)
+    check_regression(ev, n=100)
+  })
+  expect_error(check_regression(ev, n=37), "sample size `37` not found")
+})
