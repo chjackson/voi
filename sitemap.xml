@@ -1,84 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://chjackson.github.io/voi/404.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/TODO.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/articles/book.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/articles/plots.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/articles/voi.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/coding_style.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/index.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/all_interactions.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/check_model_fn.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/check_regression.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/chemo_model.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/enbs.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/enbs_opt.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/evpi.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/evppi.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/evppi_mc.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/evppivar.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/evsi.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/evsivar.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/import_heemod.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/plot.evppi.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/pop_voi.html</loc>
-  </url>
-  <url>
-    <loc>https://chjackson.github.io/voi/reference/voi-package.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://chjackson.github.io/voi/404.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/TODO.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/articles/book.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/articles/index.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/articles/plots.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/articles/voi.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/authors.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/coding_style.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/index.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/news/index.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/all_interactions.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/check_model_fn.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/check_regression.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/chemo_model.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/enbs.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/enbs_opt.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/evpi.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/evppi.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/evppi_mc.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/evppivar.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/evsi.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/evsivar.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/import_heemod.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/index.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/plot.evppi.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/pop_voi.html</loc></url>
+<url><loc>https://chjackson.github.io/voi/reference/voi-package.html</loc></url>
 </urlset>
+
