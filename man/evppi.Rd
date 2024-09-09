@@ -78,7 +78,7 @@ of \code{pars}.
 
 The default methods are based on nonparametric regression:
 
-\code{"gam"} for a generalized additive model implemented in the \code{\link{gam}}
+\code{"gam"} for a generalized additive model implemented in the \code{\link[mgcv]{gam}}
 function from the \pkg{mgcv} package.  This is the default method for
 calculating the EVPPI of 4 or fewer parameters.
 

@@ -6,11 +6,11 @@
 ##' @details For VoI estimation, the key thing we are looking for is that the residuals
 ##' have mean zero, hence that the mean of the model output is represented well by the
 ##' regression function of the model input parameters.  It should not matter if the 
-##' variance of the residuals is non-constant, or non-normally distributed.
+##' variance of the residuals is non-constant, or if the residuals are non-normally distributed.
 ##'
-##' Models produced with `method="gam"` are summarised using \code{\link{gam.check}}.
+##' Models produced with `method="gam"` are summarised using \code{\link[mgcv]{gam.check}}.
 ##'
-##' Models produced `method="earth"` are summarised using \code{\link{plot.earth}}.
+##' Models produced `method="earth"` are summarised using \code{\link[earth]{plot.earth}}.
 ##' 
 ##' For any regression model, if `fitted()` and `residuals()` methods are defined for those models,
 ##' then a histogram of the residuals and a scatterplot of residuals against fitted values is produced.

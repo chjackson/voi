@@ -18,7 +18,7 @@ Depends: R (>= 3.5.0)
 VignetteBuilder: knitr
 Imports: mgcv, earth, mvtnorm, progress, dbarts, posterior, ggplot2, gridExtra, Matrix
 Suggests: testthat, BCEA, INLA, splancs, sf, knitr, rmarkdown, rjags, truncnorm, scales, dplyr, heemod
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 URL: https://chjackson.github.io/voi/
 BugReports: https://github.com/chjackson/voi/issues
