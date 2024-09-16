@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Calculate the expected value of partial perfect information from a decision-analytic model</h1>
-      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/v1.0.3/R/evppi.R" class="external-link"><code>R/evppi.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/v1.0.2/R/evppi.R" class="external-link"><code>R/evppi.R</code></a></small>
       <div class="d-none name"><code>evppi.Rd</code></div>
     </div>
 
@@ -116,7 +116,7 @@ string is supplied, this is used for all calculations.  A vector of different st
 can be supplied if a different method is desired for different list components
 of <code>pars</code>.</p>
 <p>The default methods are based on nonparametric regression:</p>
-<p><code>"gam"</code> for a generalized additive model implemented in the <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></code>
+<p><code>"gam"</code> for a generalized additive model implemented in the <code>gam</code>
 function from the <span class="pkg">mgcv</span> package.  This is the default method for
 calculating the EVPPI of 4 or fewer parameters.</p>
 <p><code>"gp"</code> for a Gaussian process regression, as described by Strong et al.
@@ -142,9 +142,7 @@ if possible.  Currently only supported for methods <code>"gam"</code>, <code>"ea
 a posterior standard deviation).  These represent uncertainty about the
 parameters of the fitted regression model, and will naturally be lower when
 more simulations from the decision model are used to fit it.  They do not
-represent uncertainty about the structure of the regression model, and are
-also typically small in the context of uncertainties arising from
-converting individual-level to population VoI.</p></dd>
+represent uncertainty about the structure of the regression model,</p></dd>
 
 
 <dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
@@ -244,8 +242,7 @@ the column <code>se</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Heath, A., Kunst, N., &amp; Jackson, C. (eds.). (2024). Value of Information for Healthcare Decision-Making. CRC Press.</p>
-<p>Strong, M., Oakley, J. E., &amp; Brennan, A. (2014). Estimating multiparameter
+    <p>Strong, M., Oakley, J. E., &amp; Brennan, A. (2014). Estimating multiparameter
 partial expected value of perfect information from a probabilistic
 sensitivity analysis sample: a nonparametric regression approach. Medical
 Decision Making, 34(3), 311-326.</p>

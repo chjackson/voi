@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Calculate the expected value of partial perfect information for an estimation problem</h1>
-      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/v1.0.3/R/evppivar.R" class="external-link"><code>R/evppivar.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/v1.0.2/R/evppivar.R" class="external-link"><code>R/evppivar.R</code></a></small>
       <div class="d-none name"><code>evppivar.Rd</code></div>
     </div>
 
@@ -95,7 +95,7 @@ string is supplied, this is used for all calculations.  A vector of different st
 can be supplied if a different method is desired for different list components
 of <code>pars</code>.</p>
 <p>The default methods are based on nonparametric regression:</p>
-<p><code>"gam"</code> for a generalized additive model implemented in the <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a></code>
+<p><code>"gam"</code> for a generalized additive model implemented in the <code>gam</code>
 function from the <span class="pkg">mgcv</span> package.  This is the default method for
 calculating the EVPPI of 4 or fewer parameters.</p>
 <p><code>"gp"</code> for a Gaussian process regression, as described by Strong et al.

@@ -9,7 +9,7 @@ mainly in order to check that the residuals have mean zero."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">voi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@ mainly in order to check that the residuals have mean zero."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Check the fit of a regression model used to estimate EVPPI or EVSI</h1>
-      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/v1.0.3/R/check_regression.R" class="external-link"><code>R/check_regression.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/chjackson/voi/blob/v1.0.2/R/check_regression.R" class="external-link"><code>R/check_regression.R</code></a></small>
       <div class="d-none name"><code>check_regression.Rd</code></div>
     </div>
 
@@ -115,9 +115,9 @@ For <code>method="earth"</code>, this is the generalised cross-validation statis
     <p>For VoI estimation, the key thing we are looking for is that the residuals
 have mean zero, hence that the mean of the model output is represented well by the
 regression function of the model input parameters.  It should not matter if the
-variance of the residuals is non-constant, or if the residuals are non-normally distributed.</p>
-<p>Models produced with <code>method="gam"</code> are summarised using <code><a href="https://rdrr.io/pkg/mgcv/man/gam.check.html" class="external-link">gam.check</a></code>.</p>
-<p>Models produced <code>method="earth"</code> are summarised using <code><a href="https://rdrr.io/pkg/earth/man/plot.earth.html" class="external-link">plot.earth</a></code>.</p>
+variance of the residuals is non-constant, or non-normally distributed.</p>
+<p>Models produced with <code>method="gam"</code> are summarised using <code>gam.check</code>.</p>
+<p>Models produced <code>method="earth"</code> are summarised using <code>plot.earth</code>.</p>
 <p>For any regression model, if <code><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted()</a></code> and <code><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">residuals()</a></code> methods are defined for those models,
 then a histogram of the residuals and a scatterplot of residuals against fitted values is produced.</p>
     </div>
