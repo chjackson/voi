@@ -25,6 +25,9 @@ fitted_inla <- function(y, inputs, pars,
     if (!is.element("INLA", (.packages()))) {
         attachNamespace("INLA")
     }
+    if (!is.element("fmesher", (.packages()))) {
+        attachNamespace("fmesher")
+    }
     if (length(pars)<2){
         stop("The INLA method can only be used with 2 or more parameters")
     }
@@ -103,10 +106,10 @@ make.mesh <- function(data, convex.inner, convex.outer,
                       cutoff,max.edge) {
     tic <- proc.time()
     inner <- suppressMessages({
-        INLA::inla.nonconvex.hull(data, convex = convex.inner)
+        fmesher::fm_nonconvex_hull(data, convex = convex.inner)
     })
-    outer <- INLA::inla.nonconvex.hull(data, convex = convex.outer)
-    mesh <- INLA::inla.mesh.2d(
+    outer <- fmesher::fm_nonconvex_hull(data, convex = convex.outer)
+    mesh <- fmesher::fm_mesh_2d_inla(
         loc=data, boundary=list(inner,outer),
         max.edge=c(max.edge,max.edge),cutoff=c(cutoff))
     toc <- proc.time() - tic
