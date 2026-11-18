@@ -51,12 +51,14 @@ describe_modelfn <- function(model_fn, ...){
 }
 
 ##' @noRd
+#' @exportS3Method NULL
 describe_modelfn.nb <- function(model_fn, ...){
     plural <- if (attr(model_fn, "nopt") > 1) "s" else ""
     message(sprintf("model_fn returns net benefit for %s decision option%s", attr(model_fn, "nopt"), plural))
 }
 
 ##' @noRd
+#' @exportS3Method NULL
 describe_modelfn.cea <- function(model_fn, ...){
     plural <- if (attr(model_fn, "nopt") > 1) "s" else ""
     message(sprintf("model_fn returns effects and costs for %s decision option%s", attr(model_fn, "nopt"), plural))

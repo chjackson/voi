@@ -102,7 +102,7 @@ estimate.hyperparameters <- function(NB, inputs, verbose=FALSE) {
     initial.values <- rep(0, p + 1)
     repeat {
         if (verbose) 
-            print(paste("calling optim function for net benefit"))
+            print(paste("optimizing the Gaussian process hyperparameters"))
       log.hyperparameters <- optim(initial.values, fn=post.density, 
                                    NB=NB, input.m=inputs,
                                    method="Nelder-Mead",

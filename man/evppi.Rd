@@ -151,6 +151,14 @@ If there are spaces in the variable names in \code{inputs}, then these should
 be converted to underscores before forming an explicit \code{gam_formula}.
 }
 
+For \code{method="earth"}:
+\itemize{
+\item \code{degree}.  Maximum degree of interactions to include in the regression.
+By default this is 1.  A better-fitting regression approximation to EVPPI
+might be obtained by using \code{degree=2} or higher, at the expense of
+fitting speed.
+}
+
 For \code{method="gp"}, the following arguments can be supplied:
 \itemize{
 \item \code{gp_hyper_n}: number of samples to use to estimate the hyperparameters

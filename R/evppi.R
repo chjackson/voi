@@ -133,7 +133,13 @@
 ##' 
 ##'     If there are spaces in the variable names in \code{inputs}, then these should
 ##' be converted to underscores before forming an explicit \code{gam_formula}.
-##' 
+##'
+##' For \code{method="earth"}:
+##'
+##' * \code{degree}.  Maximum degree of interactions to include in the regression.
+##' By default this is 1.  A better-fitting regression approximation to EVPPI
+##' might be obtained by using \code{degree=2} or higher, at the expense of
+##' fitting speed. 
 ##'
 ##' For \code{method="gp"}, the following arguments can be supplied:
 ##'
@@ -297,6 +303,7 @@ evppi <- function(outputs,
     attr(res, "methods") <- methods
     attr(res, "outputs") <- class(outputs)[1]
     class(res) <- c("evppi", attr(res,"class"))
+    warn_evppi_gt_evpi(res, outputs)
     res
 }
 
@@ -308,6 +315,7 @@ subset_outputs <- function(outputs, ...){
 }
 
 ##' @noRd
+#' @exportS3Method NULL
 subset_outputs.nb <- function(outputs, nsim, ...){
     outputs <- outputs[1:nsim,,drop=FALSE]
     class(outputs) <- c("nb", attr(outputs, "class"))
@@ -315,6 +323,7 @@ subset_outputs.nb <- function(outputs, nsim, ...){
 }
 
 ##' @noRd
+#' @exportS3Method NULL
 subset_outputs.cea <- function(outputs, nsim, ...){
     outputs$c <- outputs$c[1:nsim,,drop=FALSE]
     outputs$e <- outputs$e[1:nsim,,drop=FALSE]
@@ -447,3 +456,9 @@ remove_constant_linear_cols <- function(inputs, pars){
   list(inputs = as.data.frame(inputs), pars = pars_keep, res=res)
 }
 
+warn_evppi_gt_evpi <- function(res, outputs){
+  evpi_est <- evpi(outputs)
+  bad_res <- which(res$evppi > evpi_est)
+  if (any(bad_res))
+    warning(sprintf("Found an EVPPI estimate greater than the EVPI of %s.  Consider tuning or altering the estimation method", evpi_est))
+}

@@ -55,7 +55,7 @@ evsi_mm <- function(outputs,
 
 #' Moment matching method for calculating EVSI
 #'
-#' @inheritParams evsi
+#' inheritParams evsi
 #'
 #' Specific to `outputs` of net benefit form
 #'
@@ -85,7 +85,7 @@ evsi_mm_nb <- function(outputs, inputs, pars, pars_datagen, datagen_fn, n,
 
 #' Moment matching method for calculating EVSI
 #'
-#' @inheritParams evsi
+#' inheritParams evsi
 #'
 #' Specific to `outputs` of "cost-effectiveness analysis" form
 #'

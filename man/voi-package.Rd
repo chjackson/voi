@@ -40,6 +40,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Christopher Jackson \email{chris.jackson@mrc-bsu.cam.ac.uk}
   \item Anna Heath \email{anna.heath@sickkids.ca}
 }
 
