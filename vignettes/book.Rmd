@@ -1,5 +1,5 @@
 ---
-title: 'Value of Information for Health Economic Evaluations: book code resources'
+title: 'Value of Information for Healthcare Decision-Making: book code resources'
 author: ""
 date: "`r Sys.Date()`"
 output: 
@@ -7,7 +7,7 @@ output:
     toc: true
 vignette: >
  \usepackage[utf8]{inputenc}
- %\VignetteIndexEntry{Value of Information for Health Economic Evaluations: book code resources}
+ %\VignetteIndexEntry{Value of Information for Healthcare Decision-Making: book code resources}
  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-This is a guide to the code and software resources for the book [_Value of Information for Health Economic Evaluations_ (eds. Heath, Kunst, Jackson)](https://doi.org/10.1201/9781003156109), (Chapman and Hall/CRC, 2024). 
+This is a guide to the code and software resources for the book [_Value of Information for Healthcare Decision-Making_ (eds. Heath, Kunst, Jackson)](https://doi.org/10.1201/9781003156109), (Chapman and Hall/CRC, 2024). 
 
 Before running any of this code, you should install the `voi` package, which is available from CRAN.
 
