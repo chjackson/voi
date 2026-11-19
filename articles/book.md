@@ -1,0 +1,112 @@
+# Value of Information for Health Economic Evaluations: book code resources
+
+This is a guide to the code and software resources for the book [*Value
+of Information for Health Economic Evaluations* (eds. Heath, Kunst,
+Jackson)](https://doi.org/10.1201/9781003156109), (Chapman and Hall/CRC,
+2024).
+
+Before running any of this code, you should install the `voi` package,
+which is available from CRAN.
+
+``` r
+
+install.packages("voi")
+```
+
+Then you can set the working directory as follows
+
+``` r
+
+setwd(system.file("Chemotherapy_Book",package="voi"))
+```
+
+then your working directory should contain subdirectories that include
+`01_data_raw`, `02_data`, etc. You can check this by running the command
+[`list.files()`](https://rdrr.io/r/base/list.files.html) in your R
+console.
+
+Alternatively, you can copy the contents of the `Chemotherapy_Book`
+directory to your preferred working directory, and work there instead.
+If you work in RStudio then it is recommended to use a “project”. You
+could create a project for this work by going to
+`File`,`New Project`,`Version Control`,`Git`, then selecting
+<https://github.com/convoigroup/Chemotherapy_Book> as the
+`Repository URL`, and changing the project name and save location
+according to your preference.
+
+## Chapter 3: Chemotherapy case study
+
+The code to run the baseline cost-effectiveness analysis (Section 2.4)
+is in the `04_analysis/02_baseline_model_output.R` subdirectory ([link
+to GitHub
+source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/02_baseline_model_output.R)).
+This can be run all at once using
+
+``` r
+
+source("04_analysis/02_baseline_model_output.R")
+```
+
+Or alternatively, open this file in R, and examine and run each line of
+code by hand.
+
+## Chapter 4: Value of Perfect Information
+
+##### EVPI analysis for the Chemotherapy model (Section 3.2)
+
+`04_analysis/03_Expected_Value_of_Perfect_Information.R` ([link to
+GitHub
+source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/03_Expected_Value_of_Perfect_Information.R))
+
+##### EVPPI analysis for the Chemotherapy model (Section 3.4)
+
+`04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R` ([link
+to GitHub
+source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/04_Expected_Value_of_Partial_Perfect_Information.R))
+
+##### Nonparametric regression examples
+
+Code to draw illustrations of GAM regression (Figure 3.3)
+
+``` r
+
+misc_dir <- setwd(system.file("book_misc",package="voi"))
+```
+
+Code to draw illustrations of Gaussian process regression (Figure 3.4)
+
+``` r
+
+file.path("misc_dir", "gp_graphs.R")
+```
+
+Code to calculate EVPPI using nonparametric regression (Section 3.3.5)
+
+``` r
+
+file.path("misc_dir", "evppi_reg.Rmd")
+```
+
+## Chapter 5: Value of Sample Information
+
+##### Moment matching methods
+
+`04_analysis/05_Expected_Value_of_Sample_Information_MM.R` ([link to
+GitHub
+source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_MM.R))
+
+##### Regression-based methods
+
+`04_analysis/05_Expected_Value_of_Sample_Information_RB.R` ([link to
+GitHub
+source](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/05_Expected_Value_of_Sample_Information_RB.R))
+
+##### Presenting EVSI and ENBS Analyses
+
+For base R functions to reproduce the plots in the book, see the [source
+on
+GitHub](https://raw.githubusercontent.com/convoigroup/Chemotherapy_Book/main/04_analysis/06_Plotting_Book.R)
+
+For functions to calculate and optimise ENBS, and `ggplot2` recipes to
+reproduce similar plots, see the [voi package
+vignette](https://chjackson.github.io/voi/articles/plots.md).

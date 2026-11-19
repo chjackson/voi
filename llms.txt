@@ -1,0 +1,144 @@
+# voi: a generic package to calculate the expected value of information
+
+- A common interface for several methods to calculate the
+
+  - Expected Value of (Partial) Perfect Information and the
+
+  - Expected Value of Sample Information
+
+- A project of the [ConVOI Group: the Collaborative Network for Value of
+  Information](https://www.convoi-group.org/)
+
+## Comparison with other packages
+
+`voi` is pure “command-based” R, with no web interface like
+[SAVI](https://github.com/Sheffield-Accelerated-VoI/SAVI).
+
+- The R commands in `voi` are clean and consistent: they all have the
+  same basic interface, so you can switch between computational methods
+  easily.
+
+- Outputs are all in “tidy” data frames for consistency, and to
+  facilitate post-processing and plotting with modern tools such as
+  [ggplot2](https://ggplot2.tidyverse.org/).
+
+#### EVPPI computation
+
+- `voi` includes all the [EVPPI
+  computation](https://chjackson.github.io/voi/articles/voi.html#evppi)
+  methods that are in
+  [SAVI](https://github.com/Sheffield-Accelerated-VoI/SAVI) (GAM and
+  Gaussian process regression), and includes the INLA method from
+  [BCEA](https://cran.r-project.org/package=BCEA).
+
+- Some other nonparametric regression methods
+  ([`"earth"`](https://chjackson.github.io/voi/articles/voi.html#earth),
+  [`"bart"`](https://chjackson.github.io/voi/articles/voi.html#bart))
+  are included in `voi`, which may improve efficiency for multiparameter
+  EVPPI computation problems with large numbers of parameters.
+
+#### EVSI computation
+
+- `voi` is the first package to implement a range of [EVSI
+  computation](https://chjackson.github.io/voi/articles/voi.html#evsi)
+  methods: nonparametric regression, moment matching and importance
+  sampling. A simple model for the [expected net benefit of
+  sampling](https://chjackson.github.io/voi/articles/plots.html) is also
+  included.
+
+#### In summary
+
+- `voi` will not benefit you if you want a web interface, or if you just
+  need single-parameter EVPPI and are happy with SAVI/BCEA.
+
+- `voi` will benefit you if you want to calculate EVSI, or
+  multiparameter EVPPI with large numbers of parameters.
+
+## Installation
+
+Stable version `{r} install.packages("voi")`
+
+Development version `{r} remotes::install_github("chjackson/voi")`
+
+## User guide
+
+[`voi` for Value of Information calculation: package
+overview](https://chjackson.github.io/voi/articles/voi.html)
+
+## Source code
+
+[Github repository](https://github.com/chjackson/voi)
+
+# Package index
+
+## Package overview
+
+- [`voi`](https://chjackson.github.io/voi/reference/voi-package.md)
+  [`voi-package`](https://chjackson.github.io/voi/reference/voi-package.md)
+  : Methods to calculate the Expected Value of Information
+
+## Calculating the expected value of information
+
+- [`evpi()`](https://chjackson.github.io/voi/reference/evpi.md) :
+  Calculate the expected value of perfect information from a decision
+  model
+- [`evppi()`](https://chjackson.github.io/voi/reference/evppi.md) :
+  Calculate the expected value of partial perfect information from a
+  decision-analytic model
+- [`evppi_mc()`](https://chjackson.github.io/voi/reference/evppi_mc.md)
+  : Traditional two-level Monte Carlo estimator of EVPPI.
+- [`evppivar()`](https://chjackson.github.io/voi/reference/evppivar.md)
+  : Calculate the expected value of partial perfect information for an
+  estimation problem
+- [`plot(`*`<evppi>`*`)`](https://chjackson.github.io/voi/reference/plot.evppi.md)
+  : Plot EVPPI estimates
+- [`evsi()`](https://chjackson.github.io/voi/reference/evsi.md) :
+  Calculate the expected value of sample information from a
+  decision-analytic model
+- [`evsivar()`](https://chjackson.github.io/voi/reference/evsivar.md) :
+  Calculate the expected value of sample information for an estimation
+  problem
+- [`enbs()`](https://chjackson.github.io/voi/reference/enbs.md) :
+  Expected net benefit of sampling
+- [`enbs_opt()`](https://chjackson.github.io/voi/reference/enbs_opt.md)
+  : Determine the optimum sample size in an analysis of the expected net
+  benefit of sampling
+- [`pop_voi()`](https://chjackson.github.io/voi/reference/pop_voi.md) :
+  Population expected value of information
+
+## Utilities
+
+- [`import_heemod_outputs()`](https://chjackson.github.io/voi/reference/import_heemod.md)
+  [`import_heemod_inputs()`](https://chjackson.github.io/voi/reference/import_heemod.md)
+  : Import results of probabilistic analysis from heemod
+- [`all_interactions()`](https://chjackson.github.io/voi/reference/all_interactions.md)
+  : Generate a string with all interactions of a certain degree, to be
+  used in a GAM formula
+- [`check_regression()`](https://chjackson.github.io/voi/reference/check_regression.md)
+  : Check the fit of a regression model used to estimate EVPPI or EVSI
+
+## Example decision models
+
+- [`chemo_cea`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_nb`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_pars`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_cea_501`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_constants`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_evsi_or`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_pars_fn()`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_model_nb()`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_model_cea()`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_model_lor_nb()`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  [`chemo_model_lor_cea()`](https://chjackson.github.io/voi/reference/chemo_model.md)
+  : Chemotherapy cost-effectiveness model
+
+# Articles
+
+### All vignettes
+
+- [Value of Information for Health Economic Evaluations: book code
+  resources](https://chjackson.github.io/voi/articles/book.md):
+- [Plots of Value of Information
+  measures](https://chjackson.github.io/voi/articles/plots.md):
+- [voi for Value of Information calculation: package
+  overview](https://chjackson.github.io/voi/articles/voi.md):
