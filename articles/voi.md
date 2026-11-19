@@ -332,6 +332,12 @@ returned indicating the willingness-to-pay.
 evppi(outputs_cea, inputs, pars=list("p1",c("p1","p2")))
 ```
 
+    ## Warning in warn_evppi_gt_evpi(res, outputs): Found an EVPPI estimate greater
+    ## than the EVPI of c(1, 2, 3).  Consider tuning or altering the estimation
+    ## methodFound an EVPPI estimate greater than the EVPI of c(0.475988509295105,
+    ## 0.402800310416004, 0.417420729223289).  Consider tuning or altering the
+    ## estimation method
+
     ##    pars k      evppi
     ## 1    p1 1 0.08210074
     ## 2    p1 2 0.17052564
