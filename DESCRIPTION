@@ -12,7 +12,7 @@ Authors@R:
 	   )
 Description: Methods to calculate the expected value of information from a decision-analytic model.  This includes the expected value of perfect information (EVPI), partial perfect information (EVPPI) and sample information (EVSI), and the expected net benefit of sampling (ENBS).  A range of alternative computational methods are provided under the same user interface.  See Heath et al. (2024) <doi:10.1201/9781003156109>, Jackson et al. (2022) <doi:10.1146/annurev-statistics-040120-010730>.
 License: GPL-3
-Encoding: UTF-
+Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.5.0)
 VignetteBuilder: knitr
