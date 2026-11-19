@@ -136,7 +136,7 @@ overview](https://chjackson.github.io/voi/articles/voi.html)
 
 ### All vignettes
 
-- [Value of Information for Health Economic Evaluations: book code
+- [Value of Information for Healthcare Decision-Making: book code
   resources](https://chjackson.github.io/voi/articles/book.md):
 - [Plots of Value of Information
   measures](https://chjackson.github.io/voi/articles/plots.md):

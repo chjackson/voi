@@ -1,7 +1,7 @@
-# Value of Information for Health Economic Evaluations: book code resources
+# Value of Information for Healthcare Decision-Making: book code resources
 
 This is a guide to the code and software resources for the book [*Value
-of Information for Health Economic Evaluations* (eds. Heath, Kunst,
+of Information for Healthcare Decision-Making* (eds. Heath, Kunst,
 Jackson)](https://doi.org/10.1201/9781003156109), (Chapman and Hall/CRC,
 2024).
 
